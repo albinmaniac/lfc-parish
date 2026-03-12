@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --parchment: #faf8f4;
+    --gold: #c9983a;
+    --gold-light: #f0d898;
+    --muted: #7a7370;
+    --line: #e8e2d9;
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --card-bg: #ffffff;
+  }
+
+  body {
+    background-color: var(--parchment);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+  }
+
+  /* ── Page Header ── */
+  .events-header {
+    padding: 56px 0 36px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .events-header::before {
+    content: "EVENTS";
+    position: absolute;
+    top: 12px;
+    left: 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .events-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .events-header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* ── Add Button ── */
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 11px 22px;
+    border-radius: 100px;
+    border: none;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(26,26,46,0.18);
+  }
+
+  .btn-add:hover {
+    background: var(--gold);
+    color: var(--ink);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,152,58,0.3);
+  }
+
+  /* ── Grid ── */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  @media (max-width: 991px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 599px)  { .events-grid { grid-template-columns: 1fr; } }
+
+  /* ── Card ── */
+  .event-card {
+    background: var(--card-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s ease;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .event-card:nth-child(2) { animation-delay: 0.07s; }
+  .event-card:nth-child(3) { animation-delay: 0.14s; }
+  .event-card:nth-child(4) { animation-delay: 0.21s; }
+  .event-card:nth-child(5) { animation-delay: 0.28s; }
+  .event-card:nth-child(6) { animation-delay: 0.35s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .event-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(26,26,46,0.12);
+  }
+
+  /* ── Image area ── */
+  .card-image-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 210px;
+    background: #ede8df;
+  }
+
+  .card-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .event-card:hover .card-image-wrap img {
+    transform: scale(1.04);
+  }
+
+  .card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8e2d9 0%, #d4c9bb 100%);
+  }
+
+  .card-image-placeholder i {
+    font-size: 2.5rem;
+    color: #b8a99a;
+  }
+
+  /* ── Admin actions overlay ── */
+  .card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+  }
+
+  .event-card:hover .card-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-actions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    border-radius: 50%;
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .card-actions a:hover { transform: scale(1.15); }
+  .card-actions a.delete-btn:hover { background: #fee2e2; color: #dc2626; }
+  .card-actions a.edit-btn:hover   { background: #fef9c3; color: #854d0e; }
+
+  /* ── Card body ── */
+  .card-body {
+    padding: 22px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .date-chip {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .date-chip i { font-size: 12px; color: var(--gold); }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-left: auto;
+  }
+  .status-dot.active   { background: #22c55e; box-shadow: 0 0 0 3px #dcfce7; }
+  .status-dot.inactive { background: #94a3b8; box-shadow: 0 0 0 3px #f1f5f9; }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 0 0 10px;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0 0 auto;
+    padding-bottom: 18px;
+  }
+
+  /* ── Card footer ── */
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    margin-top: 16px;
+  }
+
+  .status-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .status-label.active   { background: var(--green-light); color: var(--green); }
+  .status-label.inactive { background: #f1f5f9; color: #64748b; }
+
+  .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    transition: background 0.18s, color 0.18s;
+  }
+
+  .btn-view:hover {
+    background: var(--ink);
+    color: var(--parchment);
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--line);
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .empty-state p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Divider accent ── */
+  .gold-rule {
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin: 14px 0 0;
+  }
+</style>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="events-header d-flex justify-content-between align-items-end">
+    <div>
+      <h1>Parish <em>Events</em></h1>
+      <span class="gold-rule"></span>
+    </div>
+    {% if user.role == "admin" or user.role == "provincial" %}
+    <a href="{% url 'event_add' %}" class="btn-add">
+      <i class="bi bi-plus"></i> Add Event
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Grid -->
+  <div class="events-grid">
+    {% for event in events %}
+    <div class="event-card">
+
+      <!-- Image -->
+      <div class="card-image-wrap">
+        {% if event.image %}
+          <img src="{{ event.image.url }}" alt="{{ event.title }}">
+        {% else %}
+          <div class="card-image-placeholder">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+        {% endif %}
+
+        <!-- Admin action icons -->
+        {% if user.role == "admin" or user.role == "provincial" %}
+        <div class="card-actions">
+          <a href="{% url 'event_edit' event.pk %}" class="edit-btn" title="Edit event">
+            <i class="bi bi-pencil"></i>
+          </a>
+          {% if user.role == "admin" %}
+          <a href="{% url 'event_delete' event.pk %}" class="delete-btn" title="Delete event">
+            <i class="bi bi-trash"></i>
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="date-chip">
+            <i class="bi bi-calendar3"></i>
+            {{ event.date|date:"M d, Y" }}
+          </span>
+          {% if event.is_active %}
+            <span class="status-dot active" title="Active"></span>
+          {% else %}
+            <span class="status-dot inactive" title="Inactive"></span>
+          {% endif %}
+        </div>
+
+        <h2 class="card-title">{{ event.title }}</h2>
+        <p class="card-desc">{{ event.description|truncatewords:22 }}</p>
+
+        <div class="card-footer-row">
+          {% if event.is_active %}
+            <span class="status-label active">Active</span>
+          {% else %}
+            <span class="status-label inactive">Inactive</span>
+          {% endif %}
+          <a href="{% url 'event_edit' event.pk %}" class="btn-view">
+            View <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <i class="bi bi-calendar-x"></i>
+      <p>No events have been scheduled yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

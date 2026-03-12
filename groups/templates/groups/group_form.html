@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --rust: #C84B31;
+    --rust-deep: #A33A22;
+    --rust-pale: #FDF0EC;
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2E2E30;
+    --stone: #F5F3EF;
+    --stone-deep: #EAE6DF;
+    --ink: #1C1C1E;
+    --muted: #7A7470;
+    --border: rgba(200,75,49,0.18);
+    --white: #FFFFFF;
+  }
+
+  body { background: var(--stone); font-family: 'Epilogue', sans-serif; }
+
+  .group-page {
+    min-height: 100vh;
+    padding: 70px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  /* Diagonal stripe background texture */
+  .group-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -55deg,
+      transparent,
+      transparent 40px,
+      rgba(200,75,49,0.025) 40px,
+      rgba(200,75,49,0.025) 41px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .group-wrap {
+    width: 100%;
+    max-width: 580px;
+    position: relative;
+    z-index: 1;
+    animation: lift 0.65s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes lift {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Side accent bar */
+  .group-wrap::before {
+    content: '';
+    position: absolute;
+    left: -6px; top: 32px; bottom: 32px;
+    width: 3px;
+    background: linear-gradient(180deg, transparent, var(--rust), transparent);
+    border-radius: 999px;
+    animation: stretch 0.8s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    transform-origin: top;
+  }
+  @keyframes stretch {
+    from { transform: scaleY(0); opacity: 0; }
+    to   { transform: scaleY(1); opacity: 1; }
+  }
+
+  .group-card {
+    background: var(--white);
+    box-shadow:
+      0 1px 0 0 var(--rust),
+      0 20px 60px rgba(28,28,30,0.10),
+      0 4px 12px rgba(28,28,30,0.06);
+    border: 1px solid rgba(200,75,49,0.1);
+  }
+
+  /* Header */
+  .group-head {
+    padding: 44px 50px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .group-head::after {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 40px solid var(--rust-pale);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .head-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 14px;
+    font-family: 'Epilogue', sans-serif;
+    animation: fadein 0.5s 0.2s both;
+  }
+  .head-tag .dot {
+    width: 6px; height: 6px;
+    background: var(--rust);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.7); }
+  }
+  @keyframes fadein { from { opacity:0 } to { opacity:1 } }
+
+  .group-head h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0 0 8px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    animation: fadein 0.5s 0.3s both;
+  }
+
+  .group-head h1 .accent {
+    color: var(--rust);
+    font-style: normal;
+  }
+
+  .group-head p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    font-weight: 300;
+    animation: fadein 0.5s 0.4s both;
+  }
+
+  /* Divider */
+  .head-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--rust), rgba(200,75,49,0.1), transparent);
+    margin: 0 50px;
+  }
+
+  /* Form body */
+  .group-body {
+    padding: 36px 50px 32px;
+  }
+
+  /* Generic field wrapper — targets all Django-rendered fields */
+  .group-body p,
+  .group-body div.field-row {
+    margin-bottom: 0;
+  }
+
+  /* Style all labels in the Django as_p output */
+  .group-body label {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    margin-top: 0;
+  }
+
+  /* Wrap each <p> from as_p with spacing */
+  .django-form-fields > p {
+    margin-bottom: 26px !important;
+    position: relative;
+  }
+
+  /* All inputs, selects, textareas */
+  .django-form-fields input[type="text"],
+  .django-form-fields input[type="email"],
+  .django-form-fields input[type="number"],
+  .django-form-fields input[type="url"],
+  .django-form-fields input[type="tel"],
+  .django-form-fields input[type="date"],
+  .django-form-fields input[type="time"],
+  .django-form-fields input[type="password"],
+  .django-form-fields select,
+  .django-form-fields textarea {
+    width: 100%;
+    background: var(--stone);
+    border: 1.5px solid var(--stone-deep);
+    border-left: 3px solid transparent;
+    padding: 13px 16px;
+    font-family: 'Epilogue', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    outline: none;
+    box-sizing: border-box;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: all 0.22s;
+    display: block;
+  }
+
+  .django-form-fields input:focus,
+  .django-form-fields select:focus,
+  .django-form-fields textarea:focus {
+    background: var(--white);
+    border-color: rgba(200,75,49,0.25);
+    border-left-color: var(--rust);
+    box-shadow: 4px 0 0 -1px var(--rust-pale), 0 4px 24px rgba(200,75,49,0.07);
+  }
+
+  .django-form-fields input::placeholder,
+  .django-form-fields textarea::placeholder {
+    color: #C4BAB4;
+    font-weight: 300;
+  }
+
+  .django-form-fields textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  /* Select arrow */
+  .django-form-fields .select-wrap,
+  .django-form-fields select {
+    position: relative;
+  }
+  /* We apply a wrapper trick via JS for selects */
+  .select-arrow-wrap {
+    position: relative;
+    display: block;
+  }
+  .select-arrow-wrap::after {
+    content: '↓';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--rust);
+    font-size: 13px;
+    pointer-events: none;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* Checkbox / radio */
+  .django-form-fields input[type="checkbox"],
+  .django-form-fields input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--stone-deep);
+    background: var(--white);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    border-radius: 0;
+  }
+  .django-form-fields input[type="checkbox"]:checked {
+    background: var(--rust);
+    border-color: var(--rust);
+  }
+  .django-form-fields input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 5px;
+    width: 5px; height: 9px;
+    border: 2px solid #fff;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+  .django-form-fields input[type="radio"] {
+    border-radius: 50%;
+  }
+  .django-form-fields input[type="radio"]:checked {
+    background: var(--rust);
+    border-color: var(--rust);
+    box-shadow: inset 0 0 0 3px var(--white);
+  }
+
+  /* File input */
+  .django-form-fields input[type="file"] {
+    background: var(--stone);
+    border: 1.5px dashed rgba(200,75,49,0.3);
+    padding: 16px;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .django-form-fields input[type="file"]:hover {
+    background: var(--rust-pale);
+    border-color: var(--rust);
+  }
+  .django-form-fields input[type="file"]::file-selector-button {
+    font-family: 'Epilogue', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--rust);
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    margin-right: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .django-form-fields input[type="file"]::file-selector-button:hover {
+    background: var(--charcoal);
+  }
+
+  /* Error styling */
+  .django-form-fields .errorlist,
+  .django-form-fields ul.errorlist {
+    list-style: none;
+    margin: 5px 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: var(--rust);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* Help text */
+  .django-form-fields .helptext,
+  .django-form-fields span.helptext {
+    display: block;
+    font-size: 11px;
+    color: #B4ABA6;
+    margin-top: 5px;
+    font-weight: 300;
+  }
+
+  /* Stagger animate each field */
+  .django-form-fields > p:nth-child(1) { animation: rise 0.4s 0.4s both; }
+  .django-form-fields > p:nth-child(2) { animation: rise 0.4s 0.5s both; }
+  .django-form-fields > p:nth-child(3) { animation: rise 0.4s 0.6s both; }
+  .django-form-fields > p:nth-child(4) { animation: rise 0.4s 0.7s both; }
+  .django-form-fields > p:nth-child(5) { animation: rise 0.4s 0.8s both; }
+  .django-form-fields > p:nth-child(n+6) { animation: rise 0.4s 0.9s both; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Footer */
+  .group-foot {
+    padding: 0 50px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    animation: fadein 0.5s 0.85s both;
+  }
+
+  .btn-cancel {
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 13px 26px;
+    border: 1.5px solid var(--stone-deep);
+    background: transparent;
+    transition: all 0.22s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-cancel:hover {
+    color: var(--ink);
+    border-color: #C8C0B8;
+    background: var(--stone);
+    text-decoration: none;
+  }
+
+  .btn-save {
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--white);
+    border: none;
+    padding: 14px 40px;
+    background: var(--rust);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-save::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--charcoal);
+    clip-path: circle(0% at 50% 50%);
+    transition: clip-path 0.4s cubic-bezier(0.22,1,0.36,1);
+  }
+  .btn-save:hover::before { clip-path: circle(150% at 50% 50%); }
+  .btn-save span { position: relative; }
+  .btn-save:active { transform: scale(0.98); }
+
+  @media (max-width: 560px) {
+    .group-head, .group-body { padding-left: 24px; padding-right: 24px; }
+    .head-divider { margin-left: 24px; margin-right: 24px; }
+    .group-foot { padding: 0 24px 36px; flex-direction: column-reverse; }
+    .btn-cancel, .btn-save { width: 100%; justify-content: center; }
+  }
+</style>
+
+<div class="group-page">
+  <div class="group-wrap">
+    <div class="group-card">
+
+      <div class="group-head">
+        <div class="head-tag"><span class="dot"></span> Parish Groups</div>
+        <h1>{% if object %}Edit <span class="accent">Group</span>{% else %}New <span class="accent">Group</span>{% endif %}</h1>
+        <p>{% if object %}Update the details for this parish group{% else %}Create and configure a new parish group{% endif %}</p>
+      </div>
+
+      <div class="head-divider"></div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="group-body">
+          <div class="django-form-fields">
+            {{ form.as_p }}
+          </div>
+        </div>
+
+        <div class="group-foot">
+          <a href="{% url 'group_list' %}" class="btn-cancel">← Cancel</a>
+          <button type="submit" class="btn-save">
+            <span>{% if object %}Update{% else %}Create Group{% endif %}</span>
+            <span>+</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Wrap all select elements with an arrow wrapper
+  document.querySelectorAll('.django-form-fields select').forEach(sel => {
+    const wrap = document.createElement('div');
+    wrap.className = 'select-arrow-wrap';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+  });
+</script>
+
+{% endblock %}

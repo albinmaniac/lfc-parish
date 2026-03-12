@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:    #0F0F1A;
+    --jade:   #00C9A7;
+    --amber:  #FFB347;
+    --rose:   #FF6B9D;
+    --sky:    #60CFFF;
+    --lilac:  #C084FC;
+    --card-bg: rgba(255,255,255,0.035);
+  }
+
+  body {
+    background: var(--ink);
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* ── Page wrapper ── */
+  .groups-page {
+    min-height: 100vh;
+    padding: 2.5rem 1rem 4rem;
+    background:
+      radial-gradient(ellipse at 5% 15%,  rgba(0,201,167,0.12)  0%, transparent 45%),
+      radial-gradient(ellipse at 95% 10%,  rgba(192,132,252,0.14) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 90%,  rgba(255,107,157,0.10) 0%, transparent 50%),
+      var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Dot-grid texture */
+  .groups-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1;
+    position: relative;
+  }
+
+  .page-title span {
+    background: linear-gradient(135deg, var(--jade), var(--sky));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-title::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 60%;
+    margin-top: 0.5rem;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--jade), transparent);
+  }
+
+  .btn-add-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--amber), #FF9E3B);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.7rem 1.6rem;
+    border-radius: 999px;
+    border: none;
+    text-decoration: none;
+    box-shadow: 0 6px 24px rgba(255,179,71,0.45);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-add-group:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 32px rgba(255,179,71,0.6);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  /* ── Grid ── */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ── Card ── */
+  .group-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), box-shadow 0.28s, border-color 0.28s;
+    opacity: 0;
+    animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  .group-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+
+  /* Top accent stripe */
+  .card-stripe {
+    height: 4px;
+    width: 100%;
+  }
+
+  /* Each card gets a different stripe color */
+  .group-card:nth-child(3n+1) .card-stripe { background: linear-gradient(90deg, var(--jade), var(--sky)); }
+  .group-card:nth-child(3n+2) .card-stripe { background: linear-gradient(90deg, var(--rose), var(--lilac)); }
+  .group-card:nth-child(3n+3) .card-stripe { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+
+  /* Matching glow on hover */
+  .group-card:nth-child(3n+1):hover { box-shadow: 0 20px 50px rgba(0,201,167,0.15); }
+  .group-card:nth-child(3n+2):hover { box-shadow: 0 20px 50px rgba(255,107,157,0.15); }
+  .group-card:nth-child(3n+3):hover { box-shadow: 0 20px 50px rgba(255,179,71,0.15); }
+
+  /* Stagger delays */
+  .group-card:nth-child(1)  { animation-delay: 0.10s; }
+  .group-card:nth-child(2)  { animation-delay: 0.17s; }
+  .group-card:nth-child(3)  { animation-delay: 0.24s; }
+  .group-card:nth-child(4)  { animation-delay: 0.31s; }
+  .group-card:nth-child(5)  { animation-delay: 0.38s; }
+  .group-card:nth-child(6)  { animation-delay: 0.45s; }
+  .group-card:nth-child(7)  { animation-delay: 0.52s; }
+  .group-card:nth-child(8)  { animation-delay: 0.59s; }
+  .group-card:nth-child(9)  { animation-delay: 0.66s; }
+
+  .card-body-inner {
+    padding: 1.4rem 1.5rem 1.5rem;
+  }
+
+  /* Action icons */
+  .action-icons {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 7px;
+    z-index: 2;
+  }
+
+  .action-icons a {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    text-decoration: none;
+    transition: transform 0.18s, background 0.18s;
+    backdrop-filter: blur(8px);
+  }
+
+  .action-edit {
+    background: rgba(96,207,255,0.15);
+    border: 1px solid rgba(96,207,255,0.3);
+    color: var(--sky) !important;
+  }
+
+  .action-edit:hover {
+    background: rgba(96,207,255,0.3);
+    transform: scale(1.15);
+  }
+
+  .action-delete {
+    background: rgba(255,107,107,0.12);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: #FF6B6B !important;
+  }
+
+  .action-delete:hover {
+    background: rgba(255,107,107,0.28);
+    transform: scale(1.15);
+  }
+
+  /* Card icon */
+  .group-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .group-card:nth-child(3n+1) .group-icon { background: rgba(0,201,167,0.15); color: var(--jade); }
+  .group-card:nth-child(3n+2) .group-icon { background: rgba(255,107,157,0.15); color: var(--rose); }
+  .group-card:nth-child(3n+3) .group-icon { background: rgba(255,179,71,0.15);  color: var(--amber); }
+
+  .group-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.6rem;
+    padding-right: 4rem; /* room for action icons */
+    line-height: 1.2;
+  }
+
+  .leader-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(0,201,167,0.15);
+    border: 1px solid rgba(0,201,167,0.3);
+    color: var(--jade);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.28rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform 0.18s, background 0.18s;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .btn-view:hover {
+    background: rgba(255,255,255,0.14);
+    transform: scale(1.04);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .members-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .members-count i {
+    font-size: 0.9rem;
+  }
+
+  /* ── Empty state ── */
+  .empty-box {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 24px;
+    color: rgba(255,255,255,0.4);
+    animation: fadeUp 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    opacity: 0;
+  }
+
+  .empty-box i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Floating blobs */
+  .blob { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+  .blob-a { width:260px; height:260px; background:rgba(0,201,167,0.1);   top:-60px;  left:-40px;  animation: drift 12s ease-in-out infinite; }
+  .blob-b { width:200px; height:200px; background:rgba(192,132,252,0.1); bottom:5%;  right:-50px; animation: drift 15s ease-in-out infinite reverse; }
+  .blob-c { width:150px; height:150px; background:rgba(255,107,157,0.08);top:40%;    left:60%;    animation: drift 10s ease-in-out infinite 3s; }
+  @keyframes drift {
+    0%,100% { transform: translate(0,0); }
+    50%      { transform: translate(15px,-20px); }
+  }
+</style>
+
+<div class="groups-page">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+
+  <div class="wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h2 class="page-title">Parish <span>Groups</span></h2>
+      {% if user.is_authenticated and user.role == "admin" or user.role == "provincial" %}
+      <a href="{% url 'group_add' %}" class="btn-add-group">
+        <i class="bi bi-plus-circle-fill"></i> Add Group
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Grid -->
+    <div class="groups-grid">
+      {% for group in groups %}
+      <div class="group-card">
+        <div class="card-stripe"></div>
+
+        <!-- Action icons -->
+        {% if user.is_authenticated %}
+          {% if user.role == "admin" or user.role == "provincial" or group.leader == user %}
+          <div class="action-icons">
+            <a href="{% url 'group_edit' group.pk %}" class="action-edit" title="Edit">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            {% if user.role == "admin" %}
+            <a href="{% url 'group_delete' group.pk %}" class="action-delete" title="Delete">
+              <i class="bi bi-trash-fill"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endif %}
+
+        <div class="card-body-inner">
+          <div class="group-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+
+          <h5 class="group-name">{{ group.name }}</h5>
+
+          {% if group.leader %}
+          <div class="leader-pill">
+            <i class="bi bi-star-fill" style="font-size:0.7rem;"></i>
+            {{ group.leader.username }}
+          </div>
+          {% endif %}
+
+          <div class="card-footer-row">
+            <a href="{% url 'group_detail' group.pk %}" class="btn-view">
+              <i class="bi bi-eye-fill"></i> View Members
+            </a>
+            <span class="members-count">
+              <i class="bi bi-person-fill"></i>
+              {{ group.members.count }} members
+            </span>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-box">
+        <i class="bi bi-people"></i>
+        No parish groups found.
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

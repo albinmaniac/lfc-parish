@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --slate: #0F1923;
+    --slate-mid: #1E2D3D;
+    --slate-soft: #2C3E50;
+    --teal: #4ECDC4;
+    --teal-dim: #3BBDB4;
+    --teal-glow: rgba(78,205,196,0.15);
+    --fog: #F0F4F8;
+    --fog-deep: #E2EAF0;
+    --text: #0F1923;
+    --text-soft: #5A7184;
+    --border: rgba(78,205,196,0.2);
+    --white: #ffffff;
+  }
+
+  body { background: var(--fog); font-family: 'DM Sans', sans-serif; }
+
+  .gallery-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    position: relative;
+  }
+
+  /* Geometric background accents */
+  .gallery-page::before {
+    content: '';
+    position: fixed;
+    top: 0; right: 0;
+    width: 45vw; height: 100vh;
+    background: linear-gradient(160deg, var(--slate) 0%, var(--slate-mid) 100%);
+    clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 0;
+  }
+
+  .gallery-card {
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+    z-index: 1;
+    animation: appear 0.7s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Floating label card */
+  .card-eyebrow {
+    background: var(--teal);
+    color: var(--slate);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px 7px 14px;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: -1px;
+    position: relative;
+    animation: slide-right 0.5s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes slide-right {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .card-eyebrow::before {
+    content: '◈';
+    font-size: 12px;
+  }
+
+  .inner-card {
+    background: var(--white);
+    border: 1px solid rgba(78,205,196,0.15);
+    box-shadow:
+      0 2px 0 0 var(--teal),
+      0 30px 80px rgba(15,25,35,0.15),
+      0 8px 20px rgba(15,25,35,0.08);
+  }
+
+  .card-header {
+    padding: 36px 44px 28px;
+    border-bottom: 1px solid var(--fog-deep);
+    position: relative;
+  }
+
+  .card-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--text);
+    margin: 0 0 6px;
+    line-height: 1.2;
+    animation: fade 0.5s 0.35s both;
+  }
+  .card-header h1 em {
+    font-style: italic;
+    color: var(--teal-dim);
+  }
+
+  .card-header p {
+    font-size: 12.5px;
+    color: var(--text-soft);
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    animation: fade 0.5s 0.45s both;
+  }
+
+  /* Corner accent */
+  .card-header::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: linear-gradient(225deg, var(--teal-glow), transparent);
+  }
+
+  .card-body {
+    padding: 36px 44px 32px;
+  }
+
+  @keyframes fade {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* Fields */
+  .field-group {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: rise 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  .field-group:nth-child(1) { animation-delay: 0.45s; }
+  .field-group:nth-child(2) { animation-delay: 0.55s; }
+  .field-group:nth-child(3) { animation-delay: 0.65s; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .field-group label:not(.toggle-wrap) {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin-bottom: 9px;
+  }
+
+  /* Text inputs */
+  .field-group input[type="text"],
+  .field-group input[type="email"],
+  .field-group input[type="number"],
+  .field-group select,
+  .field-group textarea {
+    width: 100%;
+    background: var(--fog);
+    border: 1.5px solid transparent;
+    border-bottom: 2px solid var(--fog-deep);
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    box-sizing: border-box;
+    border-radius: 2px;
+    transition: all 0.25s;
+    -webkit-appearance: none;
+  }
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus {
+    background: #fff;
+    border-color: var(--teal);
+    box-shadow: 0 4px 20px var(--teal-glow), inset 0 0 0 1px rgba(78,205,196,0.1);
+  }
+  .field-group input::placeholder { color: #B0C4D0; font-weight: 300; }
+
+  /* File drop zone */
+  .file-zone {
+    position: relative;
+    cursor: pointer;
+  }
+  .file-zone-inner {
+    border: 2px dashed rgba(78,205,196,0.35);
+    background: var(--fog);
+    padding: 32px 20px;
+    text-align: center;
+    transition: all 0.25s;
+    border-radius: 2px;
+  }
+  .file-zone:hover .file-zone-inner,
+  .file-zone input:focus ~ .file-zone-inner {
+    border-color: var(--teal);
+    background: rgba(78,205,196,0.04);
+  }
+  .file-zone .file-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+    filter: grayscale(0.3);
+  }
+  .file-zone .file-label {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 300;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .file-zone .file-sub {
+    font-size: 10.5px;
+    color: #A0B4C0;
+    letter-spacing: 0.08em;
+  }
+  .file-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+  /* Filename display */
+  .file-name-display {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--teal-dim);
+    font-weight: 500;
+    min-height: 16px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Toggle */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+  }
+  .toggle-wrap input[type="checkbox"] {
+    width: 0; height: 0; opacity: 0; position: absolute;
+  }
+  .toggle-track {
+    width: 46px;
+    height: 26px;
+    background: var(--fog-deep);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.25s;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,0.06);
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.25s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .toggle-wrap input:checked ~ .toggle-track {
+    background: var(--teal);
+  }
+  .toggle-wrap input:checked ~ .toggle-track .toggle-thumb {
+    transform: translateX(20px);
+  }
+  .toggle-text {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 400;
+  }
+  .toggle-badge {
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--fog-deep);
+    color: #A0B4C0;
+    transition: all 0.25s;
+  }
+  .toggle-wrap input:checked ~ .toggle-badge-wrap .toggle-badge {
+    background: rgba(78,205,196,0.15);
+    color: var(--teal-dim);
+  }
+
+  /* Error */
+  .errorlist {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: #E05C5C;
+  }
+
+  /* Card footer */
+  .card-footer-actions {
+    padding: 20px 44px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--fog-deep);
+    opacity: 0;
+    animation: fade 0.5s 0.8s forwards;
+  }
+
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 12px 22px;
+    border: 1.5px solid var(--fog-deep);
+    background: transparent;
+    transition: all 0.22s;
+    border-radius: 2px;
+  }
+  .btn-cancel:hover {
+    border-color: #CBD5DC;
+    color: var(--text);
+    background: var(--fog);
+  }
+
+  .btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--slate);
+    border: none;
+    padding: 14px 36px;
+    background: var(--teal);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s, transform 0.2s;
+    border-radius: 2px;
+  }
+  .btn-save::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--slate);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  }
+  .btn-save:hover { color: var(--teal); }
+  .btn-save:hover::before { transform: scaleX(1); }
+  .btn-save:active { transform: scale(0.98); }
+  .btn-save span { position: relative; }
+
+  @media (max-width: 560px) {
+    .card-header, .card-body { padding-left: 24px; padding-right: 24px; }
+    .card-footer-actions { padding-left: 24px; padding-right: 24px; }
+    .gallery-page::before { display: none; }
+  }
+</style>
+
+<div class="gallery-page">
+  <div class="gallery-card">
+
+    <div class="card-eyebrow">Gallery Management</div>
+
+    <div class="inner-card">
+
+      <div class="card-header">
+        <h1>{% if object %}Edit <em>Image</em>{% else %}Add <em>Image</em>{% endif %}</h1>
+        <p>Upload and configure your gallery entry below</p>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="card-body">
+
+          <!-- Title -->
+          <div class="field-group">
+            <label>Image Title</label>
+            {{ form.title }}
+            {{ form.title.errors }}
+          </div>
+
+          <!-- Image upload -->
+          <div class="field-group">
+            <label>Upload Image</label>
+            <div class="file-zone">
+              {{ form.image }}
+              <div class="file-zone-inner">
+                <span class="file-icon">🖼️</span>
+                <span class="file-label">Click to choose an image, or drag & drop</span>
+                <span class="file-sub">PNG, JPG, WEBP · Max 10MB</span>
+              </div>
+            </div>
+            <div class="file-name-display" id="file-name-display"></div>
+            {{ form.image.errors }}
+          </div>
+
+          <!-- Active toggle -->
+          <div class="field-group">
+            <label class="toggle-wrap">
+              {{ form.is_active }}
+              <div class="toggle-track">
+                <div class="toggle-thumb"></div>
+              </div>
+              <span class="toggle-text">Visible in gallery</span>
+              <span class="toggle-badge-wrap">
+                <span class="toggle-badge" id="toggle-label">Inactive</span>
+              </span>
+            </label>
+            {{ form.is_active.errors }}
+          </div>
+
+        </div>
+
+        <div class="card-footer-actions">
+          <a href="{% url 'gallery' %}" class="btn-cancel">← Cancel</a>
+          <button type="submit" class="btn-save">
+            <span>{% if object %}Update{% else %}Publish{% endif %}</span>
+            <span>✦</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Live filename display
+  const fileInput = document.querySelector('.file-zone input[type="file"]');
+  const display = document.getElementById('file-name-display');
+  if (fileInput && display) {
+    fileInput.addEventListener('change', () => {
+      display.textContent = fileInput.files[0]?.name || '';
+    });
+  }
+
+  // Toggle badge label
+  const checkbox = document.querySelector('.toggle-wrap input[type="checkbox"]');
+  const badge = document.getElementById('toggle-label');
+  if (checkbox && badge) {
+    const update = () => { badge.textContent = checkbox.checked ? 'Active' : 'Inactive'; };
+    update();
+    checkbox.addEventListener('change', update);
+  }
+</script>
+
+{% endblock %}

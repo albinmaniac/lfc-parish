@@ -1,0 +1,1 @@
+web: gunicorn lfc_church.wsgi

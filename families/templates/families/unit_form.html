@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #0f0e17;
+    --cream: #faf8f4;
+    --warm: #f2ede4;
+    --accent: #c8472b;
+    --accent-light: #f0cfc8;
+    --muted: #7a7068;
+    --border: #ddd8cf;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .uf-page {
+    min-height: 100vh;
+    background-color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .uf-wrapper {
+    width: 100%;
+    max-width: 520px;
+    animation: uf-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes uf-rise {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Eyebrow tag ── */
+  .uf-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .uf-tag-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: uf-pulse 2s ease infinite;
+  }
+
+  @keyframes uf-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.75); }
+  }
+
+  /* ── Heading ── */
+  .uf-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+
+  .uf-subtext {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  /* ── Card ── */
+  .uf-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 36px 32px;
+    box-shadow: 0 2px 0 var(--border), 0 12px 40px rgba(15,14,23,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .uf-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), #e8834f, #c8472b);
+  }
+
+  /* ── Divider ── */
+  .uf-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .uf-divider::after {
+    content: '§';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    color: var(--border);
+    font-size: 12px;
+    padding: 0 8px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* ── Field group ── */
+  .uf-field {
+    margin-bottom: 22px;
+  }
+
+  .uf-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  /* Django renders inputs — we target them generically */
+  .uf-card input[type="text"],
+  .uf-card input[type="email"],
+  .uf-card input[type="number"],
+  .uf-card select,
+  .uf-card textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--warm);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .uf-card select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7068' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  .uf-card input:focus,
+  .uf-card select:focus,
+  .uf-card textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(200, 71, 43, 0.1);
+  }
+
+  .uf-card input::placeholder,
+  .uf-card textarea::placeholder {
+    color: #bfb8af;
+  }
+
+    .uf-card input[type="file"] {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--warm);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+
+  .uf-card input[type="file"]:hover {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  /* ── Actions ── */
+  .uf-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .uf-btn-cancel {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 11px 20px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    cursor: pointer;
+  }
+
+  .uf-btn-cancel:hover {
+    color: var(--ink);
+    border-color: #b5afa7;
+    background: var(--warm);
+  }
+
+  .uf-btn-save {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: 11px 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 0 #8f2c17;
+  }
+
+  .uf-btn-save:hover {
+    background: #b53d24;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #8f2c17;
+  }
+
+  .uf-btn-save:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #8f2c17;
+  }
+
+  .uf-btn-save svg {
+    transition: transform 0.2s;
+  }
+
+  .uf-btn-save:hover svg {
+    transform: translateX(2px);
+  }
+
+  /* ── Footer note ── */
+  .uf-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #c4bdb5;
+  }
+</style>
+
+<div class="uf-page">
+  <div class="uf-wrapper">
+
+    <div class="uf-tag">
+      <span class="uf-tag-dot"></span>
+      {% if object %}Editing Record{% else %}New Record{% endif %}
+    </div>
+
+    <h1 class="uf-heading">
+      {% if object %}Edit Family Unit{% else %}Add Family Unit{% endif %}
+    </h1>
+    <p class="uf-subtext">
+      {% if object %}Update the details below and save your changes.{% else %}Fill in the information to register a new family unit.{% endif %}
+    </p>
+
+    <div class="uf-card">
+
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Unit Name -->
+        <div class="uf-field">
+          <label class="uf-label">Unit Name</label>
+          {{ form.name }}
+        </div>
+
+        <div class="uf-divider"></div>
+
+        <!-- President -->
+        <div class="uf-field">
+          <label class="uf-label">President</label>
+          {{ form.president }}
+        </div>
+
+        <div class="uf-divider"></div>
+
+        <!-- Unit Logo -->
+        <div class="uf-field">
+          <label class="uf-label">Unit Logo</label>
+          <input type="file" name="logo" accept="image/*">
+
+          {% if form.instance.logo %}
+          <div style="margin-top:10px;">
+            <img src="{{ form.instance.logo.url }}" 
+                style="height:60px; border-radius:6px;">
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="uf-actions">
+          <a href="{% url 'unit_list' %}" class="uf-btn-cancel">Cancel</a>
+
+          <button type="submit" class="uf-btn-save">
+            Save
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+    <p class="uf-footer">All fields are required · Changes are saved immediately</p>
+  </div>
+</div>
+
+{% endblock %}

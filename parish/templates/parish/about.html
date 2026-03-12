@@ -1,0 +1,810 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --ink:        #0b0f14;
+    --navy:       #0d1b2a;
+    --navy-mid:   #122236;
+    --gold:       #c9a84c;
+    --gold-lt:    #e8c97e;
+    --gold-pale:  #f5e8c0;
+    --amber:      #d4870a;
+    --cream:      #faf5eb;
+    --smoke:      #f2ece0;
+    --stone:      #9a8f7e;
+    --white:      #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  .about-page { background: var(--cream); overflow-x: hidden; }
+
+  /* ══════════════════════════════════════
+     HERO  — Cathedral-window atmosphere
+  ══════════════════════════════════════ */
+  .about-hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--navy);
+  }
+
+  /* Deep space background */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(201,168,76,0.13) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 20% 70%,  rgba(201,168,76,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse 55% 45% at 80% 80%,  rgba(212,135,10,0.06) 0%, transparent 50%),
+      linear-gradient(165deg, #0b0f14 0%, #0d1b2a 50%, #101a28 100%);
+    pointer-events: none;
+  }
+
+  /* Animated particle stars */
+  .hero-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero-particles span {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle var(--dur, 4s) var(--delay, 0s) infinite ease-in-out;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50%       { opacity: var(--op, 0.6); transform: scale(1.4); }
+  }
+
+  /* Vertical light rays */
+  .hero-rays {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-rays::before,
+  .hero-rays::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    width: 1px;
+    height: 140%;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.15), transparent);
+  }
+
+  .hero-rays::before { left: 33%; transform: rotate(-8deg); }
+  .hero-rays::after  { left: 65%; transform: rotate(8deg);  }
+
+  /* Gothic arch frame */
+  .hero-arch {
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: min(500px, 90vw);
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero-arch::before {
+    content: '';
+    position: absolute;
+    top: -30px; left: 50%; transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(201,168,76,0.08);
+    border-bottom: none;
+    border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+  }
+
+  /* Hero content */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 80px 24px 100px;
+    max-width: 760px;
+  }
+
+  .hero-logo-ring {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 32px;
+  }
+
+  .hero-logo-ring::before,
+  .hero-logo-ring::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    animation: rotateSlow 18s linear infinite;
+  }
+
+  .hero-logo-ring::before {
+    inset: -8px;
+    border: 1px solid rgba(201,168,76,0.35);
+    border-top-color: var(--gold);
+    border-right-color: rgba(201,168,76,0.1);
+    animation-direction: normal;
+  }
+
+  .hero-logo-ring::after {
+    inset: -16px;
+    border: 1px dashed rgba(201,168,76,0.15);
+    animation-direction: reverse;
+    animation-duration: 28s;
+  }
+
+  @keyframes rotateSlow {
+    to { transform: rotate(360deg); }
+  }
+
+  .hero-logo-inner {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--navy-mid), var(--ink));
+    border: 2px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-logo-inner img {
+    max-width: 80px;
+    max-height: 80px;
+    object-fit: contain;
+  }
+
+  .hero-logo-inner .default-cross {
+    font-size: 52px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(201,168,76,0.6);
+  }
+
+  .hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: heroFadeUp 0.8s 0.2s ease forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(26px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin: 0 0 20px;
+    opacity: 0;
+    animation: heroFadeUp 0.8s 0.35s ease forwards;
+    text-shadow: 0 4px 30px rgba(201,168,76,0.2);
+  }
+
+  .hero-title em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--gold), var(--gold-lt), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: clamp(16px, 2.2vw, 20px);
+    color: rgba(255,255,255,0.6);
+    line-height: 1.8;
+    margin: 0 auto 36px;
+    max-width: 560px;
+    opacity: 0;
+    animation: heroFadeUp 0.8s 0.5s ease forwards;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: heroFadeUp 0.8s 0.65s ease forwards;
+  }
+
+  @keyframes heroFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scroll-down chevron */
+  .hero-scroll {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(201,168,76,0.5);
+    font-size: 22px;
+    animation: bounce 2.5s infinite ease-in-out;
+    z-index: 10;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+    50%       { transform: translateX(-50%) translateY(8px); opacity: 1; }
+  }
+
+  /* ── Edit button in hero ── */
+  .btn-edit-hero {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+    border: none;
+    padding: 12px 28px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 24px rgba(201,168,76,0.35);
+  }
+
+  .btn-edit-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 34px rgba(201,168,76,0.5);
+    color: var(--navy);
+  }
+
+  /* ══════════════════════════════════════
+     SECTION WRAPPER
+  ══════════════════════════════════════ */
+  .about-section {
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .about-section + .about-section {
+    border-top: 1px solid rgba(201,168,76,0.12);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .section-kicker {
+    font-family: 'Cinzel', serif;
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 400;
+    color: var(--navy);
+    margin: 0 0 18px;
+    line-height: 1.3;
+  }
+
+  .section-ornament {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .orn-line {
+    width: 44px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .orn-line:last-child { background: linear-gradient(90deg, var(--gold), transparent); }
+  .orn-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); }
+
+  /* ══════════════════════════════════════
+     CONTACT INFO TILES
+  ══════════════════════════════════════ */
+  .info-tiles-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 767px) { .info-tiles-row { grid-template-columns: 1fr; } }
+  @media (max-width: 991px) and (min-width: 768px) { .info-tiles-row { grid-template-columns: repeat(3,1fr); } }
+
+  .info-tile {
+    position: relative;
+    background: var(--white);
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 36px 24px 30px;
+    text-align: center;
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    opacity: 0;
+    transform: translateY(26px);
+    animation: tileReveal 0.6s ease forwards;
+  }
+
+  .info-tile:nth-child(1) { animation-delay: 0.05s; }
+  .info-tile:nth-child(2) { animation-delay: 0.15s; }
+  .info-tile:nth-child(3) { animation-delay: 0.25s; }
+
+  @keyframes tileReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .info-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-lt), var(--gold));
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.4s ease;
+  }
+
+  .info-tile::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: radial-gradient(ellipse at 50% 100%, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .info-tile:hover { transform: translateY(-6px); box-shadow: 0 24px 56px rgba(11,15,20,0.12); }
+  .info-tile:hover::before { transform: scaleX(1); }
+  .info-tile:hover::after { opacity: 1; }
+
+  .tile-icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--navy);
+    margin: 0 auto 18px;
+    box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+    transition: transform 0.3s ease;
+  }
+
+  .info-tile:hover .tile-icon-circle { transform: scale(1.1) rotate(-5deg); }
+
+  .tile-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--stone);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .tile-value {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--navy);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ══════════════════════════════════════
+     MAP SECTION
+  ══════════════════════════════════════ */
+  .map-section-bg {
+    background: var(--navy);
+    padding: 70px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .map-section-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .map-section-bg .section-title { color: var(--white); }
+  .map-section-bg .section-kicker { color: var(--gold-lt); }
+
+  .map-frame-wrap {
+    position: relative;
+    border: 1px solid rgba(201,168,76,0.25);
+    padding: 10px;
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Corner decorations */
+  .map-frame-wrap::before,
+  .map-frame-wrap::after {
+    content: '';
+    position: absolute;
+    width: 22px; height: 22px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  .map-frame-wrap::before {
+    top: -1px; left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+
+  .map-frame-wrap::after {
+    bottom: -1px; right: -1px;
+    border-width: 0 2px 2px 0;
+  }
+
+  .map-corner-tr, .map-corner-bl {
+    position: absolute;
+    width: 22px; height: 22px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  .map-corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+  .map-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+
+  .map-frame-wrap iframe {
+    display: block;
+    width: 100%;
+    height: 480px;
+    border: none;
+    filter: grayscale(15%) contrast(1.05);
+    transition: filter 0.4s ease;
+  }
+
+  .map-frame-wrap:hover iframe { filter: none; }
+
+  .btn-map-open {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 12px 30px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 22px;
+  }
+
+  .btn-map-open::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    z-index: 0;
+  }
+
+  .btn-map-open:hover { color: var(--navy); border-color: var(--gold); }
+  .btn-map-open:hover::before { transform: scaleX(1); }
+  .btn-map-open i, .btn-map-open span { position: relative; z-index: 1; }
+
+  /* ══════════════════════════════════════
+     MASS TIMINGS
+  ══════════════════════════════════════ */
+  .mass-section {
+    padding: 80px 0;
+    background: var(--smoke);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mass-section::before {
+    content: '✛';
+    position: absolute;
+    font-size: 500px;
+    color: rgba(201,168,76,0.04);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .mass-card {
+    position: relative;
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 48px 48px 44px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(11,15,20,0.07);
+  }
+
+  /* Four-corner gold brackets */
+  .mass-card::before, .mass-card::after,
+  .mass-corner-tr, .mass-corner-bl {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  .mass-card::before  { top: 10px;    left: 10px;  border-width: 2px 0 0 2px; }
+  .mass-card::after   { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; content: ''; }
+  .mass-corner-tr { top: 10px;    right: 10px; border-width: 2px 2px 0 0; }
+  .mass-corner-bl { bottom: 10px; left: 10px;  border-width: 0 0 2px 2px; }
+
+  .mass-card .church-icon {
+    font-size: 44px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 4px 12px rgba(201,168,76,0.4));
+  }
+
+  .mass-card h3 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 400;
+    color: var(--navy);
+    margin: 0 0 20px;
+  }
+
+  .mass-timings-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    color: var(--stone);
+    line-height: 1.9;
+    margin: 0;
+    white-space: pre-line;
+  }
+
+  .mass-card .ornament {
+    margin: 18px 0;
+  }
+
+  /* ══════════════════════════════════════
+     SCROLL REVEAL
+  ══════════════════════════════════════ */
+  .sr {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+
+  .sr.visible { opacity: 1; transform: translateY(0); }
+  .sr.delay-1 { transition-delay: 0.1s; }
+  .sr.delay-2 { transition-delay: 0.2s; }
+  .sr.delay-3 { transition-delay: 0.3s; }
+</style>
+
+<div class="about-page">
+
+  <!-- ══════════════════════════════════
+       HERO
+  ══════════════════════════════════ -->
+  <section class="about-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-particles" id="heroParticles"></div>
+    <div class="hero-rays"></div>
+    <div class="hero-arch"></div>
+
+    <div class="hero-content">
+      <div class="hero-logo-ring">
+        <div class="hero-logo-inner">
+          {% if parish.logo %}
+          <img src="{{ parish.logo.url }}" alt="{{ parish.name }} logo">
+          {% else %}
+          <span class="default-cross">✛</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <span class="hero-eyebrow">Welcome to Our Community</span>
+
+      <h1 class="hero-title">
+        <em>{{ parish.name|default:"St. Mary's Parish" }}</em>
+      </h1>
+
+      <p class="hero-desc">
+        {{ parish.about|default:"Welcome to our parish community. We are a place of faith, fellowship, and service." }}
+      </p>
+
+      <div class="hero-cta-row">
+        {% if can_edit_parish %}
+        <a href="{% url 'parish_edit' %}" class="btn-edit-hero">
+          <i class="bi bi-pencil-fill"></i>
+          <span>Edit Parish Info</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <i class="bi bi-chevron-double-down"></i>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       CONTACT INFO TILES
+  ══════════════════════════════════ -->
+  <section class="about-section">
+    <div class="container">
+      <div class="section-header sr">
+        <span class="section-kicker">Get in Touch</span>
+        <h2 class="section-title">Parish Information</h2>
+        <div class="section-ornament">
+          <div class="orn-line"></div>
+          <div class="orn-diamond"></div>
+          <div class="orn-line"></div>
+        </div>
+      </div>
+
+      <div class="info-tiles-row">
+        <div class="info-tile sr delay-1">
+          <div class="tile-icon-circle"><i class="bi bi-geo-alt-fill"></i></div>
+          <span class="tile-label">Address</span>
+          <p class="tile-value">{{ parish.address|default:"Address not available." }}</p>
+        </div>
+
+        <div class="info-tile sr delay-2">
+          <div class="tile-icon-circle"><i class="bi bi-telephone-fill"></i></div>
+          <span class="tile-label">Phone</span>
+          <p class="tile-value">{{ parish.phone|default:"Not available" }}</p>
+        </div>
+
+        <div class="info-tile sr delay-3">
+          <div class="tile-icon-circle"><i class="bi bi-envelope-fill"></i></div>
+          <span class="tile-label">Email</span>
+          <p class="tile-value">{{ parish.email|default:"Not available" }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       MAP
+  ══════════════════════════════════ -->
+  <section class="map-section-bg">
+    <div class="container">
+      <div class="section-header sr" style="margin-bottom:40px">
+        <span class="section-kicker">Find Us</span>
+        <h2 class="section-title">Our Location</h2>
+        <div class="section-ornament">
+          <div class="orn-line" style="background:linear-gradient(90deg,transparent,rgba(201,168,76,0.5))"></div>
+          <div class="orn-diamond"></div>
+          <div class="orn-line" style="background:linear-gradient(90deg,rgba(201,168,76,0.5),transparent)"></div>
+        </div>
+      </div>
+
+      <div class="sr delay-1">
+        <div class="map-frame-wrap">
+          <div class="map-corner-tr"></div>
+          <div class="map-corner-bl"></div>
+          <iframe
+            src="https://www.google.com/maps?q=9.6845868,76.3576093&z=17&output=embed"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Parish Location Map">
+          </iframe>
+        </div>
+        <div class="text-center">
+          <a href="https://www.google.com/maps?q=9.6845868,76.3576093" target="_blank" class="btn-map-open">
+            <i class="bi bi-compass-fill"></i>
+            <span>Open in Google Maps</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════
+       MASS TIMINGS
+  ══════════════════════════════════ -->
+  {% if parish.mass_timings %}
+  <section class="mass-section">
+    <div class="container">
+      <div class="sr">
+        <div class="mass-card">
+          <div class="mass-corner-tr"></div>
+          <div class="mass-corner-bl"></div>
+          <i class="bi bi-building church-icon"></i>
+          <h3>Holy Mass Schedule</h3>
+          <div class="section-ornament ornament">
+            <div class="orn-line"></div>
+            <div class="orn-diamond"></div>
+            <div class="orn-line"></div>
+          </div>
+          <p class="mass-timings-text">{{ parish.mass_timings }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+</div><!-- end .about-page -->
+
+
+<script>
+  /* ── Particle generator ── */
+  (function() {
+    const container = document.getElementById('heroParticles');
+    if (!container) return;
+    const count = 55;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('span');
+      const size = Math.random() < 0.2 ? 3 : 2;
+      s.style.cssText = `
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        width:${size}px;
+        height:${size}px;
+        --dur:${3 + Math.random()*5}s;
+        --delay:${Math.random()*6}s;
+        --op:${0.3 + Math.random()*0.55};
+      `;
+      container.appendChild(s);
+    }
+  })();
+
+  /* ── Scroll reveal ── */
+  const sr = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); sr.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.sr').forEach(el => sr.observe(el));
+</script>
+
+{% endblock %}

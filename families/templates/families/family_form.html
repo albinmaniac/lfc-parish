@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% block title %}Family Form{% endblock %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --cream: #faf7f2;
+    --warm-white: #fff9f4;
+    --ink: #1a1410;
+    --brown: #6b4c35;
+    --amber: #c97d3a;
+    --amber-light: #e8a96b;
+    --muted: #9a8a7a;
+    --border: #e2d8ce;
+    --card-bg: #ffffff;
+    --shadow: 0 8px 40px rgba(107, 76, 53, 0.12);
+    --shadow-hover: 0 16px 60px rgba(107, 76, 53, 0.2);
+  }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  .family-form-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201, 125, 58, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(107, 76, 53, 0.07) 0%, transparent 60%),
+      var(--cream);
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: box-shadow 0.4s ease;
+  }
+
+  .form-card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Header */
+  .form-header {
+    background: linear-gradient(135deg, var(--brown) 0%, #3d2b1a 100%);
+    padding: 2.5rem 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(201, 125, 58, 0.15);
+  }
+
+  .form-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: 40%;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .form-header-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .form-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .form-header p {
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* Body */
+  .form-body {
+    padding: 2.5rem 3rem 3rem;
+  }
+
+  /* Field groups */
+  .field-group {
+    margin-bottom: 1.75rem;
+    animation: slideUp 0.4s ease both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .field-group:nth-child(1) { animation-delay: 0.05s; }
+  .field-group:nth-child(2) { animation-delay: 0.10s; }
+  .field-group:nth-child(3) { animation-delay: 0.15s; }
+  .field-group:nth-child(4) { animation-delay: 0.20s; }
+  .field-group:nth-child(5) { animation-delay: 0.25s; }
+  .field-group:nth-child(6) { animation-delay: 0.30s; }
+
+  .field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.55rem;
+  }
+
+  /* Override Django form widget styles */
+  .field-group input,
+  .field-group select,
+  .field-group textarea,
+  .field-group input[type="text"],
+  .field-group input[type="email"],
+  .field-group input[type="number"],
+  .field-group input[type="tel"],
+  .field-group input[type="date"],
+  .field-group input[type="password"],
+  .field-group input[type="url"] {
+    width: 100% !important;
+    padding: 0.85rem 1.1rem !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: 12px !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.95rem !important;
+    color: var(--ink) !important;
+    background: var(--warm-white) !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus {
+    border-color: var(--amber) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(201, 125, 58, 0.12) !important;
+  }
+
+  .field-group select {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--warm-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1.1rem center;
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field-group textarea {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--warm-white);
+    resize: vertical;
+    min-height: 110px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    outline: none;
+  }
+
+  /* Checkbox & radio */
+  .field-group input[type="checkbox"],
+  .field-group input[type="radio"] {
+    width: auto !important;
+    padding: 0 !important;
+    accent-color: var(--amber);
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer;
+    border-radius: 4px !important;
+  }
+
+  /* File input */
+  .field-group input[type="file"] {
+    padding: 0.6rem 0.8rem !important;
+    background: var(--warm-white) !important;
+    border: 1.5px dashed var(--border) !important;
+    border-radius: 12px !important;
+    cursor: pointer;
+    font-size: 0.85rem !important;
+    color: var(--muted) !important;
+  }
+
+  .field-group input[type="file"]:hover {
+    border-color: var(--amber-light) !important;
+  }
+
+  .help-text {
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .error-text {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: #c0392b;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .error-text::before {
+    content: '⚠';
+    font-style: normal;
+  }
+
+  /* Non-field errors */
+  .non-field-errors {
+    background: #fff0ee;
+    border: 1px solid #f5c6c0;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.88rem;
+    color: #c0392b;
+  }
+
+  /* Divider */
+  .form-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  /* Actions */
+  .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-submit {
+    padding: 0.85rem 2rem;
+    background: linear-gradient(135deg, var(--amber) 0%, #b86b28 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 4px 16px rgba(201, 125, 58, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 125, 58, 0.45);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .btn-cancel {
+    padding: 0.85rem 1.5rem;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .btn-cancel:hover {
+    border-color: var(--brown);
+    color: var(--brown);
+    background: rgba(107, 76, 53, 0.04);
+    text-decoration: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-header,
+    .form-body {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+    .form-card {
+      border-radius: 18px;
+    }
+  }
+</style>
+
+<div class="family-form-wrapper">
+  <div class="form-card">
+
+    <!-- Header -->
+    <div class="form-header">
+      <div class="form-header-icon">
+        {% if object %}✏️{% else %}🏡{% endif %}
+      </div>
+      <h2>{% if object %}Edit Family{% else %}Add New Family{% endif %}</h2>
+      <p>{% if object %}Update the details for this family record{% else %}Fill in the details to register a new family{% endif %}</p>
+    </div>
+
+    <!-- Body -->
+    <div class="form-body">
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="non-field-errors">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="field-group">
+          <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+          <div class="help-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+          <div class="error-text">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="form-divider"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            {% if object %}
+              <span>✓</span> Update Family
+            {% else %}
+              <span>+</span> Create Family
+            {% endif %}
+          </button>
+          <a href="{% url 'family_list' %}" class="btn-cancel">
+            ← Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

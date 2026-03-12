@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --cream:       #faf8f3;
+    --violet:      #6c3fc5;
+    --violet-mid:  #8b5cf6;
+    --violet-light:#c4b5fd;
+    --violet-glow: rgba(108,63,197,0.15);
+    --ink:         #1a1621;
+    --ink-soft:    #3d2f5a;
+    --ink-muted:   #8b7da8;
+    --white:       #ffffff;
+    --card-bg:     #fdfcff;
+    --border:      rgba(108,63,197,0.14);
+    --shadow-sm:   0 4px 20px rgba(26,22,33,0.06);
+    --shadow-md:   0 12px 40px rgba(26,22,33,0.11);
+    --shadow-lg:   0 24px 60px rgba(26,22,33,0.17);
+    --radius:      20px;
+    --radius-sm:   12px;
+  }
+
+  body, .unit-page-wrapper {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+  }
+
+  /* ── Page Header ── */
+  .page-header {
+    position: relative;
+    padding: 60px 0 44px;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 80% at 5% 50%,  rgba(108,63,197,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 55% at 95% 15%, rgba(139,92,246,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--violet);
+    background: rgba(108,63,197,0.08);
+    border: 1px solid rgba(108,63,197,0.22);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+    width: fit-content;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+  }
+  .page-header h1 span { color: var(--violet); }
+  .page-header p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  /* ── Stats Bar ── */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 16px 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 2px; }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .stat-divider { width: 1px; height: 32px; background: var(--border); flex-shrink: 0; }
+
+  /* ── Add Button ── */
+  .btn-add-unit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--violet), var(--violet-mid));
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 24px rgba(108,63,197,0.32);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-add-unit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(108,63,197,0.45);
+    filter: brightness(1.07);
+    color: var(--white);
+  }
+  .btn-add-unit i { font-size: 16px; }
+
+  /* ── Search Bar ── */
+  .filter-bar { position: relative; margin-bottom: 36px; }
+  .filter-bar input {
+    width: 100%;
+    padding: 14px 20px 14px 50px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .filter-bar input::placeholder { color: var(--ink-muted); }
+  .filter-bar input:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(108,63,197,0.1), var(--shadow-sm);
+  }
+  .filter-bar .search-icon {
+    position: absolute;
+    left: 18px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+    font-size: 17px;
+    pointer-events: none;
+  }
+
+  /* ── Unit Card ── */
+  .unit-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s ease;
+    animation: cardReveal 0.5s ease both;
+  }
+  .unit-card:hover {
+    transform: translateY(-8px) scale(1.015);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(108,63,197,0.28);
+  }
+  .unit-card:hover .card-accent-bar { transform: scaleX(1); }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .unit-col:nth-child(1) .unit-card { animation-delay: 0.05s; }
+  .unit-col:nth-child(2) .unit-card { animation-delay: 0.10s; }
+  .unit-col:nth-child(3) .unit-card { animation-delay: 0.15s; }
+  .unit-col:nth-child(4) .unit-card { animation-delay: 0.20s; }
+  .unit-col:nth-child(5) .unit-card { animation-delay: 0.25s; }
+  .unit-col:nth-child(6) .unit-card { animation-delay: 0.30s; }
+  .unit-col:nth-child(n+7) .unit-card { animation-delay: 0.35s; }
+
+  /* Animated top accent bar */
+  .card-accent-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--violet), var(--violet-mid), var(--violet-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(.22,.68,0,1.2);
+  }
+
+  /* Decorative icon bg */
+  .card-icon-bg {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(108,63,197,0.12), rgba(139,92,246,0.08));
+    border: 1px solid rgba(108,63,197,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--violet);
+    flex-shrink: 0;
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+  .unit-card:hover .card-icon-bg {
+    transform: rotate(-6deg) scale(1.08);
+    background: linear-gradient(135deg, rgba(108,63,197,0.2), rgba(139,92,246,0.14));
+  }
+
+  /* Card body */
+  .card-body {
+    padding: 24px 22px 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card-top-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .card-title-group { flex: 1; min-width: 0; }
+  .card-unit-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-unit-subtitle {
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* President badge */
+  .president-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    padding: 6px 12px;
+    border-radius: 100px;
+    width: fit-content;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .president-badge i { color: #16a34a; font-size: 12px; }
+  .unit-card:hover .president-badge { background: #bbf7d0; border-color: #86efac; }
+
+  .no-president {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.07);
+    padding: 6px 12px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+  .no-president i { font-size: 12px; }
+
+  /* Card Footer */
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-view-families {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--violet);
+    border: 1px solid rgba(108,63,197,0.3);
+    background: transparent;
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-view-families:hover {
+    background: var(--violet);
+    color: white;
+    border-color: var(--violet);
+    transform: translateX(2px);
+  }
+  .btn-view-families i { font-size: 12px; transition: transform 0.2s; }
+  .btn-view-families:hover i { transform: translateX(3px); }
+
+  .family-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: rgba(108,63,197,0.06);
+    border: 1px solid rgba(108,63,197,0.15);
+    padding: 5px 11px;
+    border-radius: 100px;
+    transition: background 0.2s;
+  }
+  .family-count-badge i { color: var(--violet); font-size: 12px; }
+  .unit-card:hover .family-count-badge { background: rgba(108,63,197,0.1); }
+
+  /* Action Icons */
+  .action-icons {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .action-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+  }
+  .action-btn:hover { transform: scale(1.18); }
+  .action-btn.edit:hover  { background: var(--violet); color: white; }
+  .action-btn.delete:hover{ background: #e74c3c; color: white; }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    animation: cardReveal 0.5s ease both;
+  }
+  .empty-state-icon {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: rgba(108,63,197,0.08);
+    border: 2px dashed rgba(108,63,197,0.28);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 36px;
+    color: var(--violet);
+  }
+  .empty-state h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .empty-state p { color: var(--ink-muted); font-size: 14px; margin: 0; }
+
+  @media (max-width: 576px) {
+    .stats-bar { gap: 16px; }
+    .stat-divider { display: none; }
+  }
+</style>
+
+<div class="unit-page-wrapper">
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-end gap-4">
+        <div>
+          <div class="page-header-label">
+            <i class="bi bi-diagram-3-fill"></i> Parish Structure
+          </div>
+          <h1>Family <span>Units</span></h1>
+          <p>Organized groups that form the backbone of our parish community.</p>
+        </div>
+        {% if user.role == "admin" or user.role == "provincial" %}
+        <a href="{% url 'unit_add' %}" class="btn-add-unit">
+          <i class="bi bi-plus-circle-fill"></i> Add Unit
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    {% if units %}
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value">{{ units|length }}</span>
+        <span class="stat-label">Units</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="totalFamiliesCount">—</span>
+        <span class="stat-label">Total Families</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="presidentsCount">—</span>
+        <span class="stat-label">With President</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Search Bar -->
+    <div class="filter-bar">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        id="unitSearch"
+        placeholder="Search by unit name or president…"
+        autocomplete="off"
+      >
+    </div>
+
+    <!-- Units Grid -->
+    <div class="row g-4" id="unitsGrid">
+      {% for unit in units %}
+      <div
+        class="col-md-6 col-lg-4 unit-col"
+        data-name="{{ unit.name|lower }}"
+        data-president="{% if unit.president %}{{ unit.president.username|lower }}{% endif %}"
+      >
+        <div class="unit-card">
+
+          <!-- Accent bar -->
+          <div class="card-accent-bar"></div>
+
+          <!-- Action Icons -->
+          {% if user.role == "admin" or user.role == "provincial" %}
+          <div class="action-icons">
+            <a href="{% url 'unit_edit' unit.pk %}" class="action-btn edit" title="Edit Unit">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            {% if user.role == "admin" %}
+            <a href="{% url 'unit_delete' unit.pk %}" class="action-btn delete" title="Delete Unit">
+              <i class="bi bi-trash-fill"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="card-body">
+            <!-- Icon + Title -->
+            <div class="card-top-row">
+              <div class="card-icon-bg">
+                <i class="bi bi-house-fill"></i>
+              </div>
+              <div class="card-title-group">
+                <h5 class="card-unit-name" title="{{ unit.name }}">{{ unit.name }}</h5>
+                <span class="card-unit-subtitle">Family Unit</span>
+              </div>
+            </div>
+
+            <!-- President -->
+            {% if unit.president %}
+            <span class="president-badge" data-has-president="true">
+              <i class="bi bi-person-badge-fill"></i>
+              President: {{ unit.president.username }}
+            </span>
+            {% else %}
+            <span class="no-president">
+              <i class="bi bi-person-dash"></i>
+              No president assigned
+            </span>
+            {% endif %}
+
+            <!-- Footer -->
+            <div class="card-footer-row">
+              <a href="{% url 'unit_detail' unit.pk %}" class="btn-view-families">
+                View Families <i class="bi bi-arrow-right"></i>
+              </a>
+              <span class="family-count-badge" data-count="{{ unit.families.count }}">
+                <i class="bi bi-houses-fill"></i>
+                {{ unit.families.count }} Families
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="bi bi-diagram-3"></i>
+          </div>
+          <h4>No Units Found</h4>
+          <p>No family units have been created yet.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- No Search Results -->
+    <div id="noSearchResults" class="empty-state" style="display:none;">
+      <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+      <h4>No Matches Found</h4>
+      <p>Try a different unit name or president.</p>
+    </div>
+
+    <div style="height: 60px;"></div>
+  </div>
+</div>
+
+<script>
+  // ── Live Search ──
+  const searchInput = document.getElementById('unitSearch');
+  const grid        = document.getElementById('unitsGrid');
+  const noResults   = document.getElementById('noSearchResults');
+
+  if (searchInput && grid) {
+    searchInput.addEventListener('input', function () {
+      const q = this.value.trim().toLowerCase();
+      const cols = grid.querySelectorAll('.unit-col');
+      let visible = 0;
+      cols.forEach(col => {
+        const name  = col.dataset.name      || '';
+        const pres  = col.dataset.president || '';
+        const show  = !q || name.includes(q) || pres.includes(q);
+        col.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (noResults) noResults.style.display = (visible === 0 && q) ? 'block' : 'none';
+    });
+  }
+
+  // ── Compute stats ──
+  (function () {
+    const badges   = document.querySelectorAll('.family-count-badge[data-count]');
+    const presBadges = document.querySelectorAll('[data-has-president="true"]');
+    const totalEl  = document.getElementById('totalFamiliesCount');
+    const presEl   = document.getElementById('presidentsCount');
+    if (totalEl) {
+      let total = 0;
+      badges.forEach(b => { total += parseInt(b.dataset.count, 10) || 0; });
+      totalEl.textContent = total;
+    }
+    if (presEl) presEl.textContent = presBadges.length;
+  })();
+</script>
+
+{% endblock %}

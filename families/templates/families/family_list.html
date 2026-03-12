@@ -1,0 +1,564 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --cream:     #faf8f3;
+    --gold:      #c8974b;
+    --gold-light:#e8c47a;
+    --ink:       #1a1611;
+    --ink-soft:  #4a3f30;
+    --ink-muted: #9b8b76;
+    --white:     #ffffff;
+    --card-bg:   #fffefb;
+    --border:    rgba(200,151,75,0.18);
+    --shadow-sm: 0 4px 20px rgba(26,22,17,0.06);
+    --shadow-md: 0 12px 40px rgba(26,22,17,0.12);
+    --shadow-lg: 0 24px 60px rgba(26,22,17,0.18);
+    --radius:    20px;
+    --radius-sm: 12px;
+  }
+
+  body, .family-page-wrapper {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+  }
+
+  /* ── Page Header ── */
+  .page-header {
+    position: relative;
+    padding: 60px 0 48px;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 10% 50%, rgba(200,151,75,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 90% 20%, rgba(200,151,75,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(200,151,75,0.1);
+    border: 1px solid rgba(200,151,75,0.25);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+  }
+  .page-header h1 span {
+    color: var(--gold);
+  }
+  .page-header p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  /* ── Stats Bar ── */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 16px 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .stat-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+  }
+
+  /* ── Add Button ── */
+  .btn-add-family {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 24px rgba(200,151,75,0.32);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-add-family:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(200,151,75,0.44);
+    filter: brightness(1.05);
+    color: var(--white);
+  }
+  .btn-add-family i { font-size: 16px; }
+
+  /* ── Search / Filter Bar ── */
+  .filter-bar {
+    position: relative;
+    margin-bottom: 36px;
+  }
+  .filter-bar input {
+    width: 100%;
+    padding: 14px 20px 14px 50px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .filter-bar input::placeholder { color: var(--ink-muted); }
+  .filter-bar input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,151,75,0.12), var(--shadow-sm);
+  }
+  .filter-bar .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+    font-size: 17px;
+    pointer-events: none;
+  }
+
+  /* ── Family Card ── */
+  .family-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s ease;
+    animation: cardReveal 0.55s ease both;
+  }
+  .family-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--shadow-lg);
+  }
+  .family-card:hover .card-img-overlay-gradient { opacity: 1; }
+  .family-card:hover .family-photo { transform: scale(1.05); }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* stagger */
+  .family-col:nth-child(1) .family-card  { animation-delay: 0.05s; }
+  .family-col:nth-child(2) .family-card  { animation-delay: 0.10s; }
+  .family-col:nth-child(3) .family-card  { animation-delay: 0.15s; }
+  .family-col:nth-child(4) .family-card  { animation-delay: 0.20s; }
+  .family-col:nth-child(5) .family-card  { animation-delay: 0.25s; }
+  .family-col:nth-child(6) .family-card  { animation-delay: 0.30s; }
+  .family-col:nth-child(n+7) .family-card{ animation-delay: 0.35s; }
+
+  /* Photo section */
+  .card-photo-wrap {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0ebe1, #e8dfd0);
+    flex-shrink: 0;
+  }
+  .family-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .no-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--ink-muted);
+  }
+  .no-photo-placeholder i { font-size: 42px; opacity: 0.4; }
+  .no-photo-placeholder span { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5; }
+
+  .card-img-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,22,17,0.55) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  /* Action icons */
+  .action-icons {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .action-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+  }
+  .action-btn:hover { transform: scale(1.15); }
+  .action-btn.edit:hover  { background: var(--gold); color: white; }
+  .action-btn.delete:hover{ background: #e74c3c; color: white; }
+
+  /* Card body */
+  .card-body {
+    padding: 20px 22px 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card-family-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin: 0;
+  }
+  .card-unit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    background: rgba(200,151,75,0.08);
+    border: 1px solid rgba(200,151,75,0.18);
+    padding: 4px 10px;
+    border-radius: 100px;
+    width: fit-content;
+    letter-spacing: 0.02em;
+  }
+  .card-unit i { color: var(--gold); font-size: 11px; }
+
+  .card-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    border: 1px solid rgba(200,151,75,0.35);
+    background: transparent;
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .btn-view-details:hover {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+    transform: translateX(2px);
+  }
+  .btn-view-details i { font-size: 12px; transition: transform 0.2s; }
+  .btn-view-details:hover i { transform: translateX(3px); }
+
+  .member-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 5px 11px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .member-badge i { color: var(--gold); font-size: 12px; }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    animation: cardReveal 0.55s ease both;
+  }
+  .empty-state-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(200,151,75,0.1);
+    border: 2px dashed rgba(200,151,75,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 38px;
+    color: var(--gold);
+  }
+  .empty-state h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .empty-state p {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* ── Decorative corner ── */
+  .decorative-cross {
+    position: absolute;
+    top: 0; right: 0;
+    width: 90px; height: 90px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  /* ── Responsive tweaks ── */
+  @media (max-width: 576px) {
+    .stats-bar { flex-wrap: wrap; gap: 16px; }
+    .stat-divider { display: none; }
+  }
+</style>
+
+<div class="family-page-wrapper">
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-end gap-4">
+        <div>
+          <div class="page-header-label">
+            <i class="bi bi-geo-alt-fill"></i> Parish Directory
+          </div>
+          <h1>Families in <span>Our Parish</span></h1>
+          <p>A living record of the families who call our community home.</p>
+        </div>
+        {% if user.role == "admin" or user.role == "provincial" %}
+        <a href="{% url 'family_add' %}" class="btn-add-family">
+          <i class="bi bi-plus-circle-fill"></i> Add Family
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    {% if families %}
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value">{{ families|length }}</span>
+        <span class="stat-label">Families</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value" id="totalMembersCount">—</span>
+        <span class="stat-label">Members</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value">✦</span>
+        <span class="stat-label">Community</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Search Filter -->
+    <div class="filter-bar">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        id="familySearch"
+        placeholder="Search by family name or unit…"
+        autocomplete="off"
+      >
+    </div>
+
+    <!-- Families Grid -->
+    <div class="row g-4" id="familiesGrid">
+      {% for family in families %}
+      <div class="col-md-6 col-lg-4 family-col" data-name="{{ family.house_name|lower }}" data-unit="{{ family.family_unit.name|lower }}">
+        <div class="family-card">
+
+          <!-- Action Icons -->
+          {% if user.role == "admin" or user.role == "provincial" %}
+          <div class="action-icons">
+            <a href="{% url 'family_edit' family.pk %}" class="action-btn edit" title="Edit Family">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            {% if user.role == "admin" %}
+            <a href="{% url 'family_delete' family.pk %}" class="action-btn delete" title="Delete Family">
+              <i class="bi bi-trash-fill"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <!-- Photo -->
+          <div class="card-photo-wrap">
+            {% if family.family_photo %}
+            <img src="{{ family.family_photo.url }}" alt="{{ family.house_name }}" class="family-photo">
+            {% else %}
+            <div class="no-photo-placeholder">
+              <i class="bi bi-house-heart"></i>
+              <span>Family Photo</span>
+            </div>
+            {% endif %}
+            <div class="card-img-overlay-gradient"></div>
+          </div>
+
+          <!-- Body -->
+          <div class="card-body">
+            <h5 class="card-family-name">{{ family.house_name }}</h5>
+            <span class="card-unit">
+              <i class="bi bi-pin-map-fill"></i>
+              {{ family.family_unit.name }}
+            </span>
+            <div class="card-footer-row">
+              <a href="{% url 'family_detail' family.pk %}" class="btn-view-details">
+                View Details <i class="bi bi-arrow-right"></i>
+              </a>
+              <span class="member-badge" data-count="{{ family.members.count }}">
+                <i class="bi bi-people-fill"></i>
+                {{ family.members.count }} Members
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="bi bi-house-heart"></i>
+          </div>
+          <h4>No Families Found</h4>
+          <p>There are no families registered in the parish yet.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- No Search Results placeholder (hidden by default) -->
+    <div id="noSearchResults" class="empty-state" style="display:none;">
+      <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+      <h4>No Matches Found</h4>
+      <p>Try a different name or unit.</p>
+    </div>
+
+    <div style="height: 60px;"></div>
+  </div>
+</div>
+
+<script>
+  // ── Live Search ──
+  const searchInput = document.getElementById('familySearch');
+  const grid        = document.getElementById('familiesGrid');
+  const noResults   = document.getElementById('noSearchResults');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      const q = this.value.trim().toLowerCase();
+      const cols = grid ? grid.querySelectorAll('.family-col') : [];
+      let visible = 0;
+      cols.forEach(col => {
+        const name = col.dataset.name || '';
+        const unit = col.dataset.unit || '';
+        const show = !q || name.includes(q) || unit.includes(q);
+        col.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (noResults) noResults.style.display = (visible === 0 && q) ? 'block' : 'none';
+    });
+  }
+
+  // ── Total Members Count ──
+  (function () {
+    const badges  = document.querySelectorAll('.member-badge[data-count]');
+    const display = document.getElementById('totalMembersCount');
+    if (!display) return;
+    let total = 0;
+    badges.forEach(b => { total += parseInt(b.dataset.count, 10) || 0; });
+    display.textContent = total;
+  })();
+</script>
+
+{% endblock %}

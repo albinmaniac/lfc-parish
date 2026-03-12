@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --gold: #B8965A;
+    --gold-light: #D4AF6E;
+    --gold-pale: #F5EDD9;
+    --ink: #1A1209;
+    --ink-soft: #3D2E14;
+    --cream: #FAF6EE;
+    --cream-deep: #F0E8D5;
+    --border: rgba(184,150,90,0.25);
+    --shadow: 0 8px 60px rgba(26,18,9,0.12);
+  }
+
+  body {
+    background: var(--cream);
+    font-family: 'Jost', sans-serif;
+  }
+
+  .leader-form-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative background */
+  .leader-form-page::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,150,90,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .leader-form-page::after {
+    content: '';
+    position: fixed;
+    bottom: -150px;
+    left: -150px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,150,90,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 760px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: relative;
+    animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Top ornamental bar */
+  .form-card::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .form-header {
+    padding: 48px 56px 36px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+  }
+
+  .form-header .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    opacity: 0;
+    animation: fade 0.5s 0.3s forwards;
+  }
+
+  @keyframes fade { to { opacity: 1; } }
+
+  .form-header .ornament::before,
+  .form-header .ornament::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .form-header .ornament::after {
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .form-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.1;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fade 0.5s 0.45s forwards;
+  }
+
+  .form-header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .form-header p {
+    font-size: 12.5px;
+    color: #9A8570;
+    letter-spacing: 0.06em;
+    margin: 0;
+    font-weight: 300;
+    opacity: 0;
+    animation: fade 0.5s 0.55s forwards;
+  }
+
+  .form-body {
+    padding: 48px 56px 40px;
+  }
+
+  /* Section dividers */
+  .form-section {
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .form-section:nth-child(1) { animation-delay: 0.55s; }
+  .form-section:nth-child(2) { animation-delay: 0.65s; }
+  .form-section:nth-child(3) { animation-delay: 0.75s; }
+  .form-section:nth-child(4) { animation-delay: 0.85s; }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 28px;
+  }
+  .field-grid.single { grid-template-columns: 1fr; }
+
+  .field-wrap {
+    position: relative;
+  }
+
+  .field-wrap label {
+    display: block;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8A7560;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  /* Django form field styling — targets rendered inputs */
+  .field-wrap input[type="text"],
+  .field-wrap input[type="tel"],
+  .field-wrap input[type="email"],
+  .field-wrap input[type="date"],
+  .field-wrap input[type="number"],
+  .field-wrap select,
+  .field-wrap textarea {
+    width: 100%;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    padding: 13px 16px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .field-wrap input:focus,
+  .field-wrap select:focus,
+  .field-wrap textarea:focus {
+    background: #fff;
+    border-color: var(--gold-light);
+    border-bottom-color: var(--gold);
+    box-shadow: 0 4px 20px rgba(184,150,90,0.10);
+  }
+
+  .field-wrap input::placeholder,
+  .field-wrap textarea::placeholder {
+    color: #C4B49A;
+    font-weight: 300;
+  }
+
+  /* File input */
+  .field-wrap input[type="file"] {
+    width: 100%;
+    background: var(--cream);
+    border: 1px dashed rgba(184,150,90,0.4);
+    padding: 20px 16px;
+    font-family: 'Jost', sans-serif;
+    font-size: 12.5px;
+    color: #8A7560;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s;
+    box-sizing: border-box;
+    border-radius: 0;
+  }
+  .field-wrap input[type="file"]:hover {
+    background: var(--gold-pale);
+    border-color: var(--gold);
+  }
+  .field-wrap input[type="file"]::file-selector-button {
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    margin-right: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .field-wrap input[type="file"]::file-selector-button:hover {
+    background: var(--ink);
+  }
+
+  /* Select arrow */
+  .field-wrap.select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 15px;
+    bottom: 14px;
+    color: var(--gold);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  /* Checkbox */
+  .active-toggle {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    width: fit-content;
+    min-width: 200px;
+  }
+  .active-toggle:hover { background: var(--gold-pale); }
+
+  .active-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid var(--gold);
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .active-toggle input[type="checkbox"]:checked {
+    background: var(--gold);
+  }
+  .active-toggle input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+  .active-toggle span {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  /* Errors */
+  .field-wrap .errorlist {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: #C0392B;
+    letter-spacing: 0.05em;
+  }
+
+  /* Submit */
+  .form-footer {
+    padding: 0 56px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0;
+    animation: fade 0.5s 0.9s forwards;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: none;
+    padding: 16px 44px;
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: translateX(-101%);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-submit:hover { color: #fff; }
+  .btn-submit:hover::before { transform: translateX(0); }
+  .btn-submit span { position: relative; }
+
+  .btn-submit .arrow {
+    position: relative;
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+  .btn-submit:hover .arrow { transform: translateX(4px); }
+
+  .form-note {
+    font-size: 11px;
+    color: #B4A28A;
+    letter-spacing: 0.08em;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .form-header, .form-body { padding-left: 28px; padding-right: 28px; }
+    .form-footer { padding-left: 28px; padding-right: 28px; flex-direction: column; gap: 16px; align-items: flex-start; }
+    .field-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="leader-form-page">
+  <div class="form-card">
+
+    <div class="form-header">
+      <div class="ornament">Parish Leadership</div>
+      <h1>{% if object %}Edit <em>Leader</em>{% else %}Add Parish <em>Leader</em>{% endif %}</h1>
+      <p>Complete all fields to register a parish leader record</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-body">
+
+        <!-- Identity -->
+        <div class="form-section">
+          <div class="section-label">Identity</div>
+          <div class="field-grid">
+            <div class="field-wrap">
+              <label>Full Name</label>
+              {{ form.name }}
+              {{ form.name.errors }}
+            </div>
+            <div class="field-wrap select-wrap">
+              <label>Role</label>
+              {{ form.role }}
+              {{ form.role.errors }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="form-section">
+          <div class="section-label">Contact</div>
+          <div class="field-grid">
+            <div class="field-wrap">
+              <label>Phone Number</label>
+              {{ form.phone }}
+              {{ form.phone.errors }}
+            </div>
+            <div class="field-wrap">
+              <label>Photo</label>
+              {{ form.photo }}
+              {{ form.photo.errors }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Term -->
+        <div class="form-section">
+          <div class="section-label">Term of Service</div>
+          <div class="field-grid">
+            <div class="field-wrap">
+              <label>Term Start</label>
+              {{ form.term_start }}
+              {{ form.term_start.errors }}
+            </div>
+            <div class="field-wrap">
+              <label>Term End</label>
+              {{ form.term_end }}
+              {{ form.term_end.errors }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-section">
+          <div class="section-label">Status</div>
+          <label class="active-toggle">
+            {{ form.is_active }}
+            <span>Currently Active</span>
+          </label>
+          {{ form.is_active.errors }}
+        </div>
+
+      </div><!-- /form-body -->
+
+      <div class="form-footer">
+        <button type="submit" class="btn-submit">
+          <span>{% if object %}Update Record{% else %}Save Leader{% endif %}</span>
+          <span class="arrow">→</span>
+        </button>
+        <span class="form-note">All fields are required</span>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

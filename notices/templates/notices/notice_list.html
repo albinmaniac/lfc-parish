@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --surface: #ffffff;
+    --ink: #1c1917;
+    --crimson: #991b1b;
+    --crimson-soft: #fee2e2;
+    --crimson-mid: #fca5a5;
+    --muted: #78716c;
+    --rule: #e7e2da;
+    --active-bg: #dcfce7;
+    --active-fg: #166534;
+    --inactive-bg: #f1f5f9;
+    --inactive-fg: #64748b;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif;
+    color: var(--ink);
+  }
+
+  /* ── Page wrapper ── */
+  .notices-page { padding: 52px 0 72px; }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 44px;
+    position: relative;
+  }
+
+  .header-left::before {
+    content: "PARISH BULLETIN";
+    display: block;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .page-title span {
+    font-style: italic;
+    color: var(--crimson);
+  }
+
+  /* ── Add button ── */
+  .btn-add-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--surface);
+    background: var(--ink);
+    padding: 11px 22px;
+    border-radius: 100px;
+    border: none;
+    box-shadow: 0 4px 18px rgba(28,25,23,0.18);
+    transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .btn-add-notice:hover {
+    background: var(--crimson);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(153,27,27,0.3);
+  }
+
+  .btn-add-notice i { font-size: 15px; }
+
+  /* ── Count pill ── */
+  .count-pill {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    background: var(--rule);
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-left: 14px;
+    vertical-align: middle;
+  }
+
+  /* ── Grid ── */
+  .notices-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 991px) { .notices-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 575px)  { .notices-grid { grid-template-columns: 1fr; } }
+
+  /* ── Card ── */
+  .notice-card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition:
+      transform 0.35s cubic-bezier(.22,.68,0,1.15),
+      box-shadow 0.35s ease,
+      border-color 0.25s ease;
+    animation: cardIn 0.5s ease both;
+  }
+
+  .notice-card:nth-child(2) { animation-delay: 0.06s; }
+  .notice-card:nth-child(3) { animation-delay: 0.12s; }
+  .notice-card:nth-child(4) { animation-delay: 0.18s; }
+  .notice-card:nth-child(5) { animation-delay: 0.24s; }
+  .notice-card:nth-child(6) { animation-delay: 0.30s; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .notice-card:hover {
+    transform: translateY(-7px) scale(1.005);
+    box-shadow: 0 24px 52px rgba(28,25,23,0.11);
+    border-color: var(--crimson-mid);
+  }
+
+  /* Left accent bar that grows on hover */
+  .notice-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--crimson);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.35s cubic-bezier(.22,.68,0,1.15);
+    z-index: 2;
+  }
+
+  .notice-card:hover::before { transform: scaleY(1); }
+
+  /* ── Image ── */
+  .card-img-wrap {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: #ede8df;
+    flex-shrink: 0;
+  }
+
+  .card-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(.22,.68,0,1.15);
+  }
+
+  .notice-card:hover .card-img-wrap img { transform: scale(1.06); }
+
+  .img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #f0ebe3 0%, #e0d8cc 100%);
+  }
+
+  .img-placeholder i {
+    font-size: 2.2rem;
+    color: #c4b8a8;
+  }
+
+  /* ── Admin actions ── */
+  .card-actions {
+    position: absolute;
+    top: 10px; right: 10px;
+    display: flex; gap: 6px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 10;
+  }
+
+  .notice-card:hover .card-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-actions a {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 50%;
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+    transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+  }
+
+  .card-actions a:hover { transform: scale(1.18); }
+  .card-actions a.act-edit:hover   { background: #fef9c3; color: #854d0e; }
+  .card-actions a.act-delete:hover { background: var(--crimson-soft); color: var(--crimson); }
+
+  /* ── Card body ── */
+  .card-body {
+    padding: 20px 22px 18px;
+    display: flex; flex-direction: column; flex: 1;
+  }
+
+  .card-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 11px;
+  }
+
+  .meta-date {
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .meta-date i { color: var(--crimson); font-size: 11px; }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-left: auto; flex-shrink: 0;
+  }
+  .status-dot.on  { background: #22c55e; box-shadow: 0 0 0 3px #dcfce7; }
+  .status-dot.off { background: #94a3b8; box-shadow: 0 0 0 3px #f1f5f9; }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 0 0 9px;
+    transition: color 0.2s ease;
+  }
+
+  .notice-card:hover .card-title { color: var(--crimson); }
+
+  .card-excerpt {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    flex: 1;
+    margin: 0 0 18px;
+  }
+
+  /* ── Card footer ── */
+  .card-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .status-tag {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .status-tag.on  { background: var(--active-bg);   color: var(--active-fg); }
+  .status-tag.off { background: var(--inactive-bg); color: var(--inactive-fg); }
+
+  .btn-view {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--ink);
+    padding: 6px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .btn-view:hover {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: #fff;
+  }
+
+  .btn-view i { font-size: 11px; transition: transform 0.2s ease; }
+  .btn-view:hover i { transform: translateX(3px); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 80px 20px;
+    text-align: center;
+  }
+
+  .empty-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--rule);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .empty-icon i { font-size: 1.8rem; color: #c4b8a8; }
+
+  .empty-state p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Decorative rule ── */
+  .crimson-rule {
+    display: block; width: 40px; height: 3px;
+    background: var(--crimson); border-radius: 2px;
+    margin-top: 14px;
+  }
+</style>
+
+<div class="container notices-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        Parish <span>Notices</span>
+        {% if notices %}
+          <small class="count-pill">{{ notices|length }}</small>
+        {% endif %}
+      </h1>
+      <span class="crimson-rule"></span>
+    </div>
+
+    {% if user.role == "admin" or user.role == "provincial" %}
+    <a href="{% url 'notice_add' %}" class="btn-add-notice">
+      <i class="bi bi-plus-lg"></i> Add Notice
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Grid -->
+  <div class="notices-grid">
+    {% for notice in notices %}
+    <div class="notice-card">
+
+      <!-- Image -->
+      <div class="card-img-wrap">
+        {% if notice.image %}
+          <img src="{{ notice.image.url }}" alt="{{ notice.title }}">
+        {% else %}
+          <div class="img-placeholder">
+            <i class="bi bi-megaphone"></i>
+          </div>
+        {% endif %}
+
+        <!-- Admin actions (visible on hover) -->
+        {% if user.role == "admin" or user.role == "provincial" %}
+        <div class="card-actions">
+          <a href="{% url 'notice_edit' notice.pk %}" class="act-edit" title="Edit">
+            <i class="bi bi-pencil"></i>
+          </a>
+          {% if user.role == "admin" %}
+          <a href="{% url 'notice_delete' notice.pk %}" class="act-delete" title="Delete">
+            <i class="bi bi-trash"></i>
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="meta-date">
+            <i class="bi bi-clock"></i>
+            {{ notice.created_at|date:"M d, Y" }}
+          </span>
+          {% if notice.is_active %}
+            <span class="status-dot on" title="Active"></span>
+          {% else %}
+            <span class="status-dot off" title="Inactive"></span>
+          {% endif %}
+        </div>
+
+        <h2 class="card-title">{{ notice.title }}</h2>
+        <p class="card-excerpt">{{ notice.content|truncatewords:22 }}</p>
+
+        <div class="card-foot">
+          {% if notice.is_active %}
+            <span class="status-tag on">Active</span>
+          {% else %}
+            <span class="status-tag off">Inactive</span>
+          {% endif %}
+
+          <a href="{% url 'notice_edit' notice.pk %}" class="btn-view">
+            View <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="bi bi-megaphone"></i>
+      </div>
+      <p>No notices have been posted yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

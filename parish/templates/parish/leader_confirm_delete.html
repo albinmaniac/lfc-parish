@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5 text-center">
+  <div class="card p-4 shadow">
+    <h4>Delete {{ object.name }}?</h4>
+
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn-danger">Confirm Delete</button>
+      <a href="{% url 'contact' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

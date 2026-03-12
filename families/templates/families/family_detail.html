@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+{% block title %}Family Details{% endblock %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --coral: #FF6B6B;
+    --gold: #FFD93D;
+    --teal: #4ECDC4;
+    --violet: #A855F7;
+    --navy: #1A1A2E;
+    --soft-white: #FEFEFE;
+  }
+
+  body {
+    background: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .family-page {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background:
+      radial-gradient(ellipse at 10% 20%, rgba(168,85,247,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(78,205,196,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255,107,107,0.08) 0%, transparent 70%),
+      var(--navy);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .family-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container-custom {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Hero Card ── */
+  .hero-card {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-banner {
+    height: 8px;
+    background: linear-gradient(90deg, var(--coral), var(--gold), var(--teal), var(--violet));
+    background-size: 300% 100%;
+    animation: shimmer 4s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  .hero-body {
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-photo {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .hero-photo img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 20px;
+    border: 3px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .hero-photo-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--coral), var(--violet));
+    z-index: -1;
+    animation: rotateBorder 6s linear infinite;
+  }
+
+  @keyframes rotateBorder {
+    0%   { background: linear-gradient(135deg, var(--coral), var(--violet)); }
+    25%  { background: linear-gradient(135deg, var(--gold), var(--coral)); }
+    50%  { background: linear-gradient(135deg, var(--teal), var(--gold)); }
+    75%  { background: linear-gradient(135deg, var(--violet), var(--teal)); }
+    100% { background: linear-gradient(135deg, var(--coral), var(--violet)); }
+  }
+
+  .hero-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .house-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--soft-white);
+    line-height: 1.1;
+    margin: 0 0 0.75rem;
+    background: linear-gradient(135deg, #fff 40%, rgba(255,217,61,0.8));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+
+  .meta-pill svg {
+    flex-shrink: 0;
+  }
+
+  .unit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(78,205,196,0.2));
+    border: 1px solid rgba(168,85,247,0.4);
+    color: #C084FC;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    width: fit-content;
+  }
+
+  /* ── Add Member Button ── */
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--teal), #38BDF8);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(78,205,196,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1.75rem;
+    animation: slideDown 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 30px rgba(78,205,196,0.55);
+    color: var(--navy);
+    text-decoration: none;
+  }
+
+  /* ── Members Section ── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    animation: slideDown 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 1.5rem;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--coral), var(--gold));
+  }
+
+  /* ── Member Cards ── */
+  .members-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .member-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 1.1rem 1.5rem;
+    backdrop-filter: blur(10px);
+    transition: background 0.25s, transform 0.25s, border-color 0.25s;
+    opacity: 0;
+    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .member-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 999px 0 0 999px;
+    background: linear-gradient(to bottom, var(--coral), var(--gold));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .member-card:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
+    transform: translateX(4px);
+  }
+
+  .member-card:hover::before {
+    opacity: 1;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .member-card:nth-child(1)  { animation-delay: 0.25s; }
+  .member-card:nth-child(2)  { animation-delay: 0.32s; }
+  .member-card:nth-child(3)  { animation-delay: 0.39s; }
+  .member-card:nth-child(4)  { animation-delay: 0.46s; }
+  .member-card:nth-child(5)  { animation-delay: 0.53s; }
+  .member-card:nth-child(6)  { animation-delay: 0.60s; }
+  .member-card:nth-child(7)  { animation-delay: 0.67s; }
+  .member-card:nth-child(8)  { animation-delay: 0.74s; }
+
+  .member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--navy);
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+  }
+
+  .member-info {
+    flex: 1;
+  }
+
+  .member-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--soft-white);
+    margin: 0;
+  }
+
+  .member-age {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+  }
+
+  .head-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: linear-gradient(135deg, rgba(255,217,61,0.25), rgba(255,107,107,0.2));
+    border: 1px solid rgba(255,217,61,0.4);
+    color: var(--gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .member-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .btn-edit, .btn-del {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform 0.18s, box-shadow 0.18s;
+    border: none;
+  }
+
+  .btn-edit {
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.35);
+    color: var(--teal);
+  }
+
+  .btn-edit:hover {
+    background: rgba(78,205,196,0.28);
+    transform: scale(1.05);
+    color: var(--teal);
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(78,205,196,0.3);
+  }
+
+  .btn-del {
+    background: rgba(255,107,107,0.12);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--coral);
+  }
+
+  .btn-del:hover {
+    background: rgba(255,107,107,0.25);
+    transform: scale(1.05);
+    color: var(--coral);
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 2rem;
+    color: rgba(255,255,255,0.4);
+    font-size: 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 18px;
+    animation: slideDown 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    opacity: 0;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  /* Floating decorative blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 10s ease-in-out infinite;
+  }
+
+  .blob-1 {
+    width: 300px; height: 300px;
+    background: rgba(168,85,247,0.12);
+    top: -80px; right: -60px;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    width: 200px; height: 200px;
+    background: rgba(255,107,107,0.1);
+    bottom: 10%; left: -60px;
+    animation-delay: 4s;
+  }
+
+  .blob-3 {
+    width: 180px; height: 180px;
+    background: rgba(78,205,196,0.08);
+    bottom: 30%; right: 5%;
+    animation-delay: 2s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-20px) scale(1.05); }
+  }
+</style>
+
+<div class="family-page">
+  <!-- Decorative blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="container-custom">
+
+    <!-- ── Hero Card ── -->
+    <div class="hero-card">
+      <div class="hero-banner"></div>
+      <div class="hero-body">
+
+        {% if family.family_photo %}
+        <div class="hero-photo">
+          <div class="hero-photo-ring"></div>
+          <img src="{{ family.family_photo.url }}" alt="{{ family.house_name }}">
+        </div>
+        {% endif %}
+
+        <div class="hero-info">
+          <h2 class="house-name">{{ family.house_name }}</h2>
+          <div class="hero-meta">
+            <span class="meta-pill">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ family.address }}
+            </span>
+            {% if family.family_unit %}
+            <div class="unit-badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              {{ family.family_unit.name }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Add Member ── -->
+    <a href="{% url 'member_add' family.id %}" class="btn-add">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Member
+    </a>
+
+    <!-- ── Members ── -->
+    <h3 class="section-title">Family Members</h3>
+
+    <div class="members-grid">
+      {% for member in members %}
+      <div class="member-card">
+
+        <div class="member-avatar">{{ member.name|first|upper }}</div>
+
+        <div class="member-info">
+          <p class="member-name">
+            {{ member.name }}
+            {% if member.is_family_head %}
+            <span class="head-badge">
+              ★ Head
+            </span>
+            {% endif %}
+          </p>
+          {% if member.age %}
+          <p class="member-age">Age {{ member.age }}</p>
+          {% endif %}
+        </div>
+
+        <div class="member-actions">
+          <a href="{% url 'member_edit' member.pk %}" class="btn-edit">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </a>
+          <a href="{% url 'member_delete' member.pk %}" class="btn-del">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Delete
+          </a>
+        </div>
+
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <span class="empty-icon">🏠</span>
+        No members added yet.<br>
+        <span style="font-size:0.85rem; margin-top:0.5rem; display:inline-block;">Click "Add Member" to get started.</span>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

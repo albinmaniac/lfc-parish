@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97e;
+    --gold-pale: #f5e9c8;
+    --ink: #1a1612;
+    --parchment: #faf6ef;
+    --stone: #8a8078;
+    --stone-light: #d4cfc8;
+    --white: #ffffff;
+  }
+
+  .gallery-section {
+    background: var(--parchment);
+    min-height: 100vh;
+    padding: 60px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative background cross pattern */
+  .gallery-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(201,168,76,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 85% 75%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ── Header ── */
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 56px;
+    position: relative;
+  }
+
+  .gallery-header .eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .gallery-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.1;
+    margin: 0 0 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .gallery-header h2 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .header-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  .header-ornament .line {
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .header-ornament .line:last-child {
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .header-ornament .diamond {
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  /* ── Add Button ── */
+  .add-gallery-btn {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: transparent;
+    border: 1px solid var(--gold);
+    padding: 10px 22px;
+    border-radius: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .add-gallery-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+
+  .add-gallery-btn:hover::before { transform: scaleX(1); }
+  .add-gallery-btn:hover { color: var(--parchment); }
+  .add-gallery-btn i, .add-gallery-btn span { position: relative; z-index: 1; }
+
+  /* ── Grid ── */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 991px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 575px) {
+    .gallery-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Masonry-style: every 5th card taller */
+  .gallery-item:nth-child(5n+2) .gallery-card { --img-h: 320px; }
+  .gallery-item:nth-child(5n+4) .gallery-card { --img-h: 300px; }
+
+  /* ── Card ── */
+  .gallery-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+    cursor: pointer;
+    /* Elegant framed look */
+    box-shadow:
+      0 0 0 1px var(--stone-light),
+      0 4px 20px rgba(26,22,18,0.08);
+    transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .gallery-card::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(201,168,76,0.25);
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .gallery-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 0 1px var(--gold-light),
+      0 20px 48px rgba(26,22,18,0.16);
+  }
+
+  .gallery-card:hover::after { opacity: 1; }
+
+  /* ── Image ── */
+  .gallery-img-wrap {
+    overflow: hidden;
+    height: var(--img-h, 260px);
+  }
+
+  .gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.65s cubic-bezier(0.4,0,0.2,1), filter 0.4s ease;
+    filter: brightness(1) saturate(0.95);
+  }
+
+  .gallery-card:hover .gallery-img {
+    transform: scale(1.07);
+    filter: brightness(0.88) saturate(1.1);
+  }
+
+  /* ── Overlay ── */
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(20,16,10,0.82) 0%,
+      rgba(20,16,10,0.3) 40%,
+      transparent 65%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .gallery-card:hover .gallery-overlay { opacity: 1; }
+
+  /* Always-visible title bar at bottom */
+  .gallery-title-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 16px 12px;
+    background: linear-gradient(to top, rgba(20,16,10,0.7), transparent);
+    z-index: 2;
+    transition: opacity 0.3s ease;
+  }
+
+  .gallery-card:hover .gallery-title-bar { opacity: 0; }
+
+  .gallery-title-bar h6 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.9);
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .overlay-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--white);
+    margin: 0 0 6px;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+
+  .overlay-divider {
+    width: 28px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  /* ── Action icons ── */
+  .action-icons {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .gallery-card:hover .action-icons {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .action-icons a {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .action-icons a.edit-btn {
+    background: rgba(255,255,255,0.92);
+    color: var(--ink);
+  }
+
+  .action-icons a.delete-btn {
+    background: rgba(220,53,69,0.88);
+    color: white;
+    border-color: rgba(220,53,69,0.3);
+  }
+
+  .action-icons a:hover {
+    transform: scale(1.12);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+
+  /* ── Lightbox ── */
+  .lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,12,8,0.95);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .lightbox-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .lightbox-inner {
+    position: relative;
+    max-width: 88vw;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: scale(0.94);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .lightbox-overlay.active .lightbox-inner { transform: scale(1); }
+
+  .lightbox-img {
+    max-width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    display: block;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .lightbox-caption {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    margin-top: 16px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 22px;
+    right: 26px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 9001;
+  }
+
+  .lightbox-close:hover {
+    background: rgba(201,168,76,0.3);
+    border-color: var(--gold);
+  }
+
+  .lightbox-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+    z-index: 9001;
+  }
+
+  .lightbox-nav:hover { background: rgba(201,168,76,0.25); border-color: var(--gold); }
+  .lightbox-prev { left: 20px; }
+  .lightbox-next { right: 20px; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--stone);
+  }
+
+  .empty-state .empty-icon {
+    font-size: 48px;
+    color: var(--stone-light);
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .empty-state p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--stone);
+    margin: 0;
+  }
+
+  /* ── Entry animation ── */
+  .gallery-item {
+    opacity: 0;
+    transform: translateY(28px);
+    animation: fadeUp 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger delays */
+  .gallery-item:nth-child(1)  { animation-delay: 0.05s; }
+  .gallery-item:nth-child(2)  { animation-delay: 0.12s; }
+  .gallery-item:nth-child(3)  { animation-delay: 0.19s; }
+  .gallery-item:nth-child(4)  { animation-delay: 0.26s; }
+  .gallery-item:nth-child(5)  { animation-delay: 0.33s; }
+  .gallery-item:nth-child(6)  { animation-delay: 0.40s; }
+  .gallery-item:nth-child(7)  { animation-delay: 0.47s; }
+  .gallery-item:nth-child(8)  { animation-delay: 0.54s; }
+  .gallery-item:nth-child(9)  { animation-delay: 0.61s; }
+</style>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+  <div class="lightbox-inner">
+    <img src="" alt="" class="lightbox-img" id="lightboxImg">
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
+
+<section class="gallery-section">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="gallery-header">
+      <span class="eyebrow">Our Sacred Moments</span>
+      <h2>Parish <em>Gallery</em></h2>
+      <div class="header-ornament">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+    </div>
+
+    <!-- Controls row -->
+    {% if can_manage_gallery %}
+    <div class="d-flex justify-content-end mb-4">
+      <a href="{% url 'gallery_add' %}" class="add-gallery-btn">
+        <i class="bi bi-plus"></i>
+        <span>Add Image</span>
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Grid -->
+    <div class="gallery-grid">
+      {% for img in images %}
+      <div class="gallery-item">
+        <div class="gallery-card"
+             data-src="{{ img.image.url }}"
+             data-title="{{ img.title }}"
+             data-index="{{ forloop.counter0 }}"
+             role="button"
+             tabindex="0"
+             aria-label="View {{ img.title }}">
+
+          {% if can_manage_gallery %}
+          <div class="action-icons">
+            <a href="{% url 'gallery_edit' img.pk %}" class="edit-btn" title="Edit" onclick="event.stopPropagation()">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            {% if user.role == "admin" %}
+            <a href="{% url 'gallery_delete' img.pk %}" class="delete-btn" title="Delete" onclick="event.stopPropagation()">
+              <i class="bi bi-trash-fill"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="gallery-img-wrap">
+            <img src="{{ img.image.url }}" alt="{{ img.title }}" class="gallery-img" loading="lazy">
+          </div>
+
+          <!-- Always-visible title -->
+          <div class="gallery-title-bar">
+            <h6>{{ img.title }}</h6>
+          </div>
+
+          <!-- Hover overlay -->
+          <div class="gallery-overlay">
+            <div class="overlay-divider"></div>
+            <p class="overlay-title">{{ img.title }}</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div style="grid-column: 1/-1;">
+        <div class="empty-state">
+          <i class="bi bi-images empty-icon"></i>
+          <p>No images have been added to the gallery yet.</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function() {
+  // Build image data from cards
+  const cards = Array.from(document.querySelectorAll('.gallery-card[data-src]'));
+  const images = cards.map(c => ({ src: c.dataset.src, title: c.dataset.title }));
+  let currentIndex = 0;
+
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  const lbCaption = document.getElementById('lightboxCaption');
+
+  function openLightbox(index) {
+    currentIndex = index;
+    lbImg.src = images[index].src;
+    lbImg.alt = images[index].title;
+    lbCaption.textContent = images[index].title;
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lb.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => { lbImg.src = ''; }, 300);
+  }
+
+  function navigate(dir) {
+    currentIndex = (currentIndex + dir + images.length) % images.length;
+    lbImg.style.opacity = '0';
+    setTimeout(() => {
+      lbImg.src = images[currentIndex].src;
+      lbCaption.textContent = images[currentIndex].title;
+      lbImg.style.opacity = '1';
+    }, 180);
+  }
+
+  lbImg.style.transition = 'opacity 0.18s ease';
+
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => openLightbox(i));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openLightbox(i); });
+  });
+
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => navigate(-1));
+  document.getElementById('lightboxNext').addEventListener('click', () => navigate(1));
+
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
+  });
+})();
+</script>
+
+{% endblock %}

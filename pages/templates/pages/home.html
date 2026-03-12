@@ -1,0 +1,1225 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home — Little Flower Church{% endblock %}
+{% block hero %}
+<!-- ═══════════════════════════════════════
+     HERO  — Full-screen cinematic
+═══════════════════════════════════════ -->
+<section class="lfc-hero">
+<!-- looping background video -->
+<video id="heroVideo" class="lfc-hero__video" autoplay muted loop playsinline>
+<source src="{% static 'videos/intro.mp4' %}" type="video/mp4">
+</video>
+<!-- layered dark veil -->
+<div class="lfc-hero__veil"></div>
+<!-- floating particles (pure CSS) -->
+<div class="lfc-hero__particles" aria-hidden="true">
+    {% for i in "123456789012345" %}
+<span class="particle p-{{ forloop.counter }}"></span>
+    {% endfor %}
+</div>
+<!-- centred copy -->
+<div class="lfc-hero__body">
+<p class="lfc-hero__eyebrow">Est.1969</p>
+<h1 class="lfc-hero__title">
+<span class="lfc-hero__title-loc">Little Flower</span>
+<span class="lfc-hero__title-sm">Church</span>
+<span class="lfc-hero__title-loc">Lisuenagar</span>
+</h1>
+<!-- ornament rule -->
+<div class="lfc-hero__rule" aria-hidden="true">
+<span></span>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+<path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+</svg>
+<span></span>
+</div>
+<blockquote class="lfc-hero__verse">
+      "Come to me, all you who are weary and burdened,<br>and I will give you rest."
+<cite>— Matthew 11:28</cite>
+</blockquote>
+<div class="lfc-hero__ctas">
+<a href="#welcome" class="lfc-btn lfc-btn--ghost">Explore Parish</a>
+<a href="#mass" class="lfc-btn lfc-btn--solid">Mass Schedule</a>
+</div>
+</div>
+<!-- scroll cue -->
+<div class="lfc-hero__scroll" aria-label="Scroll down">
+<span class="scroll-dot"></span>
+</div>
+<!-- sound toggle -->
+<button id="soundToggle" class="lfc-hero__sound" aria-label="Toggle sound">
+<svg id="iconMute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+<line x1="23" y1="9" x2="17" y2="15"></line>
+<line x1="17" y1="9" x2="23" y2="15"></line>
+</svg>
+<svg id="iconSound" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+<path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+<path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+</svg>
+</button>
+</section>
+{% endblock %}
+{% block content %}
+<!-- ─── Google Fonts ─── -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+/* ════════════════════════════════════════════════════════
+   TOKENS  — Blue Palette
+════════════════════════════════════════════════════════ */
+:root {
+  /* Deep base */
+  --navy:       #0d1b2a;
+  --navy-mid:   #122030;
+  --navy-light: #1a2f45;
+
+  /* Sky-blue accent spectrum */
+  --gold:       #3a9fd6;      /* was warm gold → now mid sky-blue */
+  --gold-light: #72c0ea;      /* was gold-light → pale sky */
+  --gold-pale:  #daeef8;      /* was gold-pale  → very light blue */
+
+  /* Page background */
+  --ivory:      #f4f8fc;
+  --ivory-dark: #e4eef6;
+
+  /* Text */
+  --ink:        #0e1e2c;
+  --muted:      #5a7284;
+  --rule:       rgba(58,159,214,.2);
+
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'EB Garamond', Georgia, serif;
+  --ff-ui:      'Jost', sans-serif;
+  --ease-out-expo: cubic-bezier(0.16,1,0.3,1);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ivory);
+  font-family: var(--ff-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════════════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════════════ */
+.lfc-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lfc-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+.lfc-hero__veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 40%, rgba(13,27,42,.58) 0%, rgba(13,27,42,.92) 100%),
+    linear-gradient(to bottom, rgba(13,27,42,.62) 0%, rgba(13,27,42,.28) 50%, rgba(13,27,42,.88) 100%);
+}
+/* floating blue sparks */
+.lfc-hero__particles { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gold-light);
+  opacity: 0;
+  animation: spark 8s infinite ease-in-out;
+}
+.p-1  { width:2px;  height:2px;  left:10%;  top:20%; animation-delay:0s;    }
+.p-2  { width:3px;  height:3px;  left:25%;  top:65%; animation-delay:1.2s;  }
+.p-3  { width:2px;  height:2px;  left:42%;  top:30%; animation-delay:2.5s;  }
+.p-4  { width:4px;  height:4px;  left:60%;  top:75%; animation-delay:0.8s;  }
+.p-5  { width:2px;  height:2px;  left:78%;  top:18%; animation-delay:3.1s;  }
+.p-6  { width:3px;  height:3px;  left:88%;  top:55%; animation-delay:1.7s;  }
+.p-7  { width:2px;  height:2px;  left:15%;  top:80%; animation-delay:4.0s;  }
+.p-8  { width:5px;  height:5px;  left:50%;  top:10%; animation-delay:2.0s;  }
+.p-9  { width:2px;  height:2px;  left:33%;  top:48%; animation-delay:0.4s;  }
+.p-10 { width:3px;  height:3px;  left:70%;  top:38%; animation-delay:3.6s;  }
+.p-11 { width:2px;  height:2px;  left:5%;   top:45%; animation-delay:5.0s;  }
+.p-12 { width:2px;  height:2px;  left:92%;  top:82%; animation-delay:1.0s;  }
+.p-13 { width:4px;  height:4px;  left:55%;  top:90%; animation-delay:2.8s;  }
+.p-14 { width:2px;  height:2px;  left:38%;  top:12%; animation-delay:6.2s;  }
+.p-15 { width:3px;  height:3px;  left:82%;  top:60%; animation-delay:4.5s;  }
+@keyframes spark {
+  0%,100% { opacity:0; transform: translateY(0) scale(1); }
+  30%      { opacity:.7; }
+  60%      { opacity:.4; transform: translateY(-28px) scale(1.4); }
+}
+/* hero copy */
+.lfc-hero__body {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+  max-width: 760px;
+  animation: fadeDown .9s var(--ease-out-expo) both;
+}
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.lfc-hero__eyebrow {
+  font-family: var(--ff-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin: 0 0 20px;
+  animation: fadeIn 1s .2s both;
+}
+.lfc-hero__title {
+  font-family: var(--ff-display);
+  margin: 0 0 20px;
+  line-height: 1;
+  animation: fadeIn 1s .35s both;
+}
+.lfc-hero__title-sm {
+  display: block;
+  font-size: clamp(1.6rem, 4.5vw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(255,255,255,.75);
+  letter-spacing: .02em;
+  margin-bottom: 4px;
+}
+.lfc-hero__title-lg {
+  display: block;
+  font-size: clamp(3.4rem, 11vw, 8rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.02em;
+  line-height: .92;
+  text-shadow: 0 4px 40px rgba(58,159,214,.35);
+}
+.lfc-hero__title-loc {
+  display: block;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold-light);
+  letter-spacing: .12em;
+  margin-top: 10px;
+}
+.lfc-hero__rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 24px auto 28px;
+  color: var(--gold-light);
+  animation: fadeIn 1s .5s both;
+}
+.lfc-hero__rule span { display:block; flex:1; max-width:110px; height:1px; background: linear-gradient(to right, transparent, var(--gold-light)); }
+.lfc-hero__rule span:last-child { background: linear-gradient(to left, transparent, var(--gold-light)); }
+.lfc-hero__verse {
+  font-family: var(--ff-display);
+  font-size: clamp(1rem, 2.2vw, 1.22rem);
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,.82);
+  line-height: 1.7;
+  margin: 0 0 36px;
+  animation: fadeIn 1s .65s both;
+}
+.lfc-hero__verse cite {
+  display: block;
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-top: 10px;
+}
+.lfc-hero__ctas {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeIn 1s .8s both;
+}
+.lfc-btn {
+  font-family: var(--ff-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 3px;
+  transition: all .28s ease;
+  cursor: pointer;
+}
+.lfc-btn--solid {
+  background: var(--gold);           /* sky blue */
+  color: #fff;
+  border: 1.5px solid var(--gold);
+}
+.lfc-btn--solid:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: var(--navy);
+  box-shadow: 0 8px 32px rgba(58,159,214,.45);
+  transform: translateY(-2px);
+}
+.lfc-btn--ghost {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.45);
+}
+.lfc-btn--ghost:hover {
+  border-color: var(--gold-light);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+}
+/* scroll cue */
+.lfc-hero__scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  animation: fadeIn 1s 1.2s both;
+}
+.scroll-dot {
+  display: block;
+  width: 1px;
+  height: 56px;
+  background: linear-gradient(to bottom, var(--gold-light), transparent);
+  margin: 0 auto;
+  animation: scrollPulse 2s infinite ease-in-out;
+}
+@keyframes scrollPulse {
+  0%,100% { transform: scaleY(1); opacity:.7; }
+  50%      { transform: scaleY(.6); opacity:1; }
+}
+/* sound button */
+.lfc-hero__sound {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.22);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.lfc-hero__sound:hover { background: var(--gold); transform: scale(1.08); }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* ════════════════════════════════════════════════════════
+   CONTENT WRAPPER
+════════════════════════════════════════════════════════ */
+.lfc-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ════════════════════════════════════════════════════════
+   BIBLE VERSE MARQUEE STRIP
+════════════════════════════════════════════════════════ */
+.verse-strip {
+  background: var(--navy);
+  padding: 16px 0;
+  overflow: hidden;
+  position: relative;
+}
+.verse-strip::before,
+.verse-strip::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+}
+.verse-strip::before { left: 0; background: linear-gradient(to right, var(--navy), transparent); }
+.verse-strip::after  { right: 0; background: linear-gradient(to left,  var(--navy), transparent); }
+.verse-strip__track {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 38s linear infinite;
+  gap: 0;
+}
+.verse-strip__track:hover { animation-play-state: paused; }
+.verse-strip__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 36px;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255,255,255,.72);
+}
+.verse-strip__item .ref {
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold-light);           /* blue */
+}
+.verse-strip__sep { color: var(--gold-light); font-size: 18px; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ════════════════════════════════════════════════════════
+   WELCOME SECTION
+════════════════════════════════════════════════════════ */
+.lfc-welcome {
+  padding: 100px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+@media (max-width:860px) { .lfc-welcome { grid-template-columns: 1fr; gap: 40px; padding: 72px 0; } }
+.lfc-welcome__img-wrap { position: relative; }
+.lfc-welcome__img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  filter: sepia(.04) saturate(1.1);
+}
+/* blue offset frame */
+.lfc-welcome__img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -14px -14px auto auto;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  opacity: .45;
+  z-index: -1;
+}
+.lfc-welcome__badge {
+  position: absolute;
+  bottom: -22px;
+  left: -22px;
+  width: 110px; height: 110px;
+  background: var(--navy);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 3px solid var(--gold);
+  padding: 12px;
+}
+.lfc-welcome__badge .num {
+  font-family: var(--ff-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold-light);
+  line-height: 1;
+}
+.lfc-welcome__badge .lbl {
+  font-family: var(--ff-ui);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.6);
+  margin-top: 4px;
+}
+.lfc-section-eyebrow {
+  font-family: var(--ff-ui);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);                  /* blue */
+  display: block;
+  margin-bottom: 16px;
+}
+.lfc-section-title {
+  font-family: var(--ff-display);
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--navy);
+  margin: 0 0 24px;
+}
+.lfc-section-title em {
+  font-style: italic;
+  color: var(--gold);                  /* blue */
+}
+.lfc-welcome__rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.lfc-welcome__rule span { height: 1px; width: 48px; background: var(--gold); opacity: .5; }
+.lfc-welcome__text {
+  font-family: var(--ff-body);
+  font-size: 1.12rem;
+  line-height: 1.85;
+  color: #3a4e5e;
+  margin: 0 0 28px;
+}
+.lfc-welcome__verse {
+  background: var(--navy);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 4px 4px 0;
+  padding: 18px 22px;
+  margin: 0 0 32px;
+}
+.lfc-welcome__verse p {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,.85);
+  margin: 0 0 6px;
+  line-height: 1.6;
+}
+.lfc-welcome__verse cite {
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.lfc-welcome__stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.lfc-stat .lfc-stat__n {
+  font-family: var(--ff-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1;
+}
+.lfc-stat .lfc-stat__l {
+  font-family: var(--ff-ui);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ════════════════════════════════════════════════════════
+   MASS SCHEDULE BAND
+════════════════════════════════════════════════════════ */
+.lfc-mass {
+  background: var(--navy);
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+.lfc-mass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(58,159,214,.14) 0%, transparent 70%);
+}
+.lfc-mass__inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 64px;
+  align-items: start;
+  position: relative;
+}
+@media (max-width:860px) { .lfc-mass__inner { grid-template-columns: 1fr; gap: 40px; } }
+.lfc-mass__head .lfc-section-eyebrow { color: var(--gold-light); }
+.lfc-mass__head .lfc-section-title { color: #fff; max-width: 280px; }
+.lfc-mass__head .lfc-section-title em { color: var(--gold-light); }
+.lfc-mass__verse {
+  margin-top: 28px;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: .98rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.6;
+  max-width: 260px;
+}
+.lfc-mass__verse cite {
+  display: block;
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-top: 8px;
+}
+.lfc-mass__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.mass-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(58,159,214,.22);
+  border-radius: 6px;
+  padding: 26px 24px;
+  transition: background .25s, border-color .25s, transform .25s;
+}
+.mass-card:hover {
+  background: rgba(58,159,214,.12);
+  border-color: rgba(114,192,234,.55);
+  transform: translateY(-4px);
+}
+.mass-card__day {
+  font-family: var(--ff-ui);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+}
+.mass-card__time {
+  font-family: var(--ff-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.mass-card__note {
+  font-family: var(--ff-body);
+  font-style: italic;
+  font-size: .88rem;
+  color: rgba(255,255,255,.5);
+}
+
+/* ════════════════════════════════════════════════════════
+   NOTICE + EVENTS GRID
+════════════════════════════════════════════════════════ */
+.lfc-two-col {
+  padding: 96px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+@media (max-width:860px) { .lfc-two-col { grid-template-columns: 1fr; padding: 64px 0; } }
+.lfc-panel {
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 8px 40px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+.lfc-panel:hover {
+  box-shadow: 0 20px 64px rgba(0,0,0,.1);
+  transform: translateY(-4px);
+}
+.lfc-panel__top-bar { height: 3px; }
+.lfc-panel--notice .lfc-panel__top-bar { background: linear-gradient(90deg, var(--navy), var(--gold)); }
+.lfc-panel--event  .lfc-panel__top-bar { background: linear-gradient(90deg, var(--gold), #1a7ab8); }
+.lfc-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 30px 20px;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+.lfc-panel__icon {
+  width: 42px; height: 42px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.lfc-panel--notice .lfc-panel__icon { background: #e8f4fc; color: #1a7ab8; }
+.lfc-panel--event  .lfc-panel__icon { background: #e8f4fc; color: var(--gold); }
+.lfc-panel__title {
+  font-family: var(--ff-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0;
+}
+.lfc-panel__body { padding: 24px 30px 28px; flex: 1; }
+/* Notice */
+.notice-heading {
+  font-family: var(--ff-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.notice-excerpt {
+  font-family: var(--ff-body);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #3e5060;
+  margin: 0 0 18px;
+}
+.notice-meta {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--ff-ui);
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: #9ab4c4;
+}
+.notice-meta i { color: var(--gold); font-size: 11px; }
+.notice-quote {
+  background: var(--ivory-dark);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 4px 4px 0;
+  padding: 14px 18px;
+  margin-top: 18px;
+}
+.notice-quote p {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: .95rem;
+  color: var(--navy);
+  margin: 0 0 4px;
+  line-height: 1.55;
+}
+.notice-quote cite {
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+/* Events */
+.event-list { list-style: none; margin: 0; padding: 0; }
+.event-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0,0,0,.05);
+  transition: padding-left .2s ease;
+}
+.event-list li:first-child { padding-top: 0; }
+.event-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.event-list li:hover { padding-left: 6px; }
+.event-date-box {
+  min-width: 50px; height: 50px;
+  background: var(--navy);
+  border-radius: 6px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.event-date-box .eday {
+  font-family: var(--ff-display);
+  font-size: 1.25rem; font-weight: 900;
+  color: var(--gold-light); line-height: 1;
+}
+.event-date-box .emon {
+  font-family: var(--ff-ui);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.5); line-height: 1.4;
+}
+.event-info strong {
+  display: block;
+  font-family: var(--ff-ui);
+  font-size: 13.5px; font-weight: 500;
+  color: var(--navy); line-height: 1.3;
+  margin-bottom: 3px;
+}
+.event-info span {
+  font-family: var(--ff-ui);
+  font-size: 11.5px;
+  color: #8aabbc;
+}
+.empty-msg {
+  font-family: var(--ff-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   GALLERY CAROUSEL
+════════════════════════════════════════════════════════ */
+.lfc-gallery { padding: 0 0 100px; }
+.lfc-gallery__head { text-align: center; margin-bottom: 48px; }
+.lfc-gallery-wrap {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(13,27,42,.22);
+}
+#heroCarousel .carousel-item img {
+  height: 520px;
+  object-fit: cover;
+  filter: brightness(.8) saturate(.92);
+  transition: transform 8s ease;
+}
+#heroCarousel .carousel-item.active img { transform: scale(1.03); }
+#heroCarousel .carousel-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(13,27,42,.75) 0%, transparent 55%);
+}
+.carousel-caption-custom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 36px 48px;
+  z-index: 10;
+  text-align: left;
+}
+.carousel-caption-custom .label {
+  font-family: var(--ff-ui);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: var(--gold-light); margin-bottom: 8px; display: block;
+}
+.carousel-caption-custom h4 {
+  font-family: var(--ff-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0,0,0,.3);
+}
+/* indicators */
+#heroCarousel .carousel-indicators { margin-bottom: 16px; gap: 7px; }
+#heroCarousel .carousel-indicators button {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.35); border: none;
+  transition: width .3s, background .3s;
+}
+#heroCarousel .carousel-indicators button.active {
+  width: 26px; border-radius: 4px; background: var(--gold-light);
+}
+/* arrows */
+.carousel-btn {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  z-index: 20;
+  width: 46px; height: 46px;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 18px; cursor: pointer;
+  text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+.carousel-btn:hover {
+  background: var(--gold); border-color: var(--gold); color: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+.carousel-btn-prev { left: 20px; }
+.carousel-btn-next { right: 20px; }
+
+/* ════════════════════════════════════════════════════════
+   FOOTER CTA / DEVOTION BAND
+════════════════════════════════════════════════════════ */
+.lfc-devotion {
+  background: var(--navy-mid);
+  padding: 80px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.lfc-devotion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233a9fd6' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.lfc-devotion__inner { position: relative; max-width: 620px; margin: 0 auto; }
+.lfc-devotion__icon {
+  width: 64px; height: 64px;
+  background: rgba(58,159,214,.15);
+  border: 1px solid rgba(58,159,214,.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 28px;
+  font-size: 26px;
+  color: var(--gold-light);
+}
+.lfc-devotion__quote {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: clamp(1.25rem, 3vw, 1.7rem);
+  color: rgba(255,255,255,.88);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+.lfc-devotion__cite {
+  font-family: var(--ff-ui);
+  font-size: 10px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.lfc-devotion__sub {
+  font-family: var(--ff-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: rgba(255,255,255,.4);
+  margin: 24px 0 36px;
+}
+</style>
+<!-- ═══════════════════════════════════════
+     BIBLE VERSE MARQUEE STRIP
+═══════════════════════════════════════ -->
+<div class="verse-strip" id="welcome">
+<div class="verse-strip__track">
+<!-- first copy -->
+<span class="verse-strip__item">
+      "The Lord is my shepherd, I shall not want."
+<span class="ref">Psalm 23:1</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "For God so loved the world that he gave his one and only Son."
+<span class="ref">John 3:16</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "I can do all things through Christ who strengthens me."
+<span class="ref">Philippians 4:13</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "Be still, and know that I am God."
+<span class="ref">Psalm 46:10</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "Trust in the Lord with all your heart."
+<span class="ref">Proverbs 3:5</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<!-- duplicate for seamless loop -->
+<span class="verse-strip__item">
+      "The Lord is my shepherd, I shall not want."
+<span class="ref">Psalm 23:1</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "For God so loved the world that he gave his one and only Son."
+<span class="ref">John 3:16</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "I can do all things through Christ who strengthens me."
+<span class="ref">Philippians 4:13</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "Be still, and know that I am God."
+<span class="ref">Psalm 46:10</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+<span class="verse-strip__item">
+      "Trust in the Lord with all your heart."
+<span class="ref">Proverbs 3:5</span>
+<span class="verse-strip__sep">✦</span>
+</span>
+</div>
+</div>
+<!-- ═══════════════════════════════════════
+     WELCOME SECTION
+═══════════════════════════════════════ -->
+<div class="lfc-wrap">
+<div class="lfc-welcome">
+<!-- Image column -->
+<div class="lfc-welcome__img-wrap">
+<!-- <img
+src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwerVf73dp3WtUi8oG60rru06_r9RPPsDJzqCBHivm1FxkR7uhm1OUeOCVBvqpXskcL-upIE8ulIeJ152s3-4cSQEiB7IBmZmBvikm6EqwsowerPAP39qJ93S3EFhenXGfu0Y9ps=s1360-w1360-h1020"
+alt="Little Flower Church" class="lfc-welcome__img"> --> 
+
+<img src="{% static 'images/IMG_1466.jpg' %}" alt="Little Flower Church" class="lfc-welcome__img">
+
+<div class="lfc-welcome__badge">
+<span class="num">Est.1969</span>
+<span class="lbl"></span>
+</div>
+</div>
+<!-- Copy column -->
+<div class="lfc-welcome__copy">
+<span class="lfc-section-eyebrow">Our Community</span>
+<h2 class="lfc-section-title">A Home of <em>Faith,</em><br>Prayer &amp; Service</h2>
+<div class="lfc-welcome__rule"><span></span></div>
+<p class="lfc-welcome__text">
+        Welcome to Little Flower Church, Lisuenagar — a vibrant Catholic parish 
+        where every soul is invited, every voice is heard, and every heart is nourished.
+        From the Sunday Eucharist to community outreach, we walk together in the footsteps 
+        of our Lord.
+</p>
+<div class="lfc-welcome__verse">
+<p>"For where two or three gather in my name, there am I with them."</p>
+<cite>— Matthew 18:20</cite>
+</div>
+<div class="lfc-welcome__stats">
+<div class="lfc-stat">
+<div class="lfc-stat__n">320+</div>
+<div class="lfc-stat__l">Families</div>
+</div>
+<div class="lfc-stat">
+<div class="lfc-stat__n">14+</div>
+<div class="lfc-stat__l">Ministries</div>
+</div>
+<div class="lfc-stat">
+<div class="lfc-stat__n">10</div>
+<div class="lfc-stat__l">Weekly Masses</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ═══════════════════════════════════════
+     MASS SCHEDULE
+═══════════════════════════════════════ -->
+<section class="lfc-mass" id="mass">
+<div class="lfc-wrap">
+<div class="lfc-mass__inner">
+<div class="lfc-mass__head">
+<span class="lfc-section-eyebrow">Worship Together</span>
+<h2 class="lfc-section-title">Mass<br><em>Schedule</em></h2>
+<div class="lfc-mass__verse">
+          "This is the day the Lord has made; let us rejoice and be glad in it."
+<cite>— Psalm 118:24</cite>
+</div>
+</div>
+<div class="lfc-mass__grid">
+<div class="mass-card">
+<div class="mass-card__day">Sunday</div>
+<div class="mass-card__time">6:15 AM</div>
+<div class="mass-card__note">Morning Mass</div>
+</div>
+<div class="mass-card">
+<div class="mass-card__day">Sunday</div>
+<div class="mass-card__time">9:15 AM</div>
+<div class="mass-card__note">Family Mass </div>
+</div>
+<div class="mass-card">
+<div class="mass-card__day">Sunday</div>
+<div class="mass-card__time">3:30 PM</div>
+<div class="mass-card__note">Evening Mass</div>
+</div>
+<div class="mass-card">
+<div class="mass-card__day">Weekdays</div>
+<div class="mass-card__time">6:15 AM</div>
+<div class="mass-card__note">Mon – Sat</div>
+</div>
+<div class="mass-card">
+<div class="mass-card__day">Holy Days</div>
+<div class="mass-card__time">6:15 AM</div>
+<div class="mass-card__note">Special celebration Mass</div>
+</div>
+<div class="mass-card">
+<div class="mass-card__day">Confession</div>
+<div class="mass-card__time">Special Days</div>
+<div class="mass-card__note"> 4:30 PM - 8:00 PM</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ═══════════════════════════════════════
+     NOTICE + EVENTS
+═══════════════════════════════════════ -->
+<div class="lfc-wrap">
+<div class="lfc-two-col">
+<!-- Latest Notice -->
+<div class="lfc-panel lfc-panel--notice">
+<div class="lfc-panel__top-bar"></div>
+<div class="lfc-panel__header">
+<div class="lfc-panel__icon">
+<i class="bi bi-megaphone-fill"></i>
+</div>
+<h4 class="lfc-panel__title">Latest Notice</h4>
+</div>
+<div class="lfc-panel__body">
+        {% if latest_notice %}
+<p class="notice-heading">{{ latest_notice.title }}</p>
+<p class="notice-excerpt">{{ latest_notice.content|truncatewords:32 }}</p>
+<div class="notice-meta">
+<i class="bi bi-clock"></i>
+            {{ latest_notice.created_at|date:"M d, Y" }}
+</div>
+        {% else %}
+        {% endif %}
+<div class="notice-quote">
+<p>"Let us not give up meeting together, as some are in the habit of doing."</p>
+<cite>— Hebrews 10:25</cite>
+</div>
+</div>
+</div>
+<!-- Upcoming Events -->
+<div class="lfc-panel lfc-panel--event">
+<div class="lfc-panel__top-bar"></div>
+<div class="lfc-panel__header">
+<div class="lfc-panel__icon">
+<i class="bi bi-calendar-event-fill"></i>
+</div>
+<h4 class="lfc-panel__title">Upcoming Events</h4>
+</div>
+<div class="lfc-panel__body">
+        {% if upcoming_events %}
+<ul class="event-list">
+          {% for event in upcoming_events %}
+<li>
+<div class="event-date-box">
+<span class="eday">{{ event.date|date:"d" }}</span>
+<span class="emon">{{ event.date|date:"M" }}</span>
+</div>
+<div class="event-info">
+<strong>{{ event.title }}</strong>
+<span>{{ event.date|date:"l, Y" }}</span>
+</div>
+</li>
+          {% endfor %}
+</ul>
+        {% else %}
+        {% endif %}
+</div>
+</div>
+</div>
+</div>
+<!-- ═══════════════════════════════════════
+     GALLERY CAROUSEL
+═══════════════════════════════════════ -->
+<div class="lfc-wrap">
+<div class="lfc-gallery">
+<div class="lfc-gallery__head">
+<span class="lfc-section-eyebrow">Parish Gallery</span>
+<h2 class="lfc-section-title">Moments of <em>Grace</em></h2>
+</div>
+<div class="lfc-gallery-wrap">
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-indicators">
+          {% for img in carousel_images %}
+<button type="button" data-bs-target="#heroCarousel"
+data-bs-slide-to="{{ forloop.counter0 }}"
+{% if forloop.first %}class="active"{% endif %}></button>
+          {% empty %}
+<button type="button" data-bs-target="#heroCarousel"
+data-bs-slide-to="0" class="active"></button>
+          {% endfor %}
+</div>
+<div class="carousel-inner">
+          {% for img in carousel_images %}
+<div class="carousel-item {% if forloop.first %}active{% endif %}">
+<img src="{{ img.image.url }}" class="d-block w-100" alt="{{ img.title }}">
+<div class="carousel-caption-custom">
+<span class="label">Parish Gallery</span>
+<h4>{{ img.title }}</h4>
+</div>
+</div>
+          {% empty %}
+<div class="carousel-item active">
+<!-- <img src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwerVf73dp3WtUi8oG60rru06_r9RPPsDJzqCBHivm1FxkR7uhm1OUeOCVBvqpXskcL-upIE8ulIeJ152s3-4cSQEiB7IBmZmBvikm6EqwsowerPAP39qJ93S3EFhenXGfu0Y9ps=s1360-w1360-h1020"
+class="d-block w-100" alt="Parish"> -->
+
+<img src="{% static 'images/IMG_1466.jpg' %}" class="d-block w-100" alt="Parish">
+
+
+<div class="carousel-caption-custom">
+<span class="label">Our Home</span>
+<h4>Little Flower Church, Lisuenagar</h4>
+</div>
+</div>
+          {% endfor %}
+</div>
+<a class="carousel-btn carousel-btn-prev" href="#heroCarousel" role="button" data-bs-slide="prev">
+<i class="bi bi-chevron-left"></i>
+</a>
+<a class="carousel-btn carousel-btn-next" href="#heroCarousel" role="button" data-bs-slide="next">
+<i class="bi bi-chevron-right"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- ═══════════════════════════════════════
+     DEVOTION CLOSING BAND
+═══════════════════════════════════════ -->
+<div class="lfc-devotion">
+<div class="lfc-devotion__inner">
+<div class="lfc-devotion__icon">✝</div>
+<blockquote class="lfc-devotion__quote">
+      "The Lord bless you and keep you; the Lord make his face shine on you
+      and be gracious to you; the Lord turn his face toward you and give you peace."
+</blockquote>
+<p class="lfc-devotion__cite">— Numbers 6:24–26</p>
+<p class="lfc-devotion__sub">
+      Little Flower Church, Lisuenagar &nbsp;·&nbsp; Open daily for prayer
+</p>
+<a href="#mass" class="lfc-btn lfc-btn--solid">Join Us for Mass</a>
+</div>
+</div>
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  const video  = document.getElementById("heroVideo");
+  const toggle = document.getElementById("soundToggle");
+  const iconMute  = document.getElementById("iconMute");
+  const iconSound = document.getElementById("iconSound");
+  if (toggle && video) {
+  toggle.addEventListener("click", function () {
+  video.muted = !video.muted;
+  iconMute.style.display  = video.muted ? "block" : "none";
+  iconSound.style.display = video.muted ? "none"  : "block";
+      });
+    }
+  /* Scroll-triggered fade-in */
+  const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+  if (e.isIntersecting) {
+  e.target.style.opacity    = '1';
+  e.target.style.transform  = 'translateY(0)';
+  observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+  document.querySelectorAll('.lfc-panel, .mass-card, .lfc-welcome__copy, .lfc-welcome__img-wrap').forEach(el => {
+  el.style.opacity   = '0';
+  el.style.transform = 'translateY(28px)';
+  el.style.transition = 'opacity .65s ease, transform .65s ease';
+  observer.observe(el);
+    });
+  });
+</script>
+{% endblock %}

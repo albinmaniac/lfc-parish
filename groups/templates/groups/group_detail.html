@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600&display=swap');
+
+  :root {
+    --ink: #0D0D14;
+    --amber: #F59E0B;
+    --lime: #84CC16;
+    --sky: #38BDF8;
+    --rose: #FB7185;
+    --surface: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  body { background: var(--ink); font-family: 'Outfit', sans-serif; }
+
+  .gp-page {
+    min-height: 100vh;
+    padding: 3rem 1.25rem;
+    background:
+      radial-gradient(ellipse at 80% 10%, rgba(56,189,248,0.12) 0%, transparent 45%),
+      radial-gradient(ellipse at 10% 90%, rgba(132,204,22,0.1)  0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(251,113,133,0.06) 0%, transparent 60%),
+      var(--ink);
+    position: relative;
+  }
+
+  /* noise grain overlay */
+  .gp-page::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .gp-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── back chip ── */
+  .gp-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  /* ── Hero ── */
+  .gp-hero {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem 2.5rem 2rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    animation: fadeUp 0.55s 0.05s ease both;
+  }
+
+  /* big decorative letter behind the title */
+  .gp-hero::before {
+    content: attr(data-initial);
+    position: absolute;
+    right: -0.1em;
+    top: -0.2em;
+    font-family: 'Syne', sans-serif;
+    font-size: 12rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.025);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* top edge glow strip */
+  .gp-hero-strip {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sky), var(--lime), var(--amber));
+    background-size: 200% 100%;
+    animation: pan 3s linear infinite;
+  }
+
+  @keyframes pan {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .gp-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 1.25rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .gp-title span {
+    display: inline-block;
+    background: linear-gradient(120deg, #fff 30%, var(--sky));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .leader-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(251,113,133,0.12));
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem 0.5rem 0.6rem;
+    color: var(--amber);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .leader-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--amber), var(--rose));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .gp-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+  }
+
+  .stat-box .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--sky);
+    line-height: 1;
+  }
+
+  .stat-box .lbl {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.25rem;
+  }
+
+  /* ── Section header ── */
+  .section-hd {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.5s 0.2s ease both;
+    opacity: 0;
+  }
+
+  .section-hd-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,0.12), transparent);
+  }
+
+  .section-hd-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ── Member cards ── */
+  .members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0.9rem 1.2rem;
+    opacity: 0;
+    animation: slideIn 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .member-row::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(56,189,248,0.05), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+
+  .member-row:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(56,189,248,0.25);
+    transform: translateX(5px);
+  }
+
+  .member-row:hover::after { opacity: 1; }
+
+  /* stagger */
+  .member-row:nth-child(1)  { animation-delay: 0.28s; }
+  .member-row:nth-child(2)  { animation-delay: 0.34s; }
+  .member-row:nth-child(3)  { animation-delay: 0.40s; }
+  .member-row:nth-child(4)  { animation-delay: 0.46s; }
+  .member-row:nth-child(5)  { animation-delay: 0.52s; }
+  .member-row:nth-child(6)  { animation-delay: 0.58s; }
+  .member-row:nth-child(7)  { animation-delay: 0.64s; }
+  .member-row:nth-child(8)  { animation-delay: 0.70s; }
+  .member-row:nth-child(9)  { animation-delay: 0.76s; }
+  .member-row:nth-child(10) { animation-delay: 0.82s; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-18px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* cycle through colors for avatars */
+  .m-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .member-row:nth-child(4n+1) .m-avatar { background: linear-gradient(135deg, var(--sky), #818CF8); }
+  .member-row:nth-child(4n+2) .m-avatar { background: linear-gradient(135deg, var(--lime), #34D399); }
+  .member-row:nth-child(4n+3) .m-avatar { background: linear-gradient(135deg, var(--amber), var(--rose)); }
+  .member-row:nth-child(4n+0) .m-avatar { background: linear-gradient(135deg, var(--rose), #C084FC); }
+
+  .m-name {
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.88);
+    flex: 1;
+  }
+
+  .m-index {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.18);
+  }
+
+  /* ── Empty state ── */
+  .empty-box {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.35);
+    animation: fadeUp 0.5s 0.3s ease both;
+    opacity: 0;
+  }
+
+  .empty-box .big-icon {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    filter: grayscale(0.3);
+  }
+
+  .empty-box p { margin: 0; font-size: 0.95rem; }
+
+  /* floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(100px);
+    animation: drift 12s ease-in-out infinite;
+  }
+  .orb-a { width:320px;height:320px;background:rgba(56,189,248,0.08);  top:-80px;  right:-60px; animation-delay:0s; }
+  .orb-b { width:240px;height:240px;background:rgba(132,204,22,0.07);  bottom:5%;  left:-50px;  animation-delay:5s; }
+  .orb-c { width:180px;height:180px;background:rgba(251,113,133,0.07); bottom:30%; right:3%;    animation-delay:2s; }
+
+  @keyframes drift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%      { transform: translate(10px,-15px) scale(1.07); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="gp-page">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+
+  <div class="gp-wrap">
+
+    <div class="gp-breadcrumb">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Group Details
+    </div>
+
+    <!-- ── Hero ── -->
+    <div class="gp-hero" data-initial="{{ group.name|first|upper }}">
+      <div class="gp-hero-strip"></div>
+
+      <h1 class="gp-title">
+        <span>{{ group.name }}</span>
+      </h1>
+
+      {% if group.leader %}
+      <div class="leader-chip">
+        <div class="leader-avatar">{{ group.leader|first|upper }}</div>
+        <span>{{ group.leader }}</span>
+      </div>
+      {% endif %}
+
+      <div class="gp-stats">
+        <div class="stat-box">
+          <div class="val">{{ members|length }}</div>
+          <div class="lbl">Members</div>
+        </div>
+        {% if group.leader %}
+        <div class="stat-box">
+          <div class="val" style="color: var(--amber);">1</div>
+          <div class="lbl">Leader</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ── Members List ── -->
+    <div class="section-hd">
+      <span class="section-hd-label">All Members</span>
+      <div class="section-hd-line"></div>
+    </div>
+
+    <div class="members-list">
+      {% for member in members %}
+      <div class="member-row">
+        <div class="m-avatar">{{ member.name|first|upper }}</div>
+        <span class="m-name">{{ member.name }}</span>
+        <span class="m-index">{{ forloop.counter|stringformat:"02d" }}</span>
+      </div>
+      {% empty %}
+      <div class="empty-box">
+        <span class="big-icon">👥</span>
+        <p>No members assigned to this group yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
