@@ -89,8 +89,8 @@ import dj_database_url
 
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgresql://user@localhost:5432/parish_db",
-        conn_max_age=600
+        conn_max_age=600,
+        ssl_require=True
     )
 }
 
