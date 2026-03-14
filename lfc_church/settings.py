@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'notices',
     'events',
     'pages',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +87,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lfc_church.wsgi.application'
 
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -177,3 +179,15 @@ CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = True
+
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+
+cloudinary.config(
+    cloud_name="djynruk1r",
+    api_key="148425291682746",
+    api_secret="ZPseLwC2OMUCjzDvj-WRqol_8aw"
+)
