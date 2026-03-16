@@ -175,7 +175,7 @@ if os.environ.get("DJANGO_ENV") == "production":
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
+    MEDIA_ROOT = BASE_DIR / "static"
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
