@@ -52,8 +52,6 @@ INSTALLED_APPS = [
     'notices',
     'events',
     'pages',
-    'cloudinary',
-    'cloudinary_storage',
     'storages',
 ]
 
