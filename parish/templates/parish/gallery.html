@@ -497,7 +497,7 @@
       {% for img in images %}
       <div class="gallery-item">
         <div class="gallery-card"
-             data-src="{{ gallery.image.url }}"
+             data-src="{{ img.image.url }}"
              data-title="{{ img.title }}"
              data-index="{{ forloop.counter0 }}"
              role="button"
@@ -518,7 +518,7 @@
           {% endif %}
 
           <div class="gallery-img-wrap">
-            <img src="{{ gallery.image.url }}" alt="{{ img.title }}" class="gallery-img" loading="lazy">
+            <img src="{{ img.image.url }}" alt="{{ img.title }}" class="gallery-img" loading="lazy">
           </div>
 
           <!-- Always-visible title -->
