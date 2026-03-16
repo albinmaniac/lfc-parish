@@ -168,9 +168,14 @@ LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 LOGIN_URL = "login"
 
-# settings.py
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+import os
+
+if os.environ.get("DJANGO_ENV") == "production":
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -179,24 +184,6 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = True
 
-
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
-
-# cloudinary.config(
-#     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-#     api_key=os.environ.get("CLOUDINARY_API_KEY"),
-#     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-# )
-
-# CLOUDINARY_STORAGE = {
-#     "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-#     "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-#     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-# }
-
-# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
