@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'events',
     'pages',
     'storages',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -168,14 +170,6 @@ LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 LOGIN_URL = "login"
 
-import os
-
-if os.environ.get("DJANGO_ENV") == "production":
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "static"
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -184,20 +178,24 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = True
 
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
-AWS_S3_ADDRESSING_STYLE = "path"
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-AWS_ACCESS_KEY_ID = os.environ.get("B2_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("B2_APPLICATION_KEY")
+import cloudinary
 
-AWS_STORAGE_BUCKET_NAME = "lfc-church-media"
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+)
 
-AWS_S3_ENDPOINT_URL = "https://s3.us-west-002.backblazeb2.com"
 
-AWS_S3_REGION_NAME = "us-west-002"
-
-AWS_QUERYSTRING_AUTH = False
-AWS_DEFAULT_ACL = "public-read"
-
-AWS_S3_FILE_OVERWRITE = False
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = BASE_DIR / "media"
