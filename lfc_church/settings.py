@@ -104,15 +104,15 @@ import dj_database_url
 #         conn_max_age=600,
 #     )
 # }
+import os
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
+        default=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
         conn_max_age=600,
         ssl_require=False
     )
 }
-
 
 # DATABASES = {
 #     "default": {
