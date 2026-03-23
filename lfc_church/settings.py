@@ -31,8 +31,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost"
+    "lfc.up.railway.app",
+    "lfc.up.railway.app",
 ]
 
 
