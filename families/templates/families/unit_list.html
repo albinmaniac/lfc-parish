@@ -408,7 +408,7 @@
           <h1>Family <span>Units</span></h1>
           <p>Organized groups that form the backbone of our parish community.</p>
         </div>
-        {% if user.role == "admin" or user.role == "provincial" %}
+        {% if user.role == "admin" or user.role == "provincial" or user.role == "staff" %}
         <a href="{% url 'unit_add' %}" class="btn-add-unit">
           <i class="bi bi-plus-circle-fill"></i> Add Unit
         </a>
@@ -461,7 +461,7 @@
           <div class="card-accent-bar"></div>
 
           <!-- Action Icons -->
-          {% if user.role == "admin" or user.role == "provincial" %}
+          {% if user.role == "admin" or user.role == "provincial" or user.role == "staff" %}
           <div class="action-icons">
             <a href="{% url 'unit_edit' unit.pk %}" class="action-btn edit" title="Edit Unit">
               <i class="bi bi-pencil-fill"></i>

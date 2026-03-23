@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -412,7 +413,8 @@
           <h1>Families in <span>Our Parish</span></h1>
           <p>A living record of the families who call our community home.</p>
         </div>
-        {% if user.role == "admin" or user.role == "provincial" %}
+         <!-- Header Button -->
+        {% if can_manage_families %}
         <a href="{% url 'family_add' %}" class="btn-add-family">
           <i class="bi bi-plus-circle-fill"></i> Add Family
         </a>
@@ -433,10 +435,10 @@
         <span class="stat-label">Members</span>
       </div>
       <div class="stat-divider"></div>
-      <div class="stat-item">
+      <!-- <div class="stat-item">
         <span class="stat-value">✦</span>
         <span class="stat-label">Community</span>
-      </div>
+      </div> -->
     </div>
     {% endif %}
 
@@ -458,13 +460,14 @@
         <div class="family-card">
 
           <!-- Action Icons -->
-          {% if user.role == "admin" or user.role == "provincial" %}
+          {% if can_manage_families %}
           <div class="action-icons">
-            <a href="{% url 'family_edit' family.pk %}" class="action-btn edit" title="Edit Family">
+            <a href="{% url 'family_edit' family.pk %}" class="action-btn edit">
               <i class="bi bi-pencil-fill"></i>
             </a>
-            {% if user.role == "admin" %}
-            <a href="{% url 'family_delete' family.pk %}" class="action-btn delete" title="Delete Family">
+
+            {% if can_manage_families %}
+            <a href="{% url 'family_delete' family.pk %}" class="action-btn delete">
               <i class="bi bi-trash-fill"></i>
             </a>
             {% endif %}
@@ -489,7 +492,7 @@
             <h5 class="card-family-name">{{ family.house_name }}</h5>
             <span class="card-unit">
               <i class="bi bi-pin-map-fill"></i>
-              {{ family.family_unit.name }}
+              {{ family.family_unit.name|default:"No Unit" }}
             </span>
             <div class="card-footer-row">
               <a href="{% url 'family_detail' family.pk %}" class="btn-view-details">
@@ -497,7 +500,7 @@
               </a>
               <span class="member-badge" data-count="{{ family.members.count }}">
                 <i class="bi bi-people-fill"></i>
-                {{ family.members.count }} Members
+                {{ family.members.count|default:0 }} Members
               </span>
             </div>
           </div>

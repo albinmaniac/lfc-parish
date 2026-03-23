@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .event-wrap {
+    max-width: 850px;
+    margin: 60px auto;
+    padding: 0 15px;
+  }
+
+  .event-card {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+  }
+
+  .event-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+  }
+
+  .event-body {
+    padding: 34px;
+  }
+
+  .event-title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .event-meta {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .event-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .event-meta i {
+    color: #991b1b;
+  }
+
+  .event-desc {
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: #444;
+    margin-bottom: 25px;
+  }
+
+  .event-status {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    display: inline-block;
+  }
+
+  .active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .inactive {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+
+  .event-actions {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-custom {
+    padding: 8px 18px;
+    font-size: 13px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: 0.25s;
+  }
+
+  .btn-edit {
+    background: #1c1917;
+    color: white;
+  }
+
+  .btn-edit:hover {
+    background: #991b1b;
+  }
+
+  .btn-delete {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .btn-delete:hover {
+    background: #991b1b;
+    color: white;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #777;
+    text-decoration: none;
+    margin-bottom: 20px;
+  }
+
+  .back-link:hover {
+    color: #991b1b;
+  }
+</style>
+
+<div class="event-wrap">
+
+  <!-- Back -->
+  <a href="{% url 'event_list' %}" class="back-link">
+    <i class="bi bi-arrow-left"></i> Back to Events
+  </a>
+
+  <div class="event-card">
+
+    {% if event.image %}
+      <img src="{{ event.image.url }}" class="event-image">
+    {% endif %}
+
+    <div class="event-body">
+
+      <!-- Title -->
+      <h2 class="event-title">{{ event.title }}</h2>
+
+      <!-- Meta -->
+      <div class="event-meta">
+        <span>
+          <i class="bi bi-calendar-event"></i>
+          {{ event.date }}
+        </span>
+
+        {% if event.location %}
+        <span>
+          <i class="bi bi-geo-alt"></i>
+          {{ event.location }}
+        </span>
+        {% endif %}
+
+        <span>
+          <i class="bi bi-clock"></i>
+          {{ event.created_at|date:"M d, Y" }}
+        </span>
+
+        {% if event.created_by %}
+        <span>
+          <i class="bi bi-person"></i>
+          {{ event.created_by.username }}
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      <div class="event-desc">
+        {{ event.description }}
+      </div>
+
+      <!-- Status -->
+      {% if event.is_active %}
+        <span class="event-status active">Active</span>
+      {% else %}
+        <span class="event-status inactive">Inactive</span>
+      {% endif %}
+
+      <!-- Actions -->
+      {% if can_manage_events %}
+      <div class="event-actions">
+
+        <a href="{% url 'event_edit' event.pk %}" class="btn-custom btn-edit">
+          Edit
+        </a>
+
+        {% if user.role == "admin" %}
+        <a href="{% url 'event_delete' event.pk %}" class="btn-custom btn-delete">
+          Delete
+        </a>
+        {% endif %}
+
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

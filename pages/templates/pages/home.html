@@ -49,7 +49,7 @@
 <span class="scroll-dot"></span>
 </div>
 <!-- sound toggle -->
-<button id="soundToggle" class="lfc-hero__sound" aria-label="Toggle sound">
+<!-- <button id="soundToggle" class="lfc-hero__sound" aria-label="Toggle sound">
 <svg id="iconMute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
 <line x1="23" y1="9" x2="17" y2="15"></line>
@@ -60,7 +60,7 @@
 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
 <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
 </svg>
-</button>
+</button> -->
 </section>
 {% endblock %}
 {% block content %}
@@ -718,56 +718,102 @@ body {
   color: var(--gold);
 }
 /* Events */
-.event-list { list-style: none; margin: 0; padding: 0; }
+/* ===== EVENT LIST ===== */
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .event-list li {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(0,0,0,.05);
-  transition: padding-left .2s ease;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
-.event-list li:first-child { padding-top: 0; }
-.event-list li:last-child { border-bottom: none; padding-bottom: 0; }
-.event-list li:hover { padding-left: 6px; }
+
+/* DATE BOX */
 .event-date-box {
-  min-width: 50px; height: 50px;
-  background: var(--navy);
-  border-radius: 6px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  flex-shrink: 0;
+  width: 50px;
+  text-align: center;
+  background: #7c67d8;
+  border-radius: 10px;
+  padding: 6px 4px;
 }
-.event-date-box .eday {
-  font-family: var(--ff-display);
-  font-size: 1.25rem; font-weight: 900;
-  color: var(--gold-light); line-height: 1;
+
+.eday {
+  display: block;
+  font-weight: bold;
+  font-size: 16px;
 }
-.event-date-box .emon {
-  font-family: var(--ff-ui);
-  font-size: 9px; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: rgba(255,255,255,.5); line-height: 1.4;
+
+.emon {
+  font-size: 11px;
+  color: #000000;
 }
+
+/* INFO */
+.event-info {
+  flex: 1;
+}
+
 .event-info strong {
   display: block;
-  font-family: var(--ff-ui);
-  font-size: 13.5px; font-weight: 500;
-  color: var(--navy); line-height: 1.3;
-  margin-bottom: 3px;
+  font-size: 14px;
 }
+
 .event-info span {
-  font-family: var(--ff-ui);
-  font-size: 11.5px;
-  color: #8aabbc;
+  font-size: 12px;
+  color: #777;
 }
-.empty-msg {
-  font-family: var(--ff-body);
-  font-style: italic;
-  font-size: 1rem;
-  color: var(--muted);
+
+/* ===== BADGES ===== */
+.event-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.badge-today {
+  background: #e53935;
+  color: #fff;
+}
+
+.badge-tomorrow {
+  background: #fb8c00;
+  color: #fff;
+}
+
+.badge-upcoming {
+  background: #43a047;
+  color: #fff;
+}
+
+/* ===== EMPTY STATE ===== */
+.no-events {
   text-align: center;
-  padding: 24px 0;
+  padding: 25px 10px;
+  color: #888;
+}
+
+.no-events i {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+  color: #ccc;
+}
+
+.no-events p {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.no-events span {
+  font-size: 12px;
 }
 
 /* ════════════════════════════════════════════════════════
@@ -1087,32 +1133,60 @@ alt="Little Flower Church" class="lfc-welcome__img"> -->
 </div>
 <!-- Upcoming Events -->
 <div class="lfc-panel lfc-panel--event">
-<div class="lfc-panel__top-bar"></div>
-<div class="lfc-panel__header">
-<div class="lfc-panel__icon">
-<i class="bi bi-calendar-event-fill"></i>
-</div>
-<h4 class="lfc-panel__title">Upcoming Events</h4>
-</div>
-<div class="lfc-panel__body">
-        {% if upcoming_events %}
-<ul class="event-list">
-          {% for event in upcoming_events %}
-<li>
-<div class="event-date-box">
-<span class="eday">{{ event.date|date:"d" }}</span>
-<span class="emon">{{ event.date|date:"M" }}</span>
-</div>
-<div class="event-info">
-<strong>{{ event.title }}</strong>
-<span>{{ event.date|date:"l, Y" }}</span>
-</div>
-</li>
-          {% endfor %}
-</ul>
-        {% else %}
-        {% endif %}
-</div>
+
+  <div class="lfc-panel__top-bar"></div>
+
+  <div class="lfc-panel__header">
+    <div class="lfc-panel__icon">
+      <i class="bi bi-calendar-event-fill"></i>
+    </div>
+    <h4 class="lfc-panel__title">Upcoming Events</h4>
+  </div>
+
+  <div class="lfc-panel__body">
+
+    {% if events %}
+    <ul class="event-list">
+
+      {% for event in events %}
+      <li>
+
+        <!-- DATE BOX -->
+        <div class="event-date-box">
+          <span class="eday">{{ event.date|date:"d" }}</span>
+          <span class="emon">{{ event.date|date:"M" }}</span>
+        </div>
+
+        <!-- INFO -->
+        <div class="event-info">
+          <strong>{{ event.title }}</strong>
+          <span>{{ event.date|date:"l, Y" }}</span>
+
+          <!-- 🔥 BADGE -->
+          {% if event.tag == "today" %}
+            <span class="event-badge badge-today">Today</span>
+          {% elif event.tag == "tomorrow" %}
+            <span class="event-badge badge-tomorrow">Tomorrow</span>
+          {% else %}
+            <span class="event-badge badge-upcoming">Upcoming</span>
+          {% endif %}
+        </div>
+
+      </li>
+      {% endfor %}
+
+    </ul>
+
+    {% else %}
+    <!-- 🔥 EMPTY STATE -->
+    <div class="no-events">
+      <i class="bi bi-calendar-x"></i>
+      <p>No upcoming events</p>
+      <span>Stay tuned for parish updates</span>
+    </div>
+    {% endif %}
+
+  </div>
 </div>
 </div>
 </div>

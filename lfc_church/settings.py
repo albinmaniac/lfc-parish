@@ -26,10 +26,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = os.environ.get("DEBUG", "False") == "True"
+
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "lfc-church.onrender.com",
     "127.0.0.1",
     "localhost"
 ]
@@ -81,6 +82,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'notices.context_processors.latest_notice',
                 'parish.context_processors.parish_data',
+                'lfc_church.context_processors.notification_counts',
             ],
         },
     },
@@ -94,12 +96,23 @@ WSGI_APPLICATION = 'lfc_church.wsgi.application'
 
 import dj_database_url
 
+
+
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         default="sqlite:///db.sqlite3",
+#         conn_max_age=600,
+#     )
+# }
+
 DATABASES = {
     "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=False
     )
 }
+
 
 # DATABASES = {
 #     "default": {
@@ -137,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -157,7 +170,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For production
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -171,22 +184,31 @@ LOGOUT_REDIRECT_URL = "home"
 LOGIN_URL = "login"
 
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+
+
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+#     },
+#     "staticfiles": {
+#         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+#     },
+# }
 
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
 
 import cloudinary
 
@@ -195,6 +217,12 @@ cloudinary.config(
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
 )
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
 
 
 # MEDIA_URL = "/media/"

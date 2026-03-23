@@ -287,6 +287,38 @@
     pointer-events: none;
   }
 
+  .privacy-box {
+    background: #fff4e6;
+    border: 1px solid #e2c27a;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #5a4a1f;
+  }
+
+  .privacy-box.soft {
+    background: #f6f6f6;
+    border-color: #ddd;
+    color: #444;
+  }
+
+  .help-text {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    margin-top: 4px;
+  }
+
+  .consent-box {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+  .consent-box input {
+    margin-right: 6px;
+  }
+
   /* Checkbox */
   .active-toggle {
     display: flex;
@@ -411,26 +443,46 @@
 <div class="leader-form-page">
   <div class="form-card">
 
+    <!-- HEADER -->
     <div class="form-header">
       <div class="ornament">Parish Leadership</div>
-      <h1>{% if object %}Edit <em>Leader</em>{% else %}Add Parish <em>Leader</em>{% endif %}</h1>
+      <h1>
+        {% if object %}
+          Edit <em>Leader</em>
+        {% else %}
+          Add Parish <em>Leader</em>
+        {% endif %}
+      </h1>
       <p>Complete all fields to register a parish leader record</p>
     </div>
 
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
+      <!-- 🔒 PRIVACY NOTICE -->
+      <div class="privacy-box">
+        <strong>⚠️ Privacy Notice</strong><br>
+        Avoid entering sensitive personal information unless necessary. Phone numbers and photos should only be added with consent.
+      </div>
+
+      <div class="privacy-box soft">
+        <strong>🔒 Reminder</strong><br>
+        This information may be visible within the parish system. Share responsibly.
+      </div>
+
       <div class="form-body">
 
         <!-- Identity -->
         <div class="form-section">
           <div class="section-label">Identity</div>
+
           <div class="field-grid">
             <div class="field-wrap">
               <label>Full Name</label>
               {{ form.name }}
               {{ form.name.errors }}
             </div>
+
             <div class="field-wrap select-wrap">
               <label>Role</label>
               {{ form.role }}
@@ -442,15 +494,19 @@
         <!-- Contact -->
         <div class="form-section">
           <div class="section-label">Contact</div>
+
           <div class="field-grid">
             <div class="field-wrap">
               <label>Phone Number</label>
               {{ form.phone }}
+              <span class="help-text">Optional — share only with consent</span>
               {{ form.phone.errors }}
             </div>
+
             <div class="field-wrap">
               <label>Photo</label>
               {{ form.photo }}
+              <span class="help-text">Optional — avoid private or sensitive images</span>
               {{ form.photo.errors }}
             </div>
           </div>
@@ -459,12 +515,14 @@
         <!-- Term -->
         <div class="form-section">
           <div class="section-label">Term of Service</div>
+
           <div class="field-grid">
             <div class="field-wrap">
               <label>Term Start</label>
               {{ form.term_start }}
               {{ form.term_start.errors }}
             </div>
+
             <div class="field-wrap">
               <label>Term End</label>
               {{ form.term_end }}
@@ -476,22 +534,37 @@
         <!-- Status -->
         <div class="form-section">
           <div class="section-label">Status</div>
+
           <label class="active-toggle">
             {{ form.is_active }}
             <span>Currently Active</span>
           </label>
+
           {{ form.is_active.errors }}
         </div>
 
+        <!-- ✅ CONSENT -->
+        <div class="consent-box">
+          <label>
+            <input type="checkbox" required>
+            I confirm that I have permission to share this leader’s information
+          </label>
+        </div>
       </div><!-- /form-body -->
 
+      <!-- FOOTER -->
       <div class="form-footer">
         <button type="submit" class="btn-submit">
           <span>{% if object %}Update Record{% else %}Save Leader{% endif %}</span>
           <span class="arrow">→</span>
         </button>
-        <span class="form-note">All fields are required</span>
+
+        <span class="form-note">This platform is intended for internal parish use.
+Users are responsible for ensuring they have consent before sharing any personal information.</span>
+
       </div>
+
+      
 
     </form>
   </div>

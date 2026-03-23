@@ -322,6 +322,77 @@
     border-radius: 2px;
     margin: 14px 0 0;
   }
+
+  .btn-view {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--ink);
+    padding: 6px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .btn-view:hover {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: #fff;
+  }
+
+  .btn-view i { font-size: 11px; transition: transform 0.2s ease; }
+  .btn-view:hover i { transform: translateX(3px); }
+
+  .event-card {
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    transition: 0.3s;
+    position: relative;
+  }
+
+  .event-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  }
+
+  /* 🔥 Highlight TODAY */
+  .event-card.highlight {
+    border: 2px solid #16a34a;
+    box-shadow: 0 0 0 4px rgba(22,163,74,0.1);
+  }
+
+  /* TAG BADGES */
+  .event-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* Different colors */
+  .event-tag.today {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .event-tag.tomorrow {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .event-tag.upcoming {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .event-tag.past {
+    background: #e5e7eb;
+    color: #374151;
+  }
 </style>
 
 <div class="container">
@@ -332,7 +403,8 @@
       <h1>Parish <em>Events</em></h1>
       <span class="gold-rule"></span>
     </div>
-    {% if user.role == "admin" or user.role == "provincial" %}
+
+    {% if can_manage_events %}
     <a href="{% url 'event_add' %}" class="btn-add">
       <i class="bi bi-plus"></i> Add Event
     </a>
@@ -342,63 +414,62 @@
   <!-- Grid -->
   <div class="events-grid">
     {% for event in events %}
-    <div class="event-card">
 
-      <!-- Image -->
-      <div class="card-image-wrap">
-        {% if event.image %}
-          <img src="{{ event.image.url }}" alt="{{ event.title }}">
-        {% else %}
-          <div class="card-image-placeholder">
-            <i class="bi bi-calendar-event"></i>
+    <!-- <a href="{% url 'event_detail' event.pk %}" class="event-link"></a> -->
+      <div class="event-card {% if event.tag == 'today' %}highlight{% endif %}">
+
+        <!-- Image -->
+        <div class="card-image-wrap">
+          {% if event.image %}
+            <img src="{{ event.image.url }}">
+          {% else %}
+            <div class="card-image-placeholder">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+          {% endif %}
+
+          <!-- TAG BADGE -->
+          <div class="event-tag {{ event.tag }}">
+            {% if event.tag == "today" %}Today
+            {% elif event.tag == "tomorrow" %}Tomorrow
+            {% elif event.tag == "past" %}Past
+            {% else %}Upcoming
+            {% endif %}
           </div>
-        {% endif %}
 
-        <!-- Admin action icons -->
-        {% if user.role == "admin" or user.role == "provincial" %}
-        <div class="card-actions">
-          <a href="{% url 'event_edit' event.pk %}" class="edit-btn" title="Edit event">
-            <i class="bi bi-pencil"></i>
-          </a>
-          {% if user.role == "admin" %}
-          <a href="{% url 'event_delete' event.pk %}" class="delete-btn" title="Delete event">
-            <i class="bi bi-trash"></i>
-          </a>
+          <!-- Actions -->
+          {% if can_manage_events %}
+          <div class="card-actions">
+            <a href="{% url 'event_edit' event.pk %}">
+              <i class="bi bi-pencil"></i>
+            </a>
+
+            {% if user.role == "admin" %}
+            <a href="{% url 'event_delete' event.pk %}">
+              <i class="bi bi-trash"></i>
+            </a>
+            {% endif %}
+          </div>
           {% endif %}
         </div>
-        {% endif %}
-      </div>
 
-      <!-- Body -->
-      <div class="card-body">
-        <div class="card-meta">
+        <!-- Body -->
+        <div class="card-body">
           <span class="date-chip">
-            <i class="bi bi-calendar3"></i>
             {{ event.date|date:"M d, Y" }}
           </span>
-          {% if event.is_active %}
-            <span class="status-dot active" title="Active"></span>
-          {% else %}
-            <span class="status-dot inactive" title="Inactive"></span>
-          {% endif %}
-        </div>
 
-        <h2 class="card-title">{{ event.title }}</h2>
-        <p class="card-desc">{{ event.description|truncatewords:22 }}</p>
+          <h2>{{ event.title }}</h2>
+          <p>{{ event.description|truncatewords:18 }}</p>
 
-        <div class="card-footer-row">
-          {% if event.is_active %}
-            <span class="status-label active">Active</span>
-          {% else %}
-            <span class="status-label inactive">Inactive</span>
-          {% endif %}
-          <a href="{% url 'event_edit' event.pk %}" class="btn-view">
-            View <i class="bi bi-arrow-right"></i>
+          <a href="{% url 'event_detail' event.pk %}" class="event-link">
+              View <i class="bi bi-arrow-right"></i>
           </a>
         </div>
-      </div>
 
-    </div>
+      </div>
+    
+
     {% empty %}
     <div class="empty-state">
       <i class="bi bi-calendar-x"></i>

@@ -2,412 +2,633 @@
 {% block content %}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
 <style>
+  /* ─── Design Tokens ─── */
   :root {
-    --ink:    #0F0F1A;
-    --jade:   #00C9A7;
-    --amber:  #FFB347;
-    --rose:   #FF6B9D;
-    --sky:    #60CFFF;
-    --lilac:  #C084FC;
-    --card-bg: rgba(255,255,255,0.035);
+    --bg:          #e8e8e8;
+    --surface:     #f0f0f0;
+    --surface-deep:#d8d8d8;
+    --white:       #ffffff;
+    --ink:         #1a1a2e;
+    --muted:       #6b7280;
+
+    --blue:        #4f46e5;
+    --blue-light:  #818cf8;
+    --teal:        #0ea5e9;
+    --rose:        #f43f5e;
+    --amber:       #f59e0b;
+    --green:       #10b981;
+    --purple:      #8b5cf6;
+
+    --shadow-nm-out:  6px 6px 14px #c8c8c8, -6px -6px 14px #ffffff;
+    --shadow-nm-in:   inset 4px 4px 10px #c8c8c8, inset -4px -4px 10px #ffffff;
+    --shadow-hover:   10px 10px 24px #b8b8b8, -4px -4px 16px #ffffff;
+    --radius-card:    20px;
+    --radius-badge:   100px;
+
+    --font-body:   'Poppins', sans-serif;
+    --font-display:'Playfair Display', serif;
   }
 
-  body {
-    background: var(--ink);
-    font-family: 'Outfit', sans-serif;
-  }
+  /* ─── Reset / Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── Page wrapper ── */
   .groups-page {
+    background: var(--bg);
     min-height: 100vh;
-    padding: 2.5rem 1rem 4rem;
-    background:
-      radial-gradient(ellipse at 5% 15%,  rgba(0,201,167,0.12)  0%, transparent 45%),
-      radial-gradient(ellipse at 95% 10%,  rgba(192,132,252,0.14) 0%, transparent 45%),
-      radial-gradient(ellipse at 50% 90%,  rgba(255,107,157,0.10) 0%, transparent 50%),
-      var(--ink);
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Dot-grid texture */
-  .groups-page::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 32px 32px;
-    pointer-events: none;
-    z-index: 0;
+    padding: 3rem 1.5rem 5rem;
+    font-family: var(--font-body);
   }
 
   .wrap {
-    max-width: 1100px;
+    max-width: 1180px;
     margin: 0 auto;
-    position: relative;
-    z-index: 1;
   }
 
-  /* ── Header ── */
+  /* ─── Page Header ─── */
   .page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 3rem;
-    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    gap: 1.25rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .header-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.35rem;
   }
 
   .page-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.2rem, 5vw, 3.2rem);
-    font-weight: 700;
-    color: #fff;
-    margin: 0;
-    line-height: 1;
-    position: relative;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.1;
   }
 
-  .page-title span {
-    background: linear-gradient(135deg, var(--jade), var(--sky));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .page-title em {
+    font-style: normal;
+    color: var(--blue);
   }
 
-  .page-title::after {
-    content: '';
-    display: block;
-    height: 3px;
-    width: 60%;
+  .page-subtitle {
     margin-top: 0.5rem;
-    border-radius: 2px;
-    background: linear-gradient(90deg, var(--jade), transparent);
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--muted);
   }
 
+  /* Add Group Button */
   .btn-add-group {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, var(--amber), #FF9E3B);
-    color: var(--ink);
-    font-family: 'Outfit', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    padding: 0.7rem 1.6rem;
-    border-radius: 999px;
+    gap: 0.55rem;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-badge);
     border: none;
     text-decoration: none;
-    box-shadow: 0 6px 24px rgba(255,179,71,0.45);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.40);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    white-space: nowrap;
   }
 
   .btn-add-group:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 10px 32px rgba(255,179,71,0.6);
-    color: var(--ink);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.55);
+    color: #fff;
     text-decoration: none;
   }
 
-  /* ── Grid ── */
-  .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+  .btn-add-group i { font-size: 1rem; }
+
+  /* ─── Summary Strip ─── */
+  .summary-strip {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
   }
 
-  /* ── Card ── */
+  .summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-nm-out);
+    border-radius: var(--radius-badge);
+    padding: 0.5rem 1.2rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .summary-chip i { font-size: 0.95rem; color: var(--blue); }
+
+  /* ─── Grid ─── */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  /* ─── Card ─── */
   .group-card {
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 24px;
-    backdrop-filter: blur(18px);
-    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-nm-out);
     position: relative;
-    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), box-shadow 0.28s, border-color 0.28s;
+    overflow: hidden;
+    transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.32s ease;
     opacity: 0;
-    animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+    animation: slideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .group-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(255,255,255,0.16);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--shadow-hover);
   }
 
-  /* Top accent stripe */
-  .card-stripe {
-    height: 4px;
-    width: 100%;
+  /* Stagger */
+  .group-card:nth-child(1) { animation-delay: 0.08s; }
+  .group-card:nth-child(2) { animation-delay: 0.14s; }
+  .group-card:nth-child(3) { animation-delay: 0.20s; }
+  .group-card:nth-child(4) { animation-delay: 0.26s; }
+  .group-card:nth-child(5) { animation-delay: 0.32s; }
+  .group-card:nth-child(6) { animation-delay: 0.38s; }
+  .group-card:nth-child(7) { animation-delay: 0.44s; }
+  .group-card:nth-child(8) { animation-delay: 0.50s; }
+  .group-card:nth-child(9) { animation-delay: 0.56s; }
+
+  /* ─── Card Header Band ─── */
+  .card-header-band {
+    position: relative;
+    height: 100px;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 1.5rem;
   }
 
-  /* Each card gets a different stripe color */
-  .group-card:nth-child(3n+1) .card-stripe { background: linear-gradient(90deg, var(--jade), var(--sky)); }
-  .group-card:nth-child(3n+2) .card-stripe { background: linear-gradient(90deg, var(--rose), var(--lilac)); }
-  .group-card:nth-child(3n+3) .card-stripe { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+  /* Color variants */
+  .group-card:nth-child(4n+1) .card-header-band { background: linear-gradient(135deg, #4f46e5, #818cf8); }
+  .group-card:nth-child(4n+2) .card-header-band { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+  .group-card:nth-child(4n+3) .card-header-band { background: linear-gradient(135deg, #8b5cf6, #c084fc); }
+  .group-card:nth-child(4n+0) .card-header-band { background: linear-gradient(135deg, #f43f5e, #fb7185); }
 
-  /* Matching glow on hover */
-  .group-card:nth-child(3n+1):hover { box-shadow: 0 20px 50px rgba(0,201,167,0.15); }
-  .group-card:nth-child(3n+2):hover { box-shadow: 0 20px 50px rgba(255,107,157,0.15); }
-  .group-card:nth-child(3n+3):hover { box-shadow: 0 20px 50px rgba(255,179,71,0.15); }
-
-  /* Stagger delays */
-  .group-card:nth-child(1)  { animation-delay: 0.10s; }
-  .group-card:nth-child(2)  { animation-delay: 0.17s; }
-  .group-card:nth-child(3)  { animation-delay: 0.24s; }
-  .group-card:nth-child(4)  { animation-delay: 0.31s; }
-  .group-card:nth-child(5)  { animation-delay: 0.38s; }
-  .group-card:nth-child(6)  { animation-delay: 0.45s; }
-  .group-card:nth-child(7)  { animation-delay: 0.52s; }
-  .group-card:nth-child(8)  { animation-delay: 0.59s; }
-  .group-card:nth-child(9)  { animation-delay: 0.66s; }
-
-  .card-body-inner {
-    padding: 1.4rem 1.5rem 1.5rem;
+  /* Abstract decoration circles */
+  .card-header-band::before {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
   }
 
-  /* Action icons */
+  .card-header-band::after {
+    content: '';
+    position: absolute;
+    right: 40px;
+    bottom: -50px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+
+  /* Big icon inside band */
+  .band-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    z-index: 1;
+  }
+
+  .band-label {
+    margin-left: 1rem;
+    z-index: 1;
+  }
+
+  .band-label-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .band-label-count {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    font-family: var(--font-display);
+  }
+
+  /* ─── Action Icons ─── */
   .action-icons {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 12px;
+    right: 12px;
     display: flex;
-    gap: 7px;
-    z-index: 2;
+    gap: 6px;
+    z-index: 10;
   }
 
-  .action-icons a {
+  .action-btn {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 0.78rem;
     text-decoration: none;
-    transition: transform 0.18s, background 0.18s;
-    backdrop-filter: blur(8px);
+    transition: transform 0.2s, background 0.2s;
+    border: none;
+    cursor: pointer;
   }
 
   .action-edit {
-    background: rgba(96,207,255,0.15);
-    border: 1px solid rgba(96,207,255,0.3);
-    color: var(--sky) !important;
+    background: rgba(255,255,255,0.3);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.5);
   }
 
   .action-edit:hover {
-    background: rgba(96,207,255,0.3);
-    transform: scale(1.15);
+    background: rgba(255,255,255,0.55);
+    transform: scale(1.15) rotate(-8deg);
+    color: var(--blue);
+    text-decoration: none;
   }
 
   .action-delete {
-    background: rgba(255,107,107,0.12);
-    border: 1px solid rgba(255,107,107,0.3);
-    color: #FF6B6B !important;
+    background: rgba(244, 63, 94, 0.25);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
   }
 
   .action-delete:hover {
-    background: rgba(255,107,107,0.28);
-    transform: scale(1.15);
+    background: rgba(244, 63, 94, 0.65);
+    transform: scale(1.15) rotate(8deg);
+    color: #fff;
+    text-decoration: none;
   }
 
-  /* Card icon */
-  .group-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+  /* ─── Card Body ─── */
+  .card-body-inner {
+    padding: 1.4rem 1.5rem 0.5rem;
+  }
+
+  .group-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.25;
+    padding-right: 0.5rem;
+  }
+
+  /* Leader row */
+  .leader-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .leader-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-  }
-
-  .group-card:nth-child(3n+1) .group-icon { background: rgba(0,201,167,0.15); color: var(--jade); }
-  .group-card:nth-child(3n+2) .group-icon { background: rgba(255,107,157,0.15); color: var(--rose); }
-  .group-card:nth-child(3n+3) .group-icon { background: rgba(255,179,71,0.15);  color: var(--amber); }
-
-  .group-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.35rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 0.6rem;
-    padding-right: 4rem; /* room for action icons */
-    line-height: 1.2;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(79,70,229,0.35);
   }
 
-  .leader-pill {
+  .leader-role {
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .leader-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.4rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: rgba(0,201,167,0.15);
-    border: 1px solid rgba(0,201,167,0.3);
-    color: var(--jade);
-    font-size: 0.8rem;
-    font-weight: 500;
-    padding: 0.28rem 0.75rem;
-    border-radius: 999px;
-    margin-bottom: 1.25rem;
+    gap: 0.4rem;
+    background: var(--bg);
+    box-shadow: 3px 3px 8px #c8c8c8, -2px -2px 6px #ffffff;
+    border-radius: var(--radius-badge);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
   }
 
+  .stat-chip i { font-size: 0.8rem; color: var(--muted); }
+  .stat-chip strong { color: var(--blue); }
+
+  /* ─── Card Footer ─── */
   .card-footer-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    padding-top: 1.1rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 1rem 1.5rem 1.5rem;
   }
 
   .btn-view {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    font-family: 'Outfit', sans-serif;
-    padding: 0.45rem 1.1rem;
-    border-radius: 999px;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    padding: 0.55rem 1.3rem;
+    border-radius: var(--radius-badge);
     text-decoration: none;
-    transition: transform 0.18s, background 0.18s;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    cursor: pointer;
   }
+
+  /* color per card variant */
+  .group-card:nth-child(4n+1) .btn-view { background: var(--blue); color: #ffffff; box-shadow: 0 4px 14px rgba(79,70,229,0.4); }
+  .group-card:nth-child(4n+2) .btn-view { background: var(--teal); color: #fff; box-shadow: 0 4px 14px rgba(14,165,233,0.4); }
+  .group-card:nth-child(4n+3) .btn-view { background: var(--purple); color: #fff; box-shadow: 0 4px 14px rgba(139,92,246,0.4); }
+  .group-card:nth-child(4n+0) .btn-view { background: var(--rose); color: #fff; box-shadow: 0 4px 14px rgba(244,63,94,0.4); }
 
   .btn-view:hover {
-    background: rgba(255,255,255,0.14);
-    transform: scale(1.04);
-    color: #fff;
+    transform: translateY(-2px) scale(1.04);
     text-decoration: none;
+    color: #fff;
+    filter: brightness(1.1);
   }
 
-  .members-count {
+  .members-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     font-size: 0.82rem;
     font-weight: 600;
-    color: rgba(255,255,255,0.5);
+    color: var(--muted);
+    background: var(--bg);
+    box-shadow: inset 2px 2px 6px #c8c8c8, inset -2px -2px 6px #ffffff;
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-badge);
   }
 
-  .members-count i {
-    font-size: 0.9rem;
+  .members-badge i { font-size: 0.85rem; }
+
+  /* ─── Separator ─── */
+  .card-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d0d0d0, transparent);
+    margin: 0 1.5rem;
   }
 
-  /* ── Empty state ── */
+  /* ─── Empty State ─── */
   .empty-box {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 4rem 2rem;
-    background: rgba(255,255,255,0.02);
-    border: 1px dashed rgba(255,255,255,0.1);
-    border-radius: 24px;
-    color: rgba(255,255,255,0.4);
-    animation: fadeUp 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    padding: 5rem 2rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-nm-out);
+    border-radius: var(--radius-card);
+    animation: slideUp 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
     opacity: 0;
   }
 
-  .empty-box i {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 0.75rem;
-    color: rgba(255,255,255,0.2);
+  .empty-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: var(--shadow-nm-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
   }
 
-  /* ── Animations ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
+  .empty-icon-wrap i {
+    font-size: 2rem;
+    color: var(--muted);
+  }
+
+  .empty-box h3 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-box p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Floating blobs */
-  .blob { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
-  .blob-a { width:260px; height:260px; background:rgba(0,201,167,0.1);   top:-60px;  left:-40px;  animation: drift 12s ease-in-out infinite; }
-  .blob-b { width:200px; height:200px; background:rgba(192,132,252,0.1); bottom:5%;  right:-50px; animation: drift 15s ease-in-out infinite reverse; }
-  .blob-c { width:150px; height:150px; background:rgba(255,107,157,0.08);top:40%;    left:60%;    animation: drift 10s ease-in-out infinite 3s; }
-  @keyframes drift {
-    0%,100% { transform: translate(0,0); }
-    50%      { transform: translate(15px,-20px); }
+  .page-header {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .summary-strip {
+    animation: slideUp 0.5s 0.06s cubic-bezier(0.16, 1, 0.3, 1) both;
+    opacity: 0;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 640px) {
+    .groups-page { padding: 2rem 1rem 4rem; }
+    .groups-grid { gap: 1.5rem; }
+    .page-header { flex-direction: column; align-items: flex-start; }
   }
 </style>
 
 <div class="groups-page">
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
-  <div class="blob blob-c"></div>
-
   <div class="wrap">
 
-    <!-- Header -->
+    <!-- ── Page Header ── -->
     <div class="page-header">
-      <h2 class="page-title">Parish <span>Groups</span></h2>
-      {% if user.is_authenticated and user.role == "admin" or user.role == "provincial" %}
+      <div class="header-left">
+        <p class="header-eyebrow">Community</p>
+        <h1 class="page-title">Parish <em>Groups</em></h1>
+        <p class="page-subtitle">Connect, serve, and grow together in faith.</p>
+      </div>
+
+      {% if can_manage_groups %}
       <a href="{% url 'group_add' %}" class="btn-add-group">
-        <i class="bi bi-plus-circle-fill"></i> Add Group
+        <i class="bi bi-plus-circle-fill"></i> New Group
       </a>
       {% endif %}
     </div>
 
-    <!-- Grid -->
+    <!-- ── Summary Strip ── -->
+    <div class="summary-strip">
+      <div class="summary-chip">
+        <i class="bi bi-collection-fill"></i>
+        {{ groups|length }} Groups
+      </div>
+    </div>
+
+    <!-- ── Groups Grid ── -->
     <div class="groups-grid">
       {% for group in groups %}
       <div class="group-card">
-        <div class="card-stripe"></div>
 
-        <!-- Action icons -->
-        {% if user.is_authenticated %}
-          {% if user.role == "admin" or user.role == "provincial" or group.leader == user %}
-          <div class="action-icons">
-            <a href="{% url 'group_edit' group.pk %}" class="action-edit" title="Edit">
-              <i class="bi bi-pencil-fill"></i>
-            </a>
-            {% if user.role == "admin" %}
-            <a href="{% url 'group_delete' group.pk %}" class="action-delete" title="Delete">
-              <i class="bi bi-trash-fill"></i>
-            </a>
+        <!-- Coloured header band -->
+        <div class="card-header-band">
+
+          <!-- Action icons (positioned inside band) -->
+          {% if user.is_authenticated %}
+            {% if can_manage_groups or group.leader == user %}
+            <div class="action-icons">
+              <a href="{% url 'group_edit' group.pk %}" class="action-btn action-edit" title="Edit">
+                <i class="bi bi-pencil-fill"></i>
+              </a>
+              {% if user.role in "admin provincial staff" %}
+              <a href="{% url 'group_delete' group.pk %}" class="action-btn action-delete" title="Delete">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+              {% endif %}
+            </div>
             {% endif %}
-          </div>
           {% endif %}
-        {% endif %}
 
-        <div class="card-body-inner">
-          <div class="group-icon">
+          <div class="band-icon">
             <i class="bi bi-people-fill"></i>
           </div>
 
-          <h5 class="group-name">{{ group.name }}</h5>
+          <div class="band-label">
+            <!-- <div class="band-label-text">Members</div> -->
+            <div class="band-label-count">{{ group.name }}</div>
+          </div>
+
+        </div>
+        <!-- /band -->
+
+        <!-- Card body -->
+        <div class="card-body-inner">
+          <!-- <h5 class="group-name">{{ group.name }}</h5> -->
 
           {% if group.leader %}
-          <div class="leader-pill">
-            <i class="bi bi-star-fill" style="font-size:0.7rem;"></i>
-            {{ group.leader.username }}
+          <div class="leader-row">
+            <div class="leader-avatar">
+              {{ group.leader.username|slice:":1"|upper }}
+            </div>
+            <div class="leader-info">
+              <div class="leader-role">Group Leader</div>
+              <div class="leader-name">{{ group.leader.username }}</div>
+            </div>
+          </div>
+          {% else %}
+          <div class="leader-row">
+            <div class="leader-avatar" style="background: linear-gradient(135deg,#9ca3af,#6b7280);">
+              <i class="bi bi-question-lg" style="font-size:0.75rem;"></i>
+            </div>
+            <div class="leader-info">
+              <div class="leader-role">Group Leader</div>
+              <div class="leader-name" style="color:var(--muted);">Not assigned</div>
+            </div>
           </div>
           {% endif %}
 
-          <div class="card-footer-row">
-            <a href="{% url 'group_detail' group.pk %}" class="btn-view">
-              <i class="bi bi-eye-fill"></i> View Members
-            </a>
-            <span class="members-count">
+          <div class="stats-row">
+            <div class="stat-chip">
               <i class="bi bi-person-fill"></i>
-              {{ group.members.count }} members
-            </span>
+              <strong>{{ group.members.count }}</strong>&nbsp;members
+            </div>
           </div>
         </div>
+
+        <div class="card-divider"></div>
+
+        <!-- Card footer -->
+        <div class="card-footer-row">
+          <a href="{% url 'group_detail' group.pk %}" class="btn-view">
+            <i class="bi bi-eye-fill"></i> View Members
+          </a>
+          <span class="members-badge">
+            <i class="bi bi-person-lines-fill"></i>
+            {{ group.members.count }}
+          </span>
+        </div>
+
       </div>
       {% empty %}
+
       <div class="empty-box">
-        <i class="bi bi-people"></i>
-        No parish groups found.
+        <div class="empty-icon-wrap">
+          <i class="bi bi-people"></i>
+        </div>
+        <h3>No Groups Yet</h3>
+        <p>Parish groups will appear here once they have been created.</p>
       </div>
+
       {% endfor %}
     </div>
+    <!-- /grid -->
 
   </div>
 </div>

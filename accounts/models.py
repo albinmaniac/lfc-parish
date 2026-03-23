@@ -1,5 +1,5 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     ROLE_CHOICES = [
@@ -14,9 +14,13 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
 
+    # ✅ ADD THESE HERE
+    last_seen_notices = models.DateTimeField(null=True, blank=True)
+    last_seen_events = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
-    
+
 
 from django.contrib.auth.mixins import UserPassesTestMixin
 

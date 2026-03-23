@@ -4,7 +4,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
   :root {
     --ink: #0f0e17;
@@ -18,6 +17,9 @@
     --error-bg: #fef2f1;
     --success: #2a7d4f;
     --radius: 4px;
+
+    /* Arrow SVG as variable so it's reused consistently */
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7068' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,13 +30,11 @@
     padding: 48px 20px 80px;
     font-family: 'DM Sans', sans-serif;
   }
-
   .mf-wrapper {
     max-width: 600px;
     margin: 0 auto;
     animation: mf-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-
   @keyframes mf-rise {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -71,19 +71,16 @@
     border-radius: 100px;
     margin-bottom: 14px;
   }
-
   .mf-tag-dot {
     width: 6px; height: 6px;
     background: var(--accent);
     border-radius: 50%;
     animation: mf-pulse 2s ease infinite;
   }
-
   @keyframes mf-pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(0.75); }
   }
-
   .mf-heading {
     font-family: 'Playfair Display', serif;
     font-size: clamp(26px, 5vw, 36px);
@@ -92,7 +89,6 @@
     line-height: 1.15;
     margin-bottom: 6px;
   }
-
   .mf-subtext {
     font-size: 14px;
     color: var(--muted);
@@ -110,16 +106,15 @@
     position: relative;
     overflow: hidden;
   }
-
   .mf-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--accent), #e8834f, #c8472b);
+    background: linear-gradient(90deg, var(--accent), #e8834f, var(--accent));
   }
 
-  /* ── Section divider ── */
+  /* ── Section label ── */
   .mf-section-label {
     font-size: 10px;
     font-weight: 500;
@@ -134,30 +129,39 @@
     align-items: center;
     gap: 8px;
   }
-
   .mf-section-label:first-of-type { margin-top: 0; }
-
-  .mf-section-label svg {
-    color: var(--accent);
-    opacity: 0.7;
-  }
+  .mf-section-label svg { color: var(--accent); opacity: 0.7; }
 
   /* ── Two-column grid ── */
   .mf-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px 20px;
+    align-items: start;  /* FIX: prevents tall fields from stretching short siblings */
   }
-
   .mf-grid-full { grid-column: 1 / -1; }
+
+  /*
+  * FIX B — If an odd number of half-width fields leaves the last one orphaned,
+  * make it span the full row automatically.
+  */
+  .mf-field:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 
   @media (max-width: 500px) {
     .mf-grid-2 { grid-template-columns: 1fr; }
     .mf-grid-full { grid-column: 1; }
+    .mf-field:last-child:nth-child(odd) { grid-column: 1; }
   }
 
-  /* ── Field ── */
-  .mf-field { display: flex; flex-direction: column; gap: 6px; }
+  /* ── Field wrapper ── */
+  .mf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;  /* FIX C: prevents grid blowout when Django injects wide widgets */
+  }
 
   .mf-label {
     font-size: 11px;
@@ -165,9 +169,10 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
+    display: block;  /* ensures it always sits above the input */
   }
 
-  /* Django-rendered inputs */
+  /* ── All Django-rendered inputs ── */
   .mf-card input[type="text"],
   .mf-card input[type="email"],
   .mf-card input[type="number"],
@@ -177,68 +182,107 @@
   .mf-card input[type="password"],
   .mf-card select,
   .mf-card textarea {
+    /* FIX C: !important overrides any size= or style= Django may inject */
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    color: var(--ink) !important;
+    background-color: var(--warm) !important;
+    background-image: none !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    padding: 11px 13px !important;
+    outline: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: block !important;
+    line-height: 1.4 !important;
+    box-sizing: border-box !important;
+  }
+
+  /*
+  * FIX D — Django sometimes wraps widgets in extra block-level elements
+  * (e.g. <div> for ClearableFileInput, <ul> for RadioSelect).
+  * Force them to fill their container without adding margin/padding.
+  */
+  .mf-field > div,
+  .mf-field > p,
+  .mf-field > ul {
     width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--ink);
-    background: var(--warm);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 11px 13px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    -webkit-appearance: none;
-    appearance: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mf-field > div input,
+  .mf-field > div select,
+  .mf-field > div textarea,
+  .mf-field > p input,
+  .mf-field > ul input {
+    width: 100% !important;
   }
 
+  /* ── Select: arrow on all states ── */
   .mf-card select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7068' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 13px center;
-    padding-right: 36px;
+    /* FIX F: split background into colour + image so error state can
+      override just the colour without nuking the arrow. */
+    background-color: var(--warm) !important;
+    background-image: var(--select-arrow) !important;
+    background-repeat: no-repeat !important;
+    background-position: right 13px center !important;
+    padding-right: 36px !important;
+    cursor: pointer !important;
   }
 
+  /* ── Textarea ── */
   .mf-card textarea {
-    resize: vertical;
-    min-height: 90px;
+    resize: vertical !important;
+    min-height: 90px !important;
   }
 
+  /* ── Focus states ── */
   .mf-card input:focus,
   .mf-card select:focus,
   .mf-card textarea:focus {
-    border-color: var(--accent);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(200, 71, 43, 0.1);
+    border-color: var(--accent) !important;
+    background-color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(200,71,43,0.1) !important;
   }
 
   .mf-card input::placeholder,
-  .mf-card textarea::placeholder {
-    color: #bfb8af;
-  }
+  .mf-card textarea::placeholder { color: #bfb8af; }
 
-  /* Input with error */
+  /* ── Error state ── */
   .mf-field--error input,
-  .mf-field--error select,
   .mf-field--error textarea {
     border-color: var(--error) !important;
-    background: var(--error-bg) !important;
+    background-color: var(--error-bg) !important;
   }
-
+  /* FIX F: Select error preserves arrow by only changing background-COLOR */
+  .mf-field--error select {
+    border-color: var(--error) !important;
+    background-color: var(--error-bg) !important;
+    background-image: var(--select-arrow) !important;
+    background-repeat: no-repeat !important;
+    background-position: right 13px center !important;
+  }
   .mf-field--error input:focus,
   .mf-field--error select:focus,
   .mf-field--error textarea:focus {
-    box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.12) !important;
+    box-shadow: 0 0 0 3px rgba(217,48,37,0.12) !important;
   }
 
   /* ── File input ── */
   .mf-card input[type="file"] {
-    font-size: 13px;
-    padding: 9px 13px;
-    cursor: pointer;
-    color: var(--muted);
+    font-size: 13px !important;
+    padding: 9px 13px !important;
+    cursor: pointer !important;
+    color: var(--muted) !important;
+    background-image: none !important;
   }
-
   .mf-card input[type="file"]::file-selector-button {
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
@@ -252,21 +296,23 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-
-  .mf-card input[type="file"]::file-selector-button:hover {
-    background: #e8bdb6;
-  }
+  .mf-card input[type="file"]::file-selector-button:hover { background: #e8bdb6; }
 
   /* ── Checkbox / Radio ── */
   .mf-card input[type="checkbox"],
   .mf-card input[type="radio"] {
-    width: 16px; height: 16px;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    padding: 0 !important;
+    background: none !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
     accent-color: var(--accent);
     cursor: pointer;
-    background: none;
-    border: none;
-    box-shadow: none;
-    padding: 0;
+    flex-shrink: 0;
+    display: inline-block !important;
   }
 
   .mf-check-row {
@@ -280,12 +326,10 @@
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
   }
-
   .mf-check-row:hover {
     border-color: var(--accent);
     background: var(--accent-light);
   }
-
   .mf-check-row label {
     font-size: 14px;
     color: var(--ink);
@@ -293,26 +337,54 @@
     font-weight: 400;
     letter-spacing: 0;
     text-transform: none;
+    line-height: 1.3;
   }
 
-  /* ── Error messages ── */
+  /* ── Error message ── */
   .mf-error-msg {
     font-size: 12px;
     color: var(--error);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 5px;
     margin-top: 2px;
+    line-height: 1.4;
   }
+  .mf-error-msg svg { flex-shrink: 0; margin-top: 1px; }
 
   /* ── Help text ── */
   .mf-card .helptext,
+  .mf-card .mf-help,
   .mf-card p.help {
     font-size: 12px;
     color: var(--muted);
     font-weight: 300;
-    margin-top: 4px;
+    margin-top: 2px;
+    line-height: 1.4;
   }
+
+    .mf-privacy {
+      background: #fff6e6;
+      border: 1px solid #e5c27a;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .mf-privacy.soft {
+      background: #f5f5f5;
+      border-color: #ddd;
+    }
+
+    .mf-consent {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .mf-consent input {
+      margin-right: 6px;
+    }
 
   /* ── Actions ── */
   .mf-actions {
@@ -324,7 +396,6 @@
     padding-top: 24px;
     border-top: 1px solid var(--border);
   }
-
   .mf-btn-cancel {
     font-family: 'DM Sans', sans-serif;
     font-size: 14px;
@@ -338,13 +409,11 @@
     transition: color 0.15s, border-color 0.15s, background 0.15s;
     cursor: pointer;
   }
-
   .mf-btn-cancel:hover {
     color: var(--ink);
     border-color: #b5afa7;
     background: var(--warm);
   }
-
   .mf-btn-submit {
     font-family: 'DM Sans', sans-serif;
     font-size: 14px;
@@ -361,18 +430,15 @@
     transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
     box-shadow: 0 3px 0 #8f2c17;
   }
-
   .mf-btn-submit:hover {
     background: #b53d24;
     transform: translateY(-1px);
     box-shadow: 0 4px 0 #8f2c17;
   }
-
   .mf-btn-submit:active {
     transform: translateY(1px);
     box-shadow: 0 1px 0 #8f2c17;
   }
-
   .mf-btn-submit svg { transition: transform 0.2s; }
   .mf-btn-submit:hover svg { transform: translateX(2px); }
 
@@ -390,7 +456,7 @@
 
     <!-- Back -->
     <a href="{% url 'family_list' %}" class="mf-back">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M19 12H5M12 19l-7-7 7-7"/>
       </svg>
       All Families
@@ -401,11 +467,17 @@
       <span class="mf-tag-dot"></span>
       {% if object %}Editing Record{% else %}New Record{% endif %}
     </div>
+
     <h1 class="mf-heading">
       {% if object %}Edit Member{% else %}Add Member{% endif %}
     </h1>
+
     <p class="mf-subtext">
-      {% if object %}Update the member's information below.{% else %}Enter the details to register a new family member.{% endif %}
+      {% if object %}
+        Update the member's information below.
+      {% else %}
+        Enter the details to register a new family member.
+      {% endif %}
     </p>
 
     <!-- Card -->
@@ -413,70 +485,100 @@
       <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
+        <!-- 🔒 PRIVACY NOTICE -->
+        <div class="mf-privacy">
+          <strong>⚠️ Privacy Notice</strong><br>
+          Avoid uploading sensitive personal data such as private photos or exact address details unless necessary.
+        </div>
+
+        <div class="mf-privacy soft">
+          <strong>🔒 Reminder</strong><br>
+          Only share information you are comfortable making visible within the parish community.
+        </div>
+
         <div class="mf-section-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
           </svg>
           Member Details
         </div>
 
+        <!-- Fields -->
         <div class="mf-grid-2">
           {% for field in form %}
+
             {% if field.field.widget.input_type == 'checkbox' %}
-              <div class="mf-field {% if field.errors %}mf-field--error{% endif %} mf-grid-full">
+              <div class="mf-field mf-grid-full {% if field.errors %}mf-field--error{% endif %}">
                 <div class="mf-check-row">
                   {{ field }}
                   <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 </div>
-                {% for error in field.errors %}
-                  <span class="mf-error-msg">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    {{ error }}
-                  </span>
-                {% endfor %}
               </div>
-            {% elif field.field.widget.input_type == 'textarea' %}
-              <div class="mf-field {% if field.errors %}mf-field--error{% endif %} mf-grid-full">
-                <label class="mf-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+            {% elif field.field.widget.input_type == 'file' %}
+              <div class="mf-field mf-grid-full {% if field.errors %}mf-field--error{% endif %}">
+                <label class="mf-label">{{ field.label }}</label>
                 {{ field }}
-                {% for error in field.errors %}
-                  <span class="mf-error-msg">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    {{ error }}
-                  </span>
-                {% endfor %}
-                {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+                <span class="mf-help">Photo is optional (upload only with consent)</span>
               </div>
+
+            {% elif field.name == "relation" %}
+              <div class="mf-field mf-grid-full {% if field.errors %}mf-field--error{% endif %}">
+                <label class="mf-label">{{ field.label }}</label>
+                {{ field }}
+                <span class="mf-help">Select relationship with family head</span>
+              </div>
+
+            {% elif field.field.widget.input_type == 'textarea' %}
+              <div class="mf-field mf-grid-full {% if field.errors %}mf-field--error{% endif %}">
+                <label class="mf-label">{{ field.label }}</label>
+                {{ field }}
+              </div>
+
             {% else %}
               <div class="mf-field {% if field.errors %}mf-field--error{% endif %}">
-                <label class="mf-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <label class="mf-label">{{ field.label }}</label>
                 {{ field }}
-                {% for error in field.errors %}
-                  <span class="mf-error-msg">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    {{ error }}
-                  </span>
-                {% endfor %}
-                {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
               </div>
+
             {% endif %}
+
+            {% for error in field.errors %}
+              <span class="mf-error-msg">{{ error }}</span>
+            {% endfor %}
+
           {% endfor %}
         </div>
+
+        <!-- ✅ CONSENT CHECKBOX -->
+        <div class="mf-consent">
+          <label>
+            <input type="checkbox" required>
+            I confirm I have consent to share this person's information
+          </label>
+        </div>
+        <span class="form-note">This platform is intended for internal parish use.
+Users are responsible for ensuring they have consent before sharing any personal information.</span>
 
         <!-- Actions -->
         <div class="mf-actions">
           <a href="{% url 'family_list' %}" class="mf-btn-cancel">Cancel</a>
+
           <button type="submit" class="mf-btn-submit">
             {% if object %}Update{% else %}Create{% endif %}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </button>
         </div>
+
       </form>
     </div>
 
-    <p class="mf-footer-note">All required fields must be filled · Changes are saved immediately</p>
+    <p class="mf-footer-note">
+      All required fields must be filled · Changes are saved immediately
+    </p>
 
   </div>
 </div>

@@ -41,7 +41,6 @@
     overflow: hidden;
   }
 
-  /* Animated radial aurora */
   .contact-hero::before {
     content: '';
     position: absolute;
@@ -58,7 +57,6 @@
     100% { transform: translateX(5%)  rotate(2deg);  }
   }
 
-  /* Cross watermark */
   .contact-hero::after {
     content: '✛';
     position: absolute;
@@ -146,7 +144,6 @@
     position: relative;
   }
 
-  /* Subtle vertical rule decoration on the left */
   .contact-body::before {
     content: '';
     position: absolute;
@@ -276,10 +273,8 @@
     line-height: 1.5;
   }
 
-  
-
   /* ═══════════════════════════════
-     EDIT BUTTON
+     EDIT / ADD BUTTONS
   ═══════════════════════════════ */
   .edit-parish-btn {
     font-family: 'Cinzel', serif;
@@ -289,7 +284,6 @@
     color: var(--navy);
     background: linear-gradient(135deg, var(--gold), var(--gold-light));
     border: none;
-    text-decoration-color: #162840;
     padding: 12px 28px;
     text-decoration: none;
     display: inline-flex;
@@ -305,7 +299,6 @@
     content: '';
     position: absolute;
     inset: 0;
-    color: var(--stone);
     background: linear-gradient(135deg, var(--gold-light), var(--gold));
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -314,53 +307,40 @@
   .edit-parish-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(201,168,76,0.45); color: var(--navy); }
   .edit-parish-btn:hover::before { opacity: 1; }
   .edit-parish-btn i, .edit-parish-btn span { position: relative; z-index: 1; }
-.add-leader-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
 
-  color: white;
-  background: #0e1e34;
+  .add-leader-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    background: #0e1e34;
+    border: 1px solid rgba(201,168,76,0.5);
+    padding: 11px 26px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
 
-  border: 1px solid rgba(201,168,76,0.5);
-  padding: 11px 26px;
-  text-decoration: none;
+  .add-leader-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    z-index: 0;
+  }
 
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
+  .add-leader-btn:hover { color: var(--navy); border-color: var(--gold); }
+  .add-leader-btn:hover::before { transform: scaleX(1); }
+  .add-leader-btn i, .add-leader-btn span { position: relative; z-index: 1; }
 
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.add-leader-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  z-index: 0;
-}
-
-.add-leader-btn:hover {
-  color: var(--navy);
-  border-color: var(--gold);
-}
-
-.add-leader-btn:hover::before {
-  transform: scaleX(1);
-}
-
-.add-leader-btn i,
-.add-leader-btn span {
-  position: relative;
-  z-index: 1;
-}
   /* ═══════════════════════════════
      DIVIDER
   ═══════════════════════════════ */
@@ -402,189 +382,230 @@
   }
 
   /* ═══════════════════════════════
-     LEADER CARDS
+     LEADER GRID
   ═══════════════════════════════ */
   .leaders-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
   }
 
-  @media (max-width: 991px) { .leaders-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 575px) { .leaders-grid { grid-template-columns: 1fr; } }
-
+  /* ═══════════════════════════════
+     LEADER CARD — flip layout
+  ═══════════════════════════════ */
   .leader-card {
+    position: relative;       /* anchor for absolute children */
+    width: 100%;
+    height: 260px;
     background: var(--white);
-    border: 1px solid rgba(201,168,76,0.15);
-    text-align: center;
-    padding: 28px 16px 22px;
-    position: relative;
+    border-radius: 20px;
     overflow: hidden;
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
-    opacity: 0;
-    transform: translateY(24px);
-    animation: tileUp 0.55s ease forwards;
+    border: 1px solid rgba(201,168,76,0.15);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .leader-card:nth-child(1) { animation-delay: 0.15s; }
-  .leader-card:nth-child(2) { animation-delay: 0.22s; }
-  .leader-card:nth-child(3) { animation-delay: 0.29s; }
-  .leader-card:nth-child(4) { animation-delay: 0.36s; }
-  .leader-card:nth-child(5) { animation-delay: 0.43s; }
-  .leader-card:nth-child(6) { animation-delay: 0.50s; }
-  .leader-card:nth-child(7) { animation-delay: 0.57s; }
-  .leader-card:nth-child(8) { animation-delay: 0.64s; }
-
-  /* Top gold stripe on hover */
-  .leader-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
+  .leader-card:hover {
+    border-color: #85cd86;
+    box-shadow: 0 5px 15px rgba(10,60,255,0.2);
   }
 
-  .leader-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(8,17,31,0.12); }
-  .leader-card:hover::before { transform: scaleX(1); }
-
-  /* Photo */
-  .leader-photo-wrap {
-    position: relative;
-    width: 88px;
-    margin: 0 auto 18px;
+  /* TOP section */
+  .top-card {
+    height: 65%;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: height 0.3s ease;
+    /* leave room for the absolute action buttons */
+    padding-top: 40px;
   }
 
-  .leader-photo-wrap::before {
-    content: '';
-    position: absolute;
-    inset: -5px;
+  .leader-card:hover .top-card { height: 35%; }
+
+  /* PHOTO / AVATAR */
+  .leader-photo,
+  .leader-avatar {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    border: 1px solid rgba(201,168,76,0.4);
-    transition: border-color 0.3s ease, transform 0.3s ease;
+    margin-bottom: 10px;
+    flex-shrink: 0;
   }
 
-  .leader-card:hover .leader-photo-wrap::before {
-    border-color: var(--gold);
-    transform: scale(1.08);
-  }
-
-  .leader-photo {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-  }
+  .leader-photo { object-fit: cover; }
 
   .leader-avatar {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--navy-light), var(--navy-mid));
     display: flex;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(135deg, var(--navy-light), var(--navy-mid));
     font-family: 'Cinzel', serif;
-    font-size: 28px;
+    font-size: 26px;
     color: var(--gold);
     border: 1px solid rgba(201,168,76,0.2);
   }
 
+  /* NAME & ROLE */
   .leader-name {
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--navy);
-    margin: 0 0 5px;
+    margin: 0 0 4px;
     line-height: 1.3;
+    text-align: center;
+    padding: 0 12px;
   }
 
   .leader-role {
     font-family: 'EB Garamond', serif;
     font-style: italic;
-    font-size: 13px;
-    color: var(--gold);
-    display: block;
-    margin-bottom: 12px;
-  }
-
-  .leader-divider {
-    width: 28px;
-    height: 1px;
-    background: var(--gold-pale);
-    margin: 0 auto 12px;
-  }
-
-  .leader-phone {
-    font-family: 'EB Garamond', serif;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--stone);
+    text-align: center;
+    padding: 0 8px;
+  }
+
+  /* ===== BOTTOM FIX ===== */
+  .bottom-card {
+    height: 35%;
+    background: #164b1693;
+    color: #fff;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    margin-bottom: 8px;
+
+    padding: 10px 10px;
+    text-align: center;
+
+    position: relative;
+    transition: height 0.3s ease;
+    overflow: hidden;
   }
 
-  .leader-phone i { color: var(--gold); font-size: 12px; }
+  /* curve */
+  .bottom-card::before {
+    content: "";
+    position: absolute;
+    bottom: 89px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    border-bottom-left-radius: 20px;
+    box-shadow: 0 30px 0 0 #6ad06893;
+    transition: bottom 0.3s ease;
+    pointer-events: none;
+  }
 
+  /* hover expand */
+  .leader-card:hover .bottom-card {
+    height: 65%;
+  }
+
+  .leader-card:hover .bottom-card::before {
+    bottom: 164px;
+  }
+
+  /* ===== CONTENT FIX ===== */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;              /* 🔥 spacing between items */
+    width: 100%;
+  }
+
+  /* ===== PHONE FIX ===== */
+  .leader-phone {
+    font-size: 13px;
+    margin: 0;
+
+    white-space: nowrap;   /* 🔥 prevent breaking */
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    max-width: 100%;
+  }
+
+  /* ===== TERM ===== */
   .leader-term {
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: rgba(154,143,127,0.6);
-    background: var(--smoke);
-    padding: 3px 10px;
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  /* ===== BUTTON ===== */
+  .card-btn {
     display: inline-block;
-    margin-top: 4px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 12px;
+    padding: 5px 10px;
+    text-decoration: none;
+    transition: 0.3s;
   }
 
+  .card-btn:hover {
+    background: #fff;
+    color: #000;
+  }
   /* ═══════════════════════════════
-   LEADER ACTIONS (EDIT / DELETE)
+     LEADER ACTION BUTTONS
+     — absolutely pinned to card top-right
   ═══════════════════════════════ */
-
-  .leader-actions{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    margin-top:10px;
+  .leader-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;       /* always above card content */
   }
 
-  .leader-action-btn{
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    border:1px solid rgba(201,168,76,0.35);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    color:var(--navy);
-    background:var(--white);
-    transition:all .25s ease;
+  .leader-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--navy);
+    background: var(--white);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
 
-  /* edit button */
-  .leader-action-edit:hover{
-    background:var(--gold-light);
-    border-color:var(--gold);
-    color:var(--navy);
-    transform:translateY(-2px);
+  .leader-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
   }
 
-  /* delete button */
-  .leader-action-delete:hover{
-    background:#fbe9e9;
-    border-color:#d86b6b;
-    color:#b03131;
-    transform:translateY(-2px);
+  /* edit */
+  .leader-action-edit:hover {
+    background: var(--gold-light);
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+
+  /* delete */
+  .leader-action-delete:hover {
+    background: #fbe9e9;
+    border-color: #d86b6b;
+    color: #b03131;
   }
 
   /* ═══════════════════════════════
-     EMPTY / WARNING STATES
+     EMPTY / NOT-CONFIGURED STATES
   ═══════════════════════════════ */
   .empty-leaders {
     grid-column: 1 / -1;
@@ -637,9 +658,6 @@
 
 <div class="contact-page">
 
-
-
-
   <!-- ── Hero ── -->
   <div class="contact-hero">
     <span class="hero-eyebrow">Reach Out to Us</span>
@@ -667,31 +685,26 @@
         </div>
 
         <div class="info-grid">
-
           <div class="info-tile">
             <div class="tile-icon"><i class="bi bi-geo-alt-fill"></i></div>
             <span class="tile-label">Address</span>
             <p class="tile-value">{{ global_parish.address|default:"Address not updated yet." }}</p>
           </div>
-
           <div class="info-tile">
             <div class="tile-icon"><i class="bi bi-telephone-fill"></i></div>
             <span class="tile-label">Phone</span>
             <p class="tile-value">{{ global_parish.phone|default:"Phone number not available." }}</p>
           </div>
-
           <div class="info-tile">
             <div class="tile-icon"><i class="bi bi-envelope-fill"></i></div>
             <span class="tile-label">Email</span>
             <p class="tile-value">{{ global_parish.email|default:"Email not available." }}</p>
           </div>
-
           <div class="info-tile">
             <div class="tile-icon"><i class="bi bi-clock-fill"></i></div>
             <span class="tile-label">Mass Timings</span>
             <p class="tile-value">{{ global_parish.mass_timings|default:"Mass timings not updated." }}</p>
           </div>
-
         </div>
       </div>
 
@@ -704,7 +717,7 @@
         </a>
         {% endif %}
 
-        {% if user.role == "admin" or user.role == "provincial" %}
+        {% if user.role == "admin" or user.role == "provincial" or user.role == "staff" %}
         <a href="{% url 'leader_add' %}" class="add-leader-btn">
           <i class="bi bi-plus-lg" style="color: #0e1e34;"></i>
           <span>Add Parish Leader</span>
@@ -730,38 +743,45 @@
         <div class="leaders-grid">
           {% for leader in leaders %}
           <div class="leader-card">
-            <div class="leader-photo-wrap">
-              {% if leader.photo %}
-              <img src="{{ leader.photo.url }}" class="leader-photo" alt="{{ leader.name }}">
-              {% else %}
-              <div class="leader-avatar">{{ leader.name|first|upper }}</div>
+
+            <!-- EDIT / DELETE — absolutely positioned, always visible -->
+            {% if user.is_authenticated %}
+              {% if user.role == "admin" or user.role == "provincial" or user.role == "staff" %}
+              <div class="leader-actions">
+                <a href="{% url 'leader_edit' leader.pk %}" class="leader-action-btn leader-action-edit" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'leader_delete' leader.pk %}" class="leader-action-btn leader-action-delete" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
               {% endif %}
-            </div>
-            <h5 class="leader-name">{{ leader.name }}</h5>
-            <span class="leader-role">{{ leader.get_role_display }}</span>
-            <div class="leader-divider"></div>
-            <p class="leader-phone"><i class="bi bi-telephone"></i> {{ leader.phone }}</p>
-            <span class="leader-term">
-              {{ leader.term_start }} – {{ leader.term_end|default:"Present" }}
-            </span>
-
-            {% if user.is_authenticated and user.role == "admin" or user.role == "provincial" %}
-            <div class="leader-actions">
-
-              <a href="{% url 'leader_edit' leader.pk %}"
-                class="leader-action-btn leader-action-edit"
-                title="Edit leader">
-                <i class="bi bi-pencil"></i>
-              </a>
-
-              <a href="{% url 'leader_delete' leader.pk %}"
-                class="leader-action-btn leader-action-delete"
-                title="Delete leader">
-                <i class="bi bi-trash"></i>
-              </a>
-
-            </div>
             {% endif %}
+
+            <!-- TOP -->
+            <div class="top-card">
+              {% if leader.photo %}
+                <img src="{{ leader.photo.url }}" alt="{{ leader.name }}" class="leader-photo">
+              {% else %}
+                <div class="leader-avatar">{{ leader.name|first|upper }}</div>
+              {% endif %}
+              <h5 class="leader-name">{{ leader.name }}</h5>
+              <span class="leader-role">{{ leader.get_role_display }}</span>
+            </div>
+
+            <!-- BOTTOM -->
+            <div class="bottom-card">
+              <div class="card-content">
+                <span class="leader-term">
+                  {{ leader.term_start }} – {{ leader.term_end|default:"Present" }}
+                </span>
+                <p class="leader-phone">
+                  <i class="bi bi-telephone"></i> {{ leader.phone|default:"N/A" }}
+                </p>
+                <a href="#" class="card-btn"></a>
+              </div>
+            </div>
+
           </div>
           {% empty %}
           <div class="empty-leaders">
@@ -784,7 +804,6 @@
 </div>
 
 <script>
-  // Scroll-reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {

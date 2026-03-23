@@ -3,517 +3,741 @@
 {% block content %}
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap');
 
   :root {
-    --coral: #FF6B6B;
-    --gold: #FFD93D;
-    --teal: #4ECDC4;
-    --violet: #A855F7;
-    --navy: #1A1A2E;
-    --soft-white: #FEFEFE;
+    --ivory:      #F9F5EE;
+    --parchment:  #EFE8D9;
+    --warm-white: #FFFDF8;
+    --ink:        #1C1812;
+    --charcoal:   #2E2A24;
+    --muted:      #7A7060;
+    --gold:       #C4933A;
+    --gold-light: #E8B96A;
+    --gold-pale:  #F5E6C8;
+    --sienna:     #A0522D;
+    --border:     rgba(180,160,120,0.25);
+    --shadow-sm:  0 2px 12px rgba(60,40,10,0.07);
+    --shadow-md:  0 8px 40px rgba(60,40,10,0.12);
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--navy);
-    font-family: 'DM Sans', sans-serif;
+    background: var(--ivory);
+    font-family: 'Outfit', sans-serif;
+    color: var(--ink);
   }
 
-  .family-page {
+  /* ── Page ── */
+  .fp {
     min-height: 100vh;
-    padding: 2rem 1rem;
-    background:
-      radial-gradient(ellipse at 10% 20%, rgba(168,85,247,0.18) 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 80%, rgba(78,205,196,0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(255,107,107,0.08) 0%, transparent 70%),
-      var(--navy);
+    padding: 3rem 1.25rem 6rem;
     position: relative;
-    overflow: hidden;
+    background:
+      radial-gradient(ellipse 800px 500px at 100% 0%, rgba(196,147,58,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 600px 600px at 0% 100%, rgba(160,82,45,0.05) 0%, transparent 60%),
+      var(--ivory);
   }
 
-  .family-page::before {
+  .fp::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image:
+      linear-gradient(rgba(180,150,100,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,150,100,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
   }
 
-  .container-custom {
-    max-width: 860px;
+  .fp-wrap {
+    max-width: 880px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
   }
 
-  /* ── Hero Card ── */
-  .hero-card {
-    position: relative;
-    border-radius: 28px;
-    overflow: hidden;
-    margin-bottom: 2.5rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(20px);
-    animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .hero-banner {
-    height: 8px;
-    background: linear-gradient(90deg, var(--coral), var(--gold), var(--teal), var(--violet));
-    background-size: 300% 100%;
-    animation: shimmer 4s linear infinite;
-  }
-
-  @keyframes shimmer {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 300% 50%; }
-  }
-
-  .hero-body {
-    padding: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .hero-photo {
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .hero-photo img {
-    width: 130px;
-    height: 130px;
-    object-fit: cover;
-    border-radius: 20px;
-    border: 3px solid rgba(255,255,255,0.15);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
-
-  .hero-photo-ring {
-    position: absolute;
-    inset: -6px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, var(--coral), var(--violet));
-    z-index: -1;
-    animation: rotateBorder 6s linear infinite;
-  }
-
-  @keyframes rotateBorder {
-    0%   { background: linear-gradient(135deg, var(--coral), var(--violet)); }
-    25%  { background: linear-gradient(135deg, var(--gold), var(--coral)); }
-    50%  { background: linear-gradient(135deg, var(--teal), var(--gold)); }
-    75%  { background: linear-gradient(135deg, var(--violet), var(--teal)); }
-    100% { background: linear-gradient(135deg, var(--coral), var(--violet)); }
-  }
-
-  .hero-info {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .house-name {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 900;
-    color: var(--soft-white);
-    line-height: 1.1;
-    margin: 0 0 0.75rem;
-    background: linear-gradient(135deg, #fff 40%, rgba(255,217,61,0.8));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .meta-pill {
+  /* ── Back ── */
+  .fp-back {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255,255,255,0.75);
-    font-size: 0.95rem;
-    font-weight: 400;
-  }
-
-  .meta-pill svg {
-    flex-shrink: 0;
-  }
-
-  .unit-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(78,205,196,0.2));
-    border: 1px solid rgba(168,85,247,0.4);
-    color: #C084FC;
-    padding: 0.3rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
+    gap: 0.45rem;
+    font-size: 0.78rem;
     font-weight: 500;
-    margin-top: 0.25rem;
-    width: fit-content;
-  }
-
-  /* ── Add Member Button ── */
-  .btn-add {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, var(--teal), #38BDF8);
-    color: var(--navy);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    padding: 0.75rem 1.75rem;
-    border-radius: 999px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(78,205,196,0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-bottom: 1.75rem;
-    animation: slideDown 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .btn-add:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 8px 30px rgba(78,205,196,0.55);
-    color: var(--navy);
-    text-decoration: none;
-  }
-
-  /* ── Members Section ── */
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: rgba(255,255,255,0.9);
-    margin-bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    animation: slideDown 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .section-title::before {
-    content: '';
-    display: inline-block;
-    width: 4px;
-    height: 1.5rem;
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--coral), var(--gold));
-  }
-
-  /* ── Member Cards ── */
-  .members-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-  }
-
-  .member-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 18px;
-    padding: 1.1rem 1.5rem;
-    backdrop-filter: blur(10px);
-    transition: background 0.25s, transform 0.25s, border-color 0.25s;
-    opacity: 0;
-    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .member-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    border-radius: 999px 0 0 999px;
-    background: linear-gradient(to bottom, var(--coral), var(--gold));
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  .member-card:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.15);
-    transform: translateX(4px);
-  }
-
-  .member-card:hover::before {
-    opacity: 1;
-  }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  .member-card:nth-child(1)  { animation-delay: 0.25s; }
-  .member-card:nth-child(2)  { animation-delay: 0.32s; }
-  .member-card:nth-child(3)  { animation-delay: 0.39s; }
-  .member-card:nth-child(4)  { animation-delay: 0.46s; }
-  .member-card:nth-child(5)  { animation-delay: 0.53s; }
-  .member-card:nth-child(6)  { animation-delay: 0.60s; }
-  .member-card:nth-child(7)  { animation-delay: 0.67s; }
-  .member-card:nth-child(8)  { animation-delay: 0.74s; }
-
-  .member-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--navy);
-    flex-shrink: 0;
-    background: linear-gradient(135deg, var(--gold), var(--coral));
-  }
-
-  .member-info {
-    flex: 1;
-  }
-
-  .member-name {
-    font-weight: 600;
-    font-size: 1.05rem;
-    color: var(--soft-white);
-    margin: 0;
-  }
-
-  .member-age {
-    color: rgba(255,255,255,0.5);
-    font-size: 0.85rem;
-    margin-top: 0.1rem;
-  }
-
-  .head-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: linear-gradient(135deg, rgba(255,217,61,0.25), rgba(255,107,107,0.2));
-    border: 1px solid rgba(255,217,61,0.4);
-    color: var(--gold);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  }
-
-  .member-actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .btn-edit, .btn-del {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 0.45rem 1rem;
-    border-radius: 999px;
+    color: var(--muted);
     text-decoration: none;
-    transition: transform 0.18s, box-shadow 0.18s;
-    border: none;
-  }
-
-  .btn-edit {
-    background: rgba(78,205,196,0.15);
-    border: 1px solid rgba(78,205,196,0.35);
-    color: var(--teal);
-  }
-
-  .btn-edit:hover {
-    background: rgba(78,205,196,0.28);
-    transform: scale(1.05);
-    color: var(--teal);
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(78,205,196,0.3);
-  }
-
-  .btn-del {
-    background: rgba(255,107,107,0.12);
-    border: 1px solid rgba(255,107,107,0.3);
-    color: var(--coral);
-  }
-
-  .btn-del:hover {
-    background: rgba(255,107,107,0.25);
-    transform: scale(1.05);
-    color: var(--coral);
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(255,107,107,0.3);
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 3.5rem 2rem;
-    color: rgba(255,255,255,0.4);
-    font-size: 1rem;
-    background: rgba(255,255,255,0.02);
-    border: 1px dashed rgba(255,255,255,0.1);
-    border-radius: 18px;
-    animation: slideDown 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s, gap 0.2s;
     opacity: 0;
+    animation: fadeUp 0.5s 0.05s ease forwards;
+  }
+  .fp-back:hover { color: var(--gold); gap: 0.65rem; text-decoration: none; }
+  .fp-back svg  { transition: transform 0.2s; }
+  .fp-back:hover svg { transform: translateX(-3px); }
+
+  /* ── Hero Card ── */
+  .fp-hero {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 2.25rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s ease forwards;
   }
 
-  .empty-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
+  .fp-hero-stripe {
+    height: 5px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--sienna) 100%);
+  }
+
+  .fp-hero-body {
+    padding: 2.5rem 3rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  /* ── Photo ── */
+  .fp-hero-photo { width: 100px; height: 100px; flex-shrink: 0; }
+
+  .fp-hero-photo img {
+    width: 100px; height: 100px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-sm);
     display: block;
   }
 
-  /* Floating decorative blobs */
-  .blob {
-    position: fixed;
+  .fp-photo-placeholder {
+    width: 100px; height: 100px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--gold-pale), var(--parchment));
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Hero Info ── */
+  .fp-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .fp-house-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 0.9rem;
+    letter-spacing: -0.01em;
+  }
+
+  .fp-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.2rem;
+    align-items: center;
+  }
+
+  .fp-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .fp-meta-item svg { flex-shrink: 0; opacity: 0.65; }
+
+  .fp-unit-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--gold-pale);
+    border: 1px solid rgba(196,147,58,0.3);
+    color: var(--gold);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+  }
+
+  /* ── Hero Stat ── */
+  .fp-stat { text-align: right; }
+
+  .fp-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .fp-stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  /* ── Section Header ── */
+  .fp-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.75rem;
+    opacity: 0;
+    animation: fadeUp 0.5s 0.32s ease forwards;
+  }
+
+  .fp-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .fp-section-title::before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 1.25rem;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--gold), var(--sienna));
+    flex-shrink: 0;
+  }
+
+  /* ── Add Member Button ── */
+  .btn-add-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--ink);
+    color: var(--ivory);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(28,24,18,0.2);
+  }
+  .btn-add-member:hover {
+    background: var(--charcoal);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(28,24,18,0.28);
+    color: var(--ivory);
+    text-decoration: none;
+  }
+  .btn-add-icon {
+    width: 17px; height: 17px;
     border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
-    animation: float 10s ease-in-out infinite;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 1.1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.22s;
+  }
+  .btn-add-member:hover .btn-add-icon { transform: rotate(90deg); }
+
+  /* ══════════════════════════════════════
+     FLIP CARD GRID
+  ══════════════════════════════════════ */
+  .fp-members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1.5rem;
   }
 
-  .blob-1 {
-    width: 300px; height: 300px;
-    background: rgba(168,85,247,0.12);
-    top: -80px; right: -60px;
-    animation-delay: 0s;
+  /* Staggered entrance */
+  .fp-member-flip { opacity: 0; animation: fadeUp 0.5s ease forwards; }
+  .fp-member-flip:nth-child(1)  { animation-delay: 0.38s; }
+  .fp-member-flip:nth-child(2)  { animation-delay: 0.44s; }
+  .fp-member-flip:nth-child(3)  { animation-delay: 0.50s; }
+  .fp-member-flip:nth-child(4)  { animation-delay: 0.56s; }
+  .fp-member-flip:nth-child(5)  { animation-delay: 0.62s; }
+  .fp-member-flip:nth-child(6)  { animation-delay: 0.68s; }
+  .fp-member-flip:nth-child(7)  { animation-delay: 0.74s; }
+  .fp-member-flip:nth-child(8)  { animation-delay: 0.80s; }
+
+  /* ── The flip card wrapper ── */
+  .flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 254px;
+    perspective: 1000px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
   }
 
-  .blob-2 {
-    width: 200px; height: 200px;
-    background: rgba(255,107,107,0.1);
-    bottom: 10%; left: -60px;
-    animation-delay: 4s;
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
   }
 
-  .blob-3 {
-    width: 180px; height: 180px;
-    background: rgba(78,205,196,0.08);
-    bottom: 30%; right: 5%;
-    animation-delay: 2s;
+  .flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
   }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50%       { transform: translateY(-20px) scale(1.05); }
+  .flip-card-front,
+  .flip-card-back {
+    box-shadow: 0 8px 24px rgba(60, 40, 10, 0.13);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 1rem;
+    overflow: hidden;
+    padding: 1.25rem 1rem;
+    gap: 0.6rem;
+  }
+
+  /* ── Front: warm parchment/gold theme ── */
+  .flip-card-front {
+    background: linear-gradient(
+      135deg,
+      var(--warm-white) 0%,
+      var(--gold-pale) 55%,
+      rgba(196,147,58,0.18) 80%,
+      rgba(160,82,45,0.22) 100%
+    );
+    border: 1px solid rgba(196,147,58,0.35);
+    color: var(--gold);
+  }
+
+  /* ── Back: rich gold/sienna ── */
+  .flip-card-back {
+    background: linear-gradient(
+      135deg,
+      #C4933A 0%,
+      #A0522D 55%,
+      #D4A94A 80%,
+      #C4933A 100%
+    );
+    border: 1px solid rgba(196,147,58,0.5);
+    color: #fff;
+    transform: rotateY(180deg);
+    gap: 0.75rem;
+  }
+
+  /* ── Front avatar ── */
+  .fc-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--gold-pale), var(--parchment));
+    border: 2.5px solid rgba(196,147,58,0.4);
+    box-shadow: 0 4px 14px rgba(196,147,58,0.2);
+    flex-shrink: 0;
+  }
+
+  .fc-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+  }
+  .flip-card:hover .fc-avatar img { transform: scale(1.06); }
+
+  .fc-avatar-initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  /* ── Front name ── */
+  .fc-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .fc-head-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: linear-gradient(135deg, rgba(196,147,58,0.2), rgba(196,147,58,0.35));
+    border: 1px solid rgba(196,147,58,0.45);
+    color: var(--gold);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .fc-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .fc-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--muted);
+    opacity: 0.5;
+  }
+
+  .fc-hint {
+    font-size: 0.64rem;
+    color: rgba(196,147,58,0.65);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
+  /* ── Back contents ── */
+  .fc-back-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .fc-back-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .fc-divider {
+    width: 36px;
+    height: 1.5px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 1px;
+  }
+
+  .fc-back-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .fc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  }
+
+  .fc-btn:hover {
+    transform: translateY(-1px) scale(1.03);
+    text-decoration: none;
+  }
+
+  .fc-btn-view {
+    background: rgba(255,255,255,0.92);
+    color: var(--sienna);
+  }
+  .fc-btn-view:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.15); color: var(--sienna); }
+
+  .fc-btn-edit {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+  .fc-btn-edit:hover { background: rgba(255,255,255,0.28); color: #fff; }
+
+  .fc-btn-del {
+    background: rgba(200,50,40,0.22);
+    color: #ffe5e3;
+    border: 1px solid rgba(255,100,90,0.3);
+  }
+  .fc-btn-del:hover { background: rgba(200,50,40,0.38); color: #fff; }
+
+  /* ── Empty State ── */
+  .fp-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 1px dashed rgba(196,147,58,0.28);
+    border-radius: 18px;
+    background: rgba(249,245,238,0.5);
+    opacity: 0;
+    animation: fadeUp 0.5s 0.38s ease forwards;
+    grid-column: 1 / -1;
+  }
+  .fp-empty-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 1.1rem;
+    border-radius: 14px;
+    background: var(--gold-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fp-empty-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.35rem;
+  }
+  .fp-empty-sub { font-size: 0.85rem; color: var(--muted); }
+
+  /* ── Keyframes ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 680px) {
+    .fp-hero-body {
+      grid-template-columns: 1fr;
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+    }
+    .fp-hero-photo { margin: 0 auto; }
+    .fp-meta-row  { justify-content: center; }
+    .fp-stat      { text-align: center; }
+    .fp-members-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .fp-section-header { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+    .fp-members-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 
-<div class="family-page">
-  <!-- Decorative blobs -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
+<div class="fp">
+  <div class="fp-wrap">
 
-  <div class="container-custom">
+    <!-- Back -->
+    <a href="{% url 'family_list' %}" class="fp-back">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      All Families
+    </a>
 
-    <!-- ── Hero Card ── -->
-    <div class="hero-card">
-      <div class="hero-banner"></div>
-      <div class="hero-body">
+    <!-- ── Hero ── -->
+    <div class="fp-hero">
+      <div class="fp-hero-stripe"></div>
+      <div class="fp-hero-body">
 
-        {% if family.family_photo %}
-        <div class="hero-photo">
-          <div class="hero-photo-ring"></div>
-          <img src="{{ family.family_photo.url }}" alt="{{ family.house_name }}">
+        <!-- Photo -->
+        <div class="fp-hero-photo">
+          {% if family.family_photo %}
+            <img src="{{ family.family_photo.url }}" alt="{{ family.house_name }}">
+          {% else %}
+            <div class="fp-photo-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C4933A" stroke-width="1.4">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+          {% endif %}
         </div>
-        {% endif %}
 
-        <div class="hero-info">
-          <h2 class="house-name">{{ family.house_name }}</h2>
-          <div class="hero-meta">
-            <span class="meta-pill">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <!-- Info -->
+        <div class="fp-hero-info">
+          <div class="fp-eyebrow">Family Record</div>
+          <h1 class="fp-house-name">{{ family.house_name }}</h1>
+          <div class="fp-meta-row">
+            {% if family.address %}
+            <span class="fp-meta-item">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
               {{ family.address }}
             </span>
+            {% endif %}
             {% if family.family_unit %}
-            <div class="unit-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="fp-unit-chip">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
               {{ family.family_unit.name }}
-            </div>
+            </span>
             {% endif %}
           </div>
+        </div>
+
+        <!-- Stat -->
+        <div class="fp-stat">
+          <div class="fp-stat-num">{{ family.members.count }}</div>
+          <div class="fp-stat-label">Members</div>
         </div>
 
       </div>
     </div>
 
-    <!-- ── Add Member ── -->
-    <a href="{% url 'member_add' family.id %}" class="btn-add">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add Member
-    </a>
+    <!-- ── Section Header ── -->
+    <div class="fp-section-header">
+      <h2 class="fp-section-title">Family Members</h2>
+      {% if user.is_authenticated %}
+      <a href="{% url 'member_add' family.id %}" class="btn-add-member">
+        <span class="btn-add-icon">+</span>
+        Add Member
+      </a>
+      {% endif %}
+    </div>
 
-    <!-- ── Members ── -->
-    <h3 class="section-title">Family Members</h3>
+    <!-- ── Members Grid (Flip Cards) ── -->
+    <div class="fp-members-grid">
+      {% for member in family.members.all %}
 
-    <div class="members-grid">
-      {% for member in members %}
-      <div class="member-card">
+      <div class="fp-member-flip">
+        <div class="flip-card">
+          <div class="flip-card-inner">
 
-        <div class="member-avatar">{{ member.name|first|upper }}</div>
+            <!-- ══ FRONT ══ -->
+            <div class="flip-card-front">
 
-        <div class="member-info">
-          <p class="member-name">
-            {{ member.name }}
-            {% if member.is_family_head %}
-            <span class="head-badge">
-              ★ Head
-            </span>
-            {% endif %}
-          </p>
-          {% if member.age %}
-          <p class="member-age">Age {{ member.age }}</p>
-          {% endif %}
-        </div>
+              <!-- Avatar -->
+              <div class="fc-avatar">
+                {% if member.photo %}
+                  <img src="{{ member.photo.url }}" alt="{{ member.name }}">
+                {% else %}
+                  <span class="fc-avatar-initials">{{ member.name|default:"?"|first|upper }}</span>
+                {% endif %}
+              </div>
 
-        <div class="member-actions">
-          <a href="{% url 'member_edit' member.pk %}" class="btn-edit">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Edit
-          </a>
-          <a href="{% url 'member_delete' member.pk %}" class="btn-del">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            Delete
-          </a>
-        </div>
+              <!-- Name + Badge -->
+              <p class="fc-name">{{ member.name|default:"Unknown" }}</p>
+              {% if member.is_family_head %}
+                <span class="fc-head-badge">★ Head</span>
+              {% endif %}
 
-      </div>
+              <!-- Sub info -->
+              <div class="fc-sub">
+                {% if member.age %}<span>Age {{ member.age }}</span>{% endif %}
+                {% if member.age and member.relation %}<span class="fc-dot"></span>{% endif %}
+                {% if member.relation %}<span>{{ member.get_relation_display }}</span>{% endif %}
+              </div>
+
+              <span class="fc-hint">swipe</span>
+            </div>
+
+            <!-- ══ BACK ══ -->
+            <div class="flip-card-back">
+
+              <p class="fc-back-name">{{ member.name|default:"Unknown" }}</p>
+
+              <div class="fc-back-sub">
+                {% if member.age %}<span>Age {{ member.age }}</span>{% endif %}
+                {% if member.age and member.relation %}<span class="fc-dot" style="background:#fff;opacity:0.4;"></span>{% endif %}
+                {% if member.relation %}<span>{{ member.get_relation_display }}</span>{% endif %}
+              </div>
+
+              <div class="fc-divider"></div>
+
+              <div class="fc-back-actions">
+                <a href="{% url 'member_detail' member.pk %}" class="fc-btn fc-btn-view">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  View Profile
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'member_edit' member.pk %}" class="fc-btn fc-btn-edit">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  Edit
+                </a>
+                <a href="{% url 'member_delete' member.pk %}" class="fc-btn fc-btn-del">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/>
+                  </svg>
+                  Delete
+                </a>
+                {% endif %}
+              </div>
+
+            </div><!-- /back -->
+          </div><!-- /inner -->
+        </div><!-- /flip-card -->
+      </div><!-- /fp-member-flip -->
+
       {% empty %}
-      <div class="empty-state">
-        <span class="empty-icon">🏠</span>
-        No members added yet.<br>
-        <span style="font-size:0.85rem; margin-top:0.5rem; display:inline-block;">Click "Add Member" to get started.</span>
+      <div class="fp-empty">
+        <div class="fp-empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C4933A" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="fp-empty-title">No members yet</div>
+        <p class="fp-empty-sub">Add the first member of this family to get started.</p>
       </div>
       {% endfor %}
     </div>

@@ -36,7 +36,6 @@
     overflow-x: hidden;
   }
 
-  /* Noise overlay */
   .dashboard-root::before {
     content: '';
     position: fixed;
@@ -47,7 +46,6 @@
     opacity: 0.5;
   }
 
-  /* Ambient glows */
   .glow-orb {
     position: fixed;
     border-radius: 50%;
@@ -157,110 +155,273 @@
     background: var(--border);
   }
 
-  /* ── Stat Cards ── */
+  /* ── Cyber Stat Cards Grid ── */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 24px;
     margin-bottom: 48px;
+    justify-items: center;
   }
 
-  @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 960px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) { .stats-grid { grid-template-columns: 1fr; } }
 
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 24px;
+  /* ── Cyber Card Base ── */
+  .cyber-card-wrap {
     position: relative;
-    overflow: hidden;
-    cursor: default;
+    width: 100%;
+    max-width: 340px;
+    height: 200px;
+    transition: 200ms;
     opacity: 0;
     animation: fadeSlideUp 0.6s forwards;
-    transition: border-color 0.3s, transform 0.3s;
   }
 
-  .stat-card:hover {
-    border-color: var(--card-accent, var(--accent));
-    transform: translateY(-4px);
+  .cyber-card-wrap:active { transform: scale(0.97); }
+  .cyber-card-wrap:nth-child(1) { animation-delay: 0.15s; }
+  .cyber-card-wrap:nth-child(2) { animation-delay: 0.22s; }
+  .cyber-card-wrap:nth-child(3) { animation-delay: 0.29s; }
+  .cyber-card-wrap:nth-child(4) { animation-delay: 0.36s; }
+  .cyber-card-wrap:nth-child(5) { animation-delay: 0.43s; }
+  .cyber-card-wrap:nth-child(6) { animation-delay: 0.50s; }
+
+  .noselect {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
-  .stat-card::before {
-    content: '';
+  /* 5×5 tilt tracker grid */
+  .card-canvas {
+    perspective: 900px;
+    inset: 0;
+    z-index: 200;
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--card-accent, var(--accent));
-    opacity: 0.7;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
   }
 
-  .stat-card::after {
-    content: '';
+  .card-canvas .tr { cursor: pointer; }
+
+  /* The actual card element */
+  .cybercard {
     position: absolute;
-    bottom: -40px; right: -30px;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: var(--card-accent, var(--accent));
-    opacity: 0.04;
-    transition: opacity 0.3s, transform 0.3s;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    border-radius: 22px;
+    transition: 700ms;
+    background: linear-gradient(145deg, #13182a, #0f1320);
+    border: 1px solid var(--c-border, rgba(91,127,255,0.25));
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.4),
+      0 20px 60px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    padding: 24px 26px;
   }
 
-  .stat-card:hover::after {
-    opacity: 0.1;
-    transform: scale(1.3);
+  /* Tilt transforms via nth-child on the tracker divs inside .card-canvas */
+  .card-canvas .tr:nth-child(1):hover ~ .cybercard  { transform: rotateX(18deg) rotateY(-10deg); }
+  .card-canvas .tr:nth-child(2):hover ~ .cybercard  { transform: rotateX(18deg) rotateY(-5deg); }
+  .card-canvas .tr:nth-child(3):hover ~ .cybercard  { transform: rotateX(18deg) rotateY(0deg); }
+  .card-canvas .tr:nth-child(4):hover ~ .cybercard  { transform: rotateX(18deg) rotateY(5deg); }
+  .card-canvas .tr:nth-child(5):hover ~ .cybercard  { transform: rotateX(18deg) rotateY(10deg); }
+  .card-canvas .tr:nth-child(6):hover ~ .cybercard  { transform: rotateX(9deg)  rotateY(-10deg); }
+  .card-canvas .tr:nth-child(7):hover ~ .cybercard  { transform: rotateX(9deg)  rotateY(-5deg); }
+  .card-canvas .tr:nth-child(8):hover ~ .cybercard  { transform: rotateX(9deg)  rotateY(0deg); }
+  .card-canvas .tr:nth-child(9):hover ~ .cybercard  { transform: rotateX(9deg)  rotateY(5deg); }
+  .card-canvas .tr:nth-child(10):hover ~ .cybercard { transform: rotateX(9deg)  rotateY(10deg); }
+  .card-canvas .tr:nth-child(11):hover ~ .cybercard { transform: rotateX(0deg)  rotateY(-10deg); }
+  .card-canvas .tr:nth-child(12):hover ~ .cybercard { transform: rotateX(0deg)  rotateY(-5deg); }
+  .card-canvas .tr:nth-child(13):hover ~ .cybercard { transform: rotateX(0deg)  rotateY(0deg); }
+  .card-canvas .tr:nth-child(14):hover ~ .cybercard { transform: rotateX(0deg)  rotateY(5deg); }
+  .card-canvas .tr:nth-child(15):hover ~ .cybercard { transform: rotateX(0deg)  rotateY(10deg); }
+  .card-canvas .tr:nth-child(16):hover ~ .cybercard { transform: rotateX(-9deg) rotateY(-10deg); }
+  .card-canvas .tr:nth-child(17):hover ~ .cybercard { transform: rotateX(-9deg) rotateY(-5deg); }
+  .card-canvas .tr:nth-child(18):hover ~ .cybercard { transform: rotateX(-9deg) rotateY(0deg); }
+  .card-canvas .tr:nth-child(19):hover ~ .cybercard { transform: rotateX(-9deg) rotateY(5deg); }
+  .card-canvas .tr:nth-child(20):hover ~ .cybercard { transform: rotateX(-9deg) rotateY(10deg); }
+  .card-canvas .tr:nth-child(21):hover ~ .cybercard { transform: rotateX(-18deg) rotateY(-10deg); }
+  .card-canvas .tr:nth-child(22):hover ~ .cybercard { transform: rotateX(-18deg) rotateY(-5deg); }
+  .card-canvas .tr:nth-child(23):hover ~ .cybercard { transform: rotateX(-18deg) rotateY(0deg); }
+  .card-canvas .tr:nth-child(24):hover ~ .cybercard { transform: rotateX(-18deg) rotateY(5deg); }
+  .card-canvas .tr:nth-child(25):hover ~ .cybercard { transform: rotateX(-18deg) rotateY(10deg); }
+  .card-canvas .tr:hover ~ .cybercard { transition: 120ms ease-in-out; filter: brightness(1.08); }
+
+  /* ── Card inner content ── */
+  .cybercard-body {
+    position: relative;
+    width: 100%;
+    z-index: 2;
   }
 
-  .stat-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    background: rgba(255,255,255,0.05);
-    color: var(--card-accent, var(--accent));
-    margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.07);
+  .cybercard-icon {
+    font-size: 1.5rem;
+    color: var(--c-main, #5b7fff);
+    margin-bottom: 12px;
+    display: block;
+    filter: drop-shadow(0 0 8px var(--c-main, #5b7fff));
   }
 
-  .stat-value {
+  .cybercard-value {
     font-family: 'Syne', sans-serif;
-    font-size: 2.6rem;
+    font-size: 2.8rem;
     font-weight: 800;
     line-height: 1;
-    color: #fff;
     letter-spacing: -0.03em;
+    color: #fff;
+    text-shadow: 0 0 30px var(--c-main, #5b7fff);
   }
 
-  .stat-label {
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-top: 6px;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-  }
-
-  .stat-trend {
-    position: absolute;
-    top: 28px; right: 24px;
-    font-size: 0.75rem;
+  .cybercard-label {
+    font-size: 0.78rem;
     font-weight: 600;
-    color: var(--accent3);
-    background: rgba(67,233,123,0.1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-top: 6px;
+  }
+
+  .cybercard-badge {
+    position: absolute;
+    top: 0; right: 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-main, #5b7fff);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--c-border, rgba(91,127,255,0.3));
     border-radius: 100px;
     padding: 3px 10px;
   }
 
-  /* Stagger animations */
-  .stat-card:nth-child(1) { animation-delay: 0.15s; }
-  .stat-card:nth-child(2) { animation-delay: 0.22s; }
-  .stat-card:nth-child(3) { animation-delay: 0.29s; }
-  .stat-card:nth-child(4) { animation-delay: 0.36s; }
-  .stat-card:nth-child(5) { animation-delay: 0.43s; }
-  .stat-card:nth-child(6) { animation-delay: 0.50s; }
+  /* ── Decorative layers ── */
 
-  /* ── Number counter animation ── */
-  .stat-value[data-target] { 
+  /* Top accent stripe */
+  .cybercard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 5%, var(--c-main, #5b7fff) 40%, var(--c-alt, #a78bfa) 60%, transparent 95%);
+    opacity: 0.9;
   }
+
+  /* Big radial glow blob */
+  .cybercard::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -50px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--c-main, #5b7fff) 0%, transparent 70%);
+    opacity: 0.07;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .card-canvas .tr:hover ~ .cybercard::after { opacity: 0.18; transform: scale(1.2); }
+
+  /* Scan line */
+  .card-scanline {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+    transform: translateY(-100%);
+    animation: scanMove 3s linear infinite;
+    pointer-events: none;
+    border-radius: 22px;
+  }
+  @keyframes scanMove {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(200%); }
+  }
+
+  /* Cyber grid lines */
+  .card-gridlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 22px;
+  }
+  .card-gridlines span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-main, #5b7fff), transparent);
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .card-gridlines span:nth-child(1) { top: 25%; animation: lineGrow 3.5s linear 0s infinite; }
+  .card-gridlines span:nth-child(2) { top: 50%; transform-origin: right; animation: lineGrow 3.5s linear 0.8s infinite; }
+  .card-gridlines span:nth-child(3) { top: 75%; animation: lineGrow 3.5s linear 1.6s infinite; }
+  @keyframes lineGrow {
+    0%   { transform: scaleX(0); opacity: 0; }
+    30%  { opacity: 0.4; }
+    60%  { transform: scaleX(1); opacity: 0.15; }
+    100% { transform: scaleX(0); opacity: 0; }
+  }
+
+  /* Corner brackets */
+  .card-corners span {
+    position: absolute;
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--c-main, #5b7fff);
+    opacity: 0.5;
+    transition: opacity 0.3s, box-shadow 0.3s;
+  }
+  .card-corners span:nth-child(1) { top: 10px;  left: 10px;  border-right: 0; border-bottom: 0; }
+  .card-corners span:nth-child(2) { top: 10px;  right: 10px; border-left: 0;  border-bottom: 0; }
+  .card-corners span:nth-child(3) { bottom: 10px; left: 10px;  border-right: 0; border-top: 0; }
+  .card-corners span:nth-child(4) { bottom: 10px; right: 10px; border-left: 0;  border-top: 0; }
+  .card-canvas .tr:hover ~ .cybercard .card-corners span {
+    opacity: 1;
+    box-shadow: 0 0 8px var(--c-main, #5b7fff);
+  }
+
+  /* Glare overlay */
+  .card-glare {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(125deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 22px;
+    pointer-events: none;
+  }
+  .card-canvas .tr:hover ~ .cybercard .card-glare { opacity: 1; }
+
+  /* Floating particles */
+  .card-particles span {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--c-main, #5b7fff);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .card-canvas .tr:hover ~ .cybercard .card-particles span {
+    animation: particleFloat 1.8s ease-in-out infinite;
+  }
+  @keyframes particleFloat {
+    0%   { opacity: 0; transform: translate(0, 0); }
+    40%  { opacity: 0.9; }
+    100% { opacity: 0; transform: translate(calc(var(--px)*28px), calc(var(--py)*28px)); }
+  }
+  .card-particles span:nth-child(1) { --px: 1;    --py: -1;   top: 45%; left: 20%;  animation-delay: 0s; }
+  .card-particles span:nth-child(2) { --px: -1;   --py: -0.5; top: 60%; right: 25%; animation-delay: 0.3s; }
+  .card-particles span:nth-child(3) { --px: 0.5;  --py: 1;    top: 25%; left: 50%;  animation-delay: 0.6s; }
+  .card-particles span:nth-child(4) { --px: -0.8; --py: 1;    top: 70%; right: 45%; animation-delay: 0.9s; }
+  .card-particles span:nth-child(5) { --px: 1;    --py: 0.6;  top: 35%; left: 65%;  animation-delay: 0.15s; }
+  .card-particles span:nth-child(6) { --px: -1;   --py: -0.8; top: 55%; right: 60%; animation-delay: 0.45s; }
 
   /* ── Quick Actions ── */
   .actions-panel {
@@ -306,37 +467,28 @@
   }
 
   .action-btn:hover::before { opacity: 1; }
-
   .action-btn:hover {
     transform: translateY(-3px) scale(1.03);
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     text-decoration: none;
   }
-
   .action-btn:active { transform: scale(0.97); }
-
-  .action-btn .btn-icon {
-    font-size: 1rem;
-    transition: transform 0.3s;
-  }
-
+  .action-btn .btn-icon { font-size: 1rem; transition: transform 0.3s; }
   .action-btn:hover .btn-icon { transform: rotate(90deg); }
 
-  .btn-blue   { background: rgba(91,127,255,0.18); color: #7a9fff; border-color: rgba(91,127,255,0.3); }
-  .btn-green  { background: rgba(67,233,123,0.15); color: #5de896; border-color: rgba(67,233,123,0.28); }
-  .btn-yellow { background: rgba(249,168,37,0.15); color: #f9c74f; border-color: rgba(249,168,37,0.28); }
+  .btn-blue   { background: rgba(91,127,255,0.18);  color: #7a9fff; border-color: rgba(91,127,255,0.3); }
+  .btn-green  { background: rgba(67,233,123,0.15);  color: #5de896; border-color: rgba(67,233,123,0.28); }
+  .btn-yellow { background: rgba(249,168,37,0.15);  color: #f9c74f; border-color: rgba(249,168,37,0.28); }
   .btn-red    { background: rgba(255,107,107,0.15); color: #ff8c8c; border-color: rgba(255,107,107,0.28); }
   .btn-dark   { background: rgba(255,255,255,0.06); color: #b0b8d0; border-color: rgba(255,255,255,0.1); }
   .btn-purple { background: rgba(167,139,250,0.15); color: #c4b5fd; border-color: rgba(167,139,250,0.28); }
 
-  /* ── Divider accent ── */
   .divider-accent {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border) 40%, var(--border) 60%, transparent);
     margin: 48px 0;
   }
 
-  /* ── Animations ── */
   @keyframes fadeSlideUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -360,47 +512,167 @@
 
     {% if role == "admin" or role == "provincial" %}
 
-    <!-- Stats -->
     <p class="section-label">Overview</p>
     <div class="stats-grid">
 
-      <div class="stat-card" style="--card-accent:#5b7fff;">
-        <div class="stat-icon"><i class="bi bi-house-door-fill"></i></div>
-        <div class="stat-trend">Active</div>
-        <div class="stat-value" data-target="{{ family_count }}">{{ family_count }}</div>
-        <div class="stat-label">Families</div>
+      <!-- Families -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#5b7fff; --c-alt:#38bdf8; --c-border:rgba(91,127,255,0.3);">
+        <div class="card-canvas">
+          {% for i in "1234567891011121314151617181920212223242526"|make_list %}{% endfor %}
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <span class="cybercard-badge">Active</span>
+            <i class="bi bi-house-door-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ family_count }}">{{ family_count }}</div>
+            <div class="cybercard-label">Families</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stat-card" style="--card-accent:#43e97b;">
-        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-        <div class="stat-trend">Active</div>
-        <div class="stat-value" data-target="{{ member_count }}">{{ member_count }}</div>
-        <div class="stat-label">Members</div>
+      <!-- Members -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#43e97b; --c-alt:#00c9a7; --c-border:rgba(67,233,123,0.3);">
+        <div class="card-canvas">
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <span class="cybercard-badge">Active</span>
+            <i class="bi bi-people-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ member_count }}">{{ member_count }}</div>
+            <div class="cybercard-label">Members</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stat-card" style="--card-accent:#a78bfa;">
-        <div class="stat-icon"><i class="bi bi-diagram-3-fill"></i></div>
-        <div class="stat-value" data-target="{{ unit_count }}">{{ unit_count }}</div>
-        <div class="stat-label">Family Units</div>
+      <!-- Family Units -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#a78bfa; --c-alt:#f472b6; --c-border:rgba(167,139,250,0.3);">
+        <div class="card-canvas">
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <i class="bi bi-diagram-3-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ unit_count }}">{{ unit_count }}</div>
+            <div class="cybercard-label">Family Units</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stat-card" style="--card-accent:#f9a825;">
-        <div class="stat-icon"><i class="bi bi-collection-fill"></i></div>
-        <div class="stat-value" data-target="{{ group_count }}">{{ group_count }}</div>
-        <div class="stat-label">Parish Groups</div>
+      <!-- Parish Groups -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#f9a825; --c-alt:#ff6b6b; --c-border:rgba(249,168,37,0.3);">
+        <div class="card-canvas">
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <i class="bi bi-collection-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ group_count }}">{{ group_count }}</div>
+            <div class="cybercard-label">Parish Groups</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stat-card" style="--card-accent:#ff6b6b;">
-        <div class="stat-icon"><i class="bi bi-megaphone-fill"></i></div>
-        <div class="stat-trend">Live</div>
-        <div class="stat-value" data-target="{{ notice_count }}">{{ notice_count }}</div>
-        <div class="stat-label">Active Notices</div>
+      <!-- Active Notices -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#ff6b6b; --c-alt:#f9a825; --c-border:rgba(255,107,107,0.3);">
+        <div class="card-canvas">
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <span class="cybercard-badge">Live</span>
+            <i class="bi bi-megaphone-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ notice_count }}">{{ notice_count }}</div>
+            <div class="cybercard-label">Active Notices</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stat-card" style="--card-accent:#38bdf8;">
-        <div class="stat-icon"><i class="bi bi-calendar-event-fill"></i></div>
-        <div class="stat-value" data-target="{{ event_count }}">{{ event_count }}</div>
-        <div class="stat-label">Upcoming Events</div>
+      <!-- Upcoming Events -->
+      <div class="cyber-card-wrap noselect"
+           style="--c-main:#38bdf8; --c-alt:#818cf8; --c-border:rgba(56,189,248,0.3);">
+        <div class="card-canvas">
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+          <div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div><div class="tr"></div>
+        </div>
+        <div class="cybercard">
+          <div class="card-scanline"></div>
+          <div class="card-gridlines"><span></span><span></span><span></span></div>
+          <div class="card-corners"><span></span><span></span><span></span><span></span></div>
+          <div class="card-glare"></div>
+          <div class="card-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="cybercard-body">
+            <i class="bi bi-calendar-event-fill cybercard-icon"></i>
+            <div class="cybercard-value" data-target="{{ event_count }}">{{ event_count }}</div>
+            <div class="cybercard-label">Upcoming Events</div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -462,21 +734,23 @@
 </div>
 
 <script>
-  // Animated counter
-  document.querySelectorAll('.stat-value[data-target]').forEach(el => {
+  // Animated counter for stat values
+  document.querySelectorAll('.cybercard-value[data-target]').forEach(el => {
     const target = parseInt(el.dataset.target, 10) || 0;
     if (target === 0) return;
-    const duration = 1200;
+    const duration = 1400;
     const start = performance.now();
-    const update = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      el.textContent = Math.round(eased * target);
-      if (progress < 1) requestAnimationFrame(update);
-    };
-    // Delay until card is visible
-    const delay = parseFloat(getComputedStyle(el.closest('.stat-card')).animationDelay) * 1000 + 200;
-    setTimeout(() => requestAnimationFrame(update), delay);
+    const wrap = el.closest('.cyber-card-wrap');
+    const delay = (parseFloat(getComputedStyle(wrap).animationDelay) || 0) * 1000 + 250;
+    setTimeout(() => {
+      const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, delay);
   });
 </script>
 

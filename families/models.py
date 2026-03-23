@@ -29,7 +29,7 @@ class FamilyUnit(models.Model):
 
 class Family(models.Model):
     house_name = models.CharField(max_length=100, help_text="Ex: Mathew Bhavan")
-    address = models.TextField(blank=True, null=True, help_text="Full postal address")
+    address = models.TextField(blank=True, null=True, help_text="Avoid entering full private address unless necessary")
     family_photo = models.ImageField(upload_to="families/photos/", blank=True, null=True)
     family_register = models.ImageField(upload_to="families/registers/", blank=True, null=True)
 
@@ -56,6 +56,16 @@ class Family(models.Model):
 
 
 class FamilyMember(models.Model):
+
+    RELATION_CHOICES = [
+        ("son", "മകൻ"),
+        ("daughter", "മകൾ"),
+        ("son_in_law", "മരുമകൻ"),
+        ("daughter_in_law", "മരുമകൾ"),
+        ("wife", "ഭാര്യ"),
+        ("husband", "ഭർത്താവ്"),
+    ]
+
     family = models.ForeignKey(
         Family,
         on_delete=models.CASCADE,
@@ -63,8 +73,16 @@ class FamilyMember(models.Model):
     )
 
     name = models.CharField(max_length=150)
-    photo = models.ImageField(upload_to="family_members/", blank=True, null=True)
+    photo = models.ImageField(upload_to="family_members/", blank=True, null=True,help_text="Avoid entering Photo unless necessary")
     dob = models.DateField("Date of Birth", null=True, blank=True)
+
+    # ✅ NEW FIELD
+    relation = models.CharField(
+        max_length=20,
+        choices=RELATION_CHOICES,
+        blank=True,
+        null=True
+    )
 
     parish_groups = models.ManyToManyField(
         ParishGroup,

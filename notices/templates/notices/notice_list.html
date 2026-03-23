@@ -110,203 +110,222 @@
   .notices-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 32px;
+    justify-items: center;
   }
 
   @media (max-width: 991px) { .notices-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 575px)  { .notices-grid { grid-template-columns: 1fr; } }
 
-  /* ── Card ── */
-  .notice-card {
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  /* ── Decorative rule ── */
+  .crimson-rule {
+    display: block; width: 40px; height: 3px;
+    background: var(--crimson); border-radius: 2px;
+    margin-top: 14px;
+  }
+
+  /* ────────────────────────────────────────────
+     From Uiverse.io by D3OXY — adapted for parish
+  ──────────────────────────────────────────── */
+  .card {
     position: relative;
-    transition:
-      transform 0.35s cubic-bezier(.22,.68,0,1.15),
-      box-shadow 0.35s ease,
-      border-color 0.25s ease;
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 16 / 10;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1000px;
+    box-shadow: 0 0 0 5px #ffffff80;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     animation: cardIn 0.5s ease both;
   }
 
-  .notice-card:nth-child(2) { animation-delay: 0.06s; }
-  .notice-card:nth-child(3) { animation-delay: 0.12s; }
-  .notice-card:nth-child(4) { animation-delay: 0.18s; }
-  .notice-card:nth-child(5) { animation-delay: 0.24s; }
-  .notice-card:nth-child(6) { animation-delay: 0.30s; }
+  .card:nth-child(2) { animation-delay: 0.06s; }
+  .card:nth-child(3) { animation-delay: 0.12s; }
+  .card:nth-child(4) { animation-delay: 0.18s; }
+  .card:nth-child(5) { animation-delay: 0.24s; }
+  .card:nth-child(6) { animation-delay: 0.30s; }
 
   @keyframes cardIn {
-    from { opacity: 0; transform: translateY(24px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
   }
 
-  .notice-card:hover {
-    transform: translateY(-7px) scale(1.005);
-    box-shadow: 0 24px 52px rgba(28,25,23,0.11);
-    border-color: var(--crimson-mid);
+  /* Front face: image or icon */
+  .card__front {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  /* Left accent bar that grows on hover */
-  .notice-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--crimson);
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 0.35s cubic-bezier(.22,.68,0,1.15);
-    z-index: 2;
-  }
-
-  .notice-card:hover::before { transform: scaleY(1); }
-
-  /* ── Image ── */
-  .card-img-wrap {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-    background: #ede8df;
-    flex-shrink: 0;
-  }
-
-  .card-img-wrap img {
-    width: 100%; height: 100%;
+  .card__front img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    transition: transform 0.55s cubic-bezier(.22,.68,0,1.15);
+    display: block;
   }
 
-  .notice-card:hover .card-img-wrap img { transform: scale(1.06); }
-
-  .img-placeholder {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #f0ebe3 0%, #e0d8cc 100%);
+  /* Placeholder when no image */
+  .card__front-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
   }
 
-  .img-placeholder i {
-    font-size: 2.2rem;
-    color: #c4b8a8;
+  .card svg.card-icon {
+    width: 52px;
+    fill: #991b1b;
+    opacity: 0.65;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  /* ── Admin actions ── */
-  .card-actions {
-    position: absolute;
-    top: 10px; right: 10px;
-    display: flex; gap: 6px;
-    opacity: 0;
-    transform: translateY(-6px);
-    transition: opacity 0.22s ease, transform 0.22s ease;
-    z-index: 10;
-  }
-
-  .notice-card:hover .card-actions {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .card-actions a {
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(8px);
-    border-radius: 50%;
-    font-size: 13px;
-    color: var(--ink);
-    text-decoration: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.13);
-    transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
-  }
-
-  .card-actions a:hover { transform: scale(1.18); }
-  .card-actions a.act-edit:hover   { background: #fef9c3; color: #854d0e; }
-  .card-actions a.act-delete:hover { background: var(--crimson-soft); color: var(--crimson); }
-
-  /* ── Card body ── */
-  .card-body {
-    padding: 20px 22px 18px;
-    display: flex; flex-direction: column; flex: 1;
-  }
-
-  .card-meta {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 11px;
-  }
-
-  .meta-date {
-    font-size: 11px; font-weight: 400;
-    letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--muted);
-    display: flex; align-items: center; gap: 5px;
-  }
-
-  .meta-date i { color: var(--crimson); font-size: 11px; }
-
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    margin-left: auto; flex-shrink: 0;
-  }
-  .status-dot.on  { background: #22c55e; box-shadow: 0 0 0 3px #dcfce7; }
-  .status-dot.off { background: #94a3b8; box-shadow: 0 0 0 3px #f1f5f9; }
-
-  .card-title {
+  /* Notice title visible on front when no image */
+  .card__front-label {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
+    font-size: 1.05rem;
     font-weight: 600;
+    color: #1c1917;
+    text-align: center;
+    padding: 0 14px;
     line-height: 1.3;
-    color: var(--ink);
-    margin: 0 0 9px;
-    transition: color 0.2s ease;
   }
 
-  .notice-card:hover .card-title { color: var(--crimson); }
+  .card:hover svg.card-icon { scale: 0; }
 
-  .card-excerpt {
-    font-size: 13.5px;
+  .card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 32px rgba(153, 27, 27, 0.18);
+  }
+
+  /* ── Flip content panel ── */
+  .card__content {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    padding: 18px 20px 14px;
+    box-sizing: border-box;
+    background-color: #fff;
+    transform: rotateX(-90deg);
+    transform-origin: bottom;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    border-top: 3px solid var(--crimson);
+  }
+
+  .card:hover .card__content { transform: rotateX(0deg); }
+
+  /* Meta row inside content */
+  .card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .card__date {
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
     color: var(--muted);
-    line-height: 1.65;
-    flex: 1;
-    margin: 0 0 18px;
+    display: flex; align-items: center; gap: 4px;
   }
 
-  /* ── Card footer ── */
-  .card-foot {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 14px;
-    border-top: 1px solid var(--rule);
-  }
+  .card__date i { color: var(--crimson); font-size: 10px; }
 
   .status-tag {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.07em; text-transform: uppercase;
-    padding: 4px 10px; border-radius: 100px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
   }
   .status-tag.on  { background: var(--active-bg);   color: var(--active-fg); }
   .status-tag.off { background: var(--inactive-bg); color: var(--inactive-fg); }
 
-  .btn-view {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
-    text-decoration: none;
+  .card__title {
+    margin: 0 0 7px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--ink);
-    padding: 6px 14px;
-    border: 1px solid var(--ink);
-    border-radius: 100px;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    line-height: 1.25;
   }
 
-  .btn-view:hover {
-    background: var(--crimson);
-    border-color: var(--crimson);
+  .card__description {
+    margin: 0 0 12px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.55;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  /* Buttons row */
+  .card__actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+
+  .card__button {
+    padding: 7px 16px;
+    border-radius: 100px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .card__button:hover { transform: translateY(-1px); }
+
+  /* Primary — View */
+  .card__button.primary {
+    background: var(--ink);
+    border: none;
     color: #fff;
   }
+  .card__button.primary:hover { background: var(--crimson); }
 
-  .btn-view i { font-size: 11px; transition: transform 0.2s ease; }
-  .btn-view:hover i { transform: translateX(3px); }
+  /* Secondary — Edit */
+  .card__button.secondary {
+    background: transparent;
+    border: 1px solid #ccc;
+    color: var(--muted);
+  }
+  .card__button.secondary:hover { border-color: #854d0e; color: #854d0e; background: #fef9c3; }
+
+  /* Danger — Delete */
+  .card__button.danger {
+    background: transparent;
+    border: 1px solid #fca5a5;
+    color: var(--crimson);
+  }
+  .card__button.danger:hover { background: var(--crimson-soft); border-color: var(--crimson); }
 
   /* ── Empty state ── */
   .empty-state {
@@ -332,13 +351,6 @@
     color: var(--muted);
     margin: 0;
   }
-
-  /* ── Decorative rule ── */
-  .crimson-rule {
-    display: block; width: 40px; height: 3px;
-    background: var(--crimson); border-radius: 2px;
-    margin-top: 14px;
-  }
 </style>
 
 <div class="container notices-page">
@@ -355,7 +367,7 @@
       <span class="crimson-rule"></span>
     </div>
 
-    {% if user.role == "admin" or user.role == "provincial" %}
+    {% if user.is_authenticated and user.role in "admin provincial staff" %}
     <a href="{% url 'notice_add' %}" class="btn-add-notice">
       <i class="bi bi-plus-lg"></i> Add Notice
     </a>
@@ -365,64 +377,64 @@
   <!-- Grid -->
   <div class="notices-grid">
     {% for notice in notices %}
-    <div class="notice-card">
 
-      <!-- Image -->
-      <div class="card-img-wrap">
+    <!-- From Uiverse.io by D3OXY -->
+    <div class="card">
+      <a href="{% url 'notice_detail' notice.pk %}">
+
+      <!-- Front face -->
+      <div class="card__front">
         {% if notice.image %}
           <img src="{{ notice.image.url }}" alt="{{ notice.title }}">
         {% else %}
-          <div class="img-placeholder">
-            <i class="bi bi-megaphone"></i>
+          <div class="card__front-placeholder">
+            <svg class="card-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z"/>
+            </svg>
+            <span class="card__front-label">{{ notice.title }}</span>
           </div>
-        {% endif %}
-
-        <!-- Admin actions (visible on hover) -->
-        {% if user.role == "admin" or user.role == "provincial" %}
-        <div class="card-actions">
-          <a href="{% url 'notice_edit' notice.pk %}" class="act-edit" title="Edit">
-            <i class="bi bi-pencil"></i>
-          </a>
-          {% if user.role == "admin" %}
-          <a href="{% url 'notice_delete' notice.pk %}" class="act-delete" title="Delete">
-            <i class="bi bi-trash"></i>
-          </a>
-          {% endif %}
-        </div>
         {% endif %}
       </div>
 
-      <!-- Body -->
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="meta-date">
+      <!-- Flip content panel -->
+      <div class="card__content">
+
+        <!-- Meta: date + status -->
+        <div class="card__meta">
+          <span class="card__date">
             <i class="bi bi-clock"></i>
             {{ notice.created_at|date:"M d, Y" }}
           </span>
-          {% if notice.is_active %}
-            <span class="status-dot on" title="Active"></span>
-          {% else %}
-            <span class="status-dot off" title="Inactive"></span>
-          {% endif %}
-        </div>
-
-        <h2 class="card-title">{{ notice.title }}</h2>
-        <p class="card-excerpt">{{ notice.content|truncatewords:22 }}</p>
-
-        <div class="card-foot">
           {% if notice.is_active %}
             <span class="status-tag on">Active</span>
           {% else %}
             <span class="status-tag off">Inactive</span>
           {% endif %}
-
-          <a href="{% url 'notice_edit' notice.pk %}" class="btn-view">
-            View <i class="bi bi-arrow-right"></i>
-          </a>
         </div>
-      </div>
 
+        <p class="card__title">{{ notice.title }}</p>
+        <p class="card__description">{{ notice.content|truncatewords:22 }}</p>
+
+        <!-- Action buttons -->
+        <div class="card__actions">
+
+          {% if user.is_authenticated and user.role in "admin provincial staff" %}
+          <a href="{% url 'notice_edit' notice.pk %}" class="card__button secondary">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+
+          {% if user.role == "admin" or user.role == "provincial" or user.role == "staff" %}
+          <a href="{% url 'notice_delete' notice.pk %}" class="card__button danger">
+            <i class="bi bi-trash"></i>
+          </a>
+          {% endif %}
+          {% endif %}
+        </div>
+
+      </div>
+      </a>
     </div>
+
     {% empty %}
     <div class="empty-state">
       <div class="empty-icon">

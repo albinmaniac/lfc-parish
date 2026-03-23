@@ -4,12 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}My Parish{% endblock %}</title>
+<title>{% block title %}Little Flower Church{% endblock %}</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 <style>
   /* =================== FOUNDATIONS =================== */
@@ -30,7 +31,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -39,12 +39,64 @@
     font-size: 17px;
     color: var(--text-body);
     overflow-x: hidden;
-    /* min-height: 100vh; */ /* Removed as per instructions */
-
-    /* Sticky footer layout fix */
-    display: flex;
-    flex-direction: column;
+    /* FIX 4: removed duplicate display:flex / flex-direction:column — Bootstrap classes on <body> handle it */
     padding-top: 78px;
+    /* FIX 5: padding-bottom so content is never hidden behind the fixed scripture ticker */
+    padding-bottom: 44px;
+    cursor: none;
+  }
+
+  /* =================== CUSTOM CROSS CURSOR =================== */
+  #cursor-cross {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    top: 0; left: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s;
+    mix-blend-mode: screen;
+  }
+
+  #cursor-ring {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99998;
+    top: 0; left: 0;
+    width: 36px; height: 36px;
+    margin: -18px 0 0 -18px;
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 50%;
+    transition: width 0.25s, height 0.25s, margin 0.25s, border-color 0.25s;
+  }
+
+  body:has(a:hover) #cursor-ring,
+  body:has(button:hover) #cursor-ring {
+    width: 54px; height: 54px;
+    margin: -27px 0 0 -27px;
+    border-color: var(--gold);
+  }
+
+  .cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99997;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s;
+  }
+
+  /* =================== SCROLL PROGRESS BAR =================== */
+  #scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold-dk), var(--gold-lt), var(--gold-dk));
+    z-index: 9999;
+    transition: width 0.05s linear;
+    box-shadow: 0 0 8px rgba(201,168,76,0.6);
   }
 
   /* =================== CANVAS BACKGROUND =================== */
@@ -53,6 +105,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    transition: opacity 0.3s;
   }
 
   /* =================== PARCHMENT OVERLAY =================== */
@@ -66,16 +119,23 @@
     pointer-events: none;
   }
 
-  /* Subtle paper texture via SVG noise */
-  body::before {
-    content: '';
+  /* =================== ANIMATED GRAIN =================== */
+  #grain-overlay {
     position: fixed;
     inset: 0;
-    z-index: 0;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
+    z-index: 2;
     pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grainShift 0.4s steps(2) infinite;
+  }
+
+  @keyframes grainShift {
+    0%   { transform: translate(0,0); }
+    25%  { transform: translate(-2px, 1px); }
+    50%  { transform: translate(1px, -2px); }
+    75%  { transform: translate(2px, 2px); }
+    100% { transform: translate(-1px, -1px); }
   }
 
   /* =================== NAVBAR =================== */
@@ -89,15 +149,19 @@
     -webkit-backdrop-filter: blur(18px) saturate(1.4);
     border-bottom: 1px solid var(--glass-border);
     box-shadow: 0 2px 40px rgba(0,0,0,0.35);
+    transition: background 0.3s, padding 0.3s;
+  }
+
+  .navbar.scrolled {
+    background: rgba(11,18,32,0.96) !important;
   }
 
   .navbar .container {
     display: flex;
     align-items: center;
-    min-height: 78px;   /* keep navbar slim */
+    min-height: 78px;
   }
 
-  /* Brand */
   .navbar-brand {
     display: flex;
     align-items: center;
@@ -120,6 +184,27 @@
     letter-spacing: 0.08em;
     color: var(--gold-lt);
     white-space: nowrap;
+    position: relative;
+  }
+
+  /* Shimmer text effect on brand */
+  .brand-main::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerText 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shimmerText {
+    0%   { background-position: -200% 0; }
+    50%  { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   .brand-sub {
@@ -156,24 +241,12 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .navbar-nav .nav-link:hover {
-    color: var(--gold-lt) !important;
-  }
+  .navbar-nav .nav-link:hover { color: var(--gold-lt) !important; }
+  .navbar-nav .nav-link:hover::after { transform: scaleX(1); }
+  .navbar-nav .nav-link.active { color: var(--gold-lt) !important; }
+  .navbar-nav .nav-link.active::after { transform: scaleX(1); background: var(--gold-lt); }
 
-  .navbar-nav .nav-link:hover::after {
-    transform: scaleX(1);
-  }
-
-  .navbar-nav .nav-link.active {
-    color: var(--gold-lt) !important;
-  }
-
-  .navbar-nav .nav-link.active::after {
-    transform: scaleX(1);
-    background: var(--gold-lt);
-  }
-
-  /* Greeting pill */
+  /* Greeting */
   .nav-greeting {
     font-family: 'Crimson Pro', serif;
     font-style: italic;
@@ -184,94 +257,116 @@
     align-items: center;
   }
 
-  /* Logout button */
-  .btn-nav-logout {
-    background: none;
-    border: 1px solid rgba(201,168,76,0.35);
-    border-radius: 4px;
-    color: rgba(201,168,76,0.8) !important;
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin: auto 8px;
+  /* ===== UIVERSE MAGNETIC BUTTON ===== */
+  .btn-uiverse {
+    cursor: none;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    border: none;
+    padding: 2px;
+    background: radial-gradient(circle 80px at 80% -10%, #ffffff, #181b1b);
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
   }
 
-  .btn-nav-logout:hover {
-    background: rgba(201,168,76,0.1);
-    border-color: var(--gold);
-    color: var(--gold-lt) !important;
+  .btn-uiverse::after {
+    content: "";
+    position: absolute;
+    width: 65%; height: 60%;
+    border-radius: 120px;
+    top: 0; right: 0;
+    box-shadow: 0 0 20px #ffffff38;
+    z-index: -1;
   }
 
-  /* Divider dot */
-  .nav-dot {
-    width: 3px; height: 3px;
-    border-radius: 50%;
-    background: rgba(201,168,76,0.4);
-    align-self: center;
-    margin: 0 2px;
+  .btn-uiverse .blob1 {
+    position: absolute;
+    width: 50px; height: 100%;
+    border-radius: 12px;
+    bottom: 0; left: 0;
+    background: radial-gradient(circle 60px at 0% 100%, #3fe9ff, #0000ff80, transparent);
+    box-shadow: -10px 10px 30px #0051ff2d;
   }
 
-  /* =================== CROSS LOGO SVG =================== */
-  /* .cross-logo {
-    width: 42px;
-    height: 42px;
+  .btn-uiverse .inner {
+    padding: 8px 16px;
+    border-radius: 10px;
+    color: #fff;
+    position: relative;
+    background: radial-gradient(circle 80px at 80% -50%, #777, #0f1111);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .btn-uiverse .inner::before {
+    content: "";
+    width: 100%; height: 100%;
+    border-radius: 10px;
+    background: radial-gradient(circle 60px at 0% 100%, #00e1ff1a, #0000ff11, transparent);
+    position: absolute;
+    left: 0; top: 0;
+  }
+
+  .btn-uiverse:hover .inner { background: radial-gradient(circle 80px at 80% -50%, #999, #111); }
+  .navbar-nav .nav-item { margin-left: 10px; }
+
+  /* Logo */
+  .logo { display: flex; align-items: center; }
+
+  .img-wrap {
+    position: relative;
+    width: 110px; height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-  } */
+    margin-top: -16px;
+    margin-bottom: -16px;
+  }
 
+  .img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(201,168,76,0.45) 0%,
+      rgba(201,168,76,0.18) 40%,
+      transparent 75%);
+    filter: blur(6px);
+    animation: halo 4s ease-in-out infinite;
+  }
 
-    /* Navbar Logo Container */
-    .logo {
-      display: flex;
-      align-items: center;
-    }
+  .img-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.15);
+    animation: haloRing 4s ease-in-out infinite reverse;
+  }
 
-    /* Small wrapper for navbar */
-    .img-wrap {
-      position: relative;
-      width: 110px;      /* bigger logo */
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: -16px; /* allow logo to grow without pushing navbar */
-      margin-bottom: -16px;
-    }
+  @keyframes halo {
+    0%,100% { opacity: 0.6; transform: scale(1); }
+    50%     { opacity: 1;   transform: scale(1.08); }
+  }
 
-    /* ✨ Soft Elegant Glow (changed from yellow to warm gold) */
-    .img-wrap::before {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      background: radial-gradient(circle,
-        rgba(201,168,76,0.45) 0%,
-        rgba(201,168,76,0.18) 40%,
-        transparent 75%);
-      filter: blur(6px);
-      animation: halo 4s ease-in-out infinite;
-    }
+  @keyframes haloRing {
+    0%,100% { transform: scale(1); opacity: 0.3; }
+    50%     { transform: scale(1.15); opacity: 0.6; }
+  }
 
-    /* Soft breathing animation */
-    @keyframes halo {
-      0%,100% { opacity: 0.6; transform: scale(1); }
-      50%     { opacity: 1;   transform: scale(1.08); }
-    }
+  .img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
 
-    .img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      position: relative;
-      z-index: 1;
-    }
-
-  /* =================== FULLSCREEN HERO VIDEO =================== */
+  /* =================== HERO =================== */
   .hero-video {
     position: relative;
     width: 100%;
@@ -282,10 +377,8 @@
 
   .hero-video video {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     object-fit: cover;
   }
 
@@ -315,26 +408,66 @@
   }
 
   .btn-sound {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid #fff;
-    padding: 8px 20px;
+    position: absolute;
+    bottom: 30px; right: 30px;
+    z-index: 3;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.6);
     color: white;
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 30px;
+    backdrop-filter: blur(8px);
     transition: 0.3s;
+    cursor: none;
   }
 
-  .btn-sound:hover {
-    background: rgba(255,255,255,0.4);
+  .btn-sound:hover { background: rgba(0,0,0,0.7); }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    animation: fadeInUp 1s 2s both;
   }
 
-  /* =================== HERO BANNER =================== */
+  .scroll-indicator span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.6);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+    animation: scrollPulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* =================== PAGE HERO BANNER =================== */
   .page-hero {
     position: relative;
     z-index: 10;
-    margin-top: 78px;
+    /* FIX 1: removed margin-top:78px — body padding-top:78px already clears the navbar */
     padding: 56px 0 44px;
     text-align: center;
     border-bottom: 1px solid rgba(201,168,76,0.15);
@@ -384,14 +517,50 @@
     color: var(--text-muted);
   }
 
-  /* =================== CONTENT AREA =================== */
+  /* =================== SCRIPTURE TICKER =================== */
+  #scripture-ticker {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 1900;
+    background: rgba(11,18,32,0.92);
+    border-top: 1px solid rgba(201,168,76,0.18);
+    padding: 12px 0;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+  }
+
+  .ticker-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: tickerScroll 60s linear infinite;
+  }
+
+  .ticker-item {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: rgba(201,168,76,0.65);
+    padding: 0 48px;
+  }
+
+  .ticker-item::before {
+    content: '✦';
+    margin-right: 16px;
+    color: rgba(201,168,76,0.35);
+    font-style: normal;
+  }
+
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* =================== MAIN CONTENT =================== */
   .main-content {
     position: relative;
     z-index: 10;
-    /* margin-top: 64px; */ /* Removed as per instructions */
     padding-top: 24px;
-
-    /* Push footer to bottom */
     flex: 1;
   }
 
@@ -403,6 +572,7 @@
     backdrop-filter: blur(8px);
     transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s;
     overflow: hidden;
+    cursor: none;
   }
 
   .card::before {
@@ -420,9 +590,7 @@
     box-shadow: 0 12px 40px rgba(11,18,32,0.12), 0 2px 8px rgba(201,168,76,0.1);
   }
 
-  .card:hover::before {
-    opacity: 1;
-  }
+  .card:hover::before { opacity: 1; }
 
   .card-header-gold {
     background: linear-gradient(135deg, var(--navy-mid), var(--navy-lt));
@@ -457,51 +625,31 @@
     background: linear-gradient(90deg, var(--gold), transparent);
     margin-top: 8px;
   }
-  /* =================== Hero Videos =================== */
 
-  .hero-video {
-    position: relative;
-    height: 100vh;
+  /* =================== SPLIT TEXT REVEAL =================== */
+  .reveal-text {
     overflow: hidden;
+    display: block;
   }
 
-  .hero-video video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .reveal-text .word {
+    display: inline-block;
+    transform: translateY(110%);
+    opacity: 0;
+    transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.5s;
   }
 
-  .hero-overlay-content {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .reveal-text.in-view .word {
+    transform: translateY(0);
+    opacity: 1;
   }
 
-  .btn-sound {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    z-index: 3;
-    background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.6);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 30px;
-    backdrop-filter: blur(8px);
-    transition: 0.3s;
-  }
-
-  .btn-sound:hover {
-    background: rgba(0,0,0,0.7);
-  }
-
+  .reveal-text .word:nth-child(1) { transition-delay: 0s; }
+  .reveal-text .word:nth-child(2) { transition-delay: 0.08s; }
+  .reveal-text .word:nth-child(3) { transition-delay: 0.16s; }
+  .reveal-text .word:nth-child(4) { transition-delay: 0.24s; }
+  .reveal-text .word:nth-child(5) { transition-delay: 0.32s; }
+  .reveal-text .word:nth-child(6) { transition-delay: 0.40s; }
 
   /* =================== BUTTONS =================== */
   .btn-parish {
@@ -514,17 +662,27 @@
     background: transparent;
     color: var(--gold-dk);
     border-radius: 1px;
-    cursor: pointer;
+    cursor: none;
     transition: all 0.25s;
     text-decoration: none;
     display: inline-block;
+    position: relative;
+    overflow: hidden;
   }
 
-  .btn-parish:hover {
+  .btn-parish::before {
+    content: '';
+    position: absolute;
+    inset: 0;
     background: var(--gold);
-    color: var(--navy);
-    box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: -1;
   }
+
+  .btn-parish:hover::before { transform: scaleX(1); }
+  .btn-parish:hover { color: var(--navy); box-shadow: 0 4px 20px rgba(201,168,76,0.3); }
 
   .btn-parish-solid {
     background: linear-gradient(135deg, var(--navy-mid), var(--navy));
@@ -588,6 +746,7 @@
     font-size: 1rem;
     padding: 10px 14px;
     transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: none;
   }
 
   .form-control:focus, .form-select:focus {
@@ -623,7 +782,7 @@
     z-index: 10;
     background: var(--navy) !important;
     border-top: 1px solid rgba(201,168,76,0.2);
-    padding: 44px 0 28px !important;
+    padding: 44px 0 60px !important;
     color: rgba(245,240,232,0.7) !important;
   }
 
@@ -660,13 +819,11 @@
     padding: 0 12px;
     border-right: 1px solid rgba(201,168,76,0.15);
     transition: color 0.2s;
+    cursor: none;
   }
 
   .footer-links a:last-child { border-right: none; }
-
-  .footer-links a:hover {
-    color: var(--gold-lt);
-  }
+  .footer-links a:hover { color: var(--gold-lt); }
 
   .footer-divider {
     height: 1px;
@@ -707,7 +864,7 @@
   /* =================== SCROLL-TO-TOP =================== */
   #scrollTop {
     position: fixed;
-    bottom: 32px;
+    bottom: 60px;
     right: 32px;
     z-index: 2000;
     width: 46px; height: 46px;
@@ -717,7 +874,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: none;
     opacity: 0;
     transform: translateY(12px);
     transition: all 0.3s;
@@ -735,11 +892,167 @@
     border-color: var(--gold);
   }
 
+  /* ===== SUPPORT TOOLTIP (bottom-right) ===== */
+  .tooltip-wrapper {
+    --clr-btn: rgb(2 22 36);
+    --clr-dropdown: rgb(2 22 36);
+    --clr-nav-hover: rgb(2 22 36);
+    --clr-dropdown-hov: rgb(2 22 36);
+    --clr-dropdown-link-hov: rgb(2 22 36);
+    --clr-light: #ffffff;
+
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+
+  .tooltip-wrapper > .tooltip-container {
+    display: block;
+    list-style: none;
+  }
+
+  .tooltip-container,
+  .tooltip-menu-with-icon {
+    list-style: none;
+  }
+
+  .nav-link > .tooltip-tab {
+    color: var(--clr-light);
+    background: var(--clr-btn);
+    padding: 0.8rem 1rem;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    justify-content: space-between;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid #00c1d5;
+    transition: 0.3s ease-in-out;
+  }
+
+  .nav-link > .tooltip-tab:hover svg {
+    transform: rotate(360deg);
+    transition: 0.3s ease-in-out;
+  }
+
+  .tooltip-links {
+    text-decoration: none;
+  }
+
+  .nav-link svg {
+    fill: #fff;
+  }
+
+  /* FIX 8: tooltip opens ABOVE the button — bottom-anchored, right-aligned, correct arrow direction */
+  .tooltip {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    left: auto;
+    min-width: 12rem;
+    max-width: 15rem;
+    transform: translateY(10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.5s;
+    padding: 0 0 15px 0;
+  }
+
+  /* Arrow points DOWN (toward the button), using rotate(180deg) */
+  .tooltip::after {
+    content: "";
+    width: 15px;
+    height: 15px;
+    background: #00c1d5;
+    bottom: 0px;
+    right: 10px;
+    left: auto;
+    position: absolute;
+    display: inline-block;
+    clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+    /* FIX 8: was rotate(360deg) — downward-pointing arrow needs no extra rotation */
+    z-index: -1;
+    box-shadow: 0px 6px 30px rgb(2 22 36);
+  }
+
+  .tooltip .tooltip-menu-with-icon {
+    padding: 10px 0px;
+    background-color: var(--clr-dropdown);
+    border: 1px solid #00c1d5;
+    position: relative;
+  }
+
+  .tooltip-link {
+    position: relative;
+  }
+
+  .tooltip-link:not(:nth-last-child(2)) {
+    border-bottom: 1px solid var(--clr-dropdown);
+  }
+
+  .tooltip-link > a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 10px;
+    background-color: var(--clr-dropdown);
+    color: var(--clr-light);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    transition: 0.3s;
+  }
+
+  .tooltip-link > a:hover {
+    background-color: var(--clr-dropdown-hov);
+    color: #00c1d5;
+  }
+
+  .tooltip-menu-with-icon svg {
+    height: 20px;
+    margin-left: 0px;
+  }
+
+  .nav-link:hover > .tooltip-tab {
+    background-color: var(--clr-nav-hover);
+  }
+
+  .nav-link:hover > .tooltip,
+  .tooltip-link:hover > .tooltip {
+    transform: translate(0, 0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* =================== NOTIFICATION BADGE =================== */
+  .notif-badge {
+    position: absolute;
+    top: 6px;
+    right: 0px;
+    background: #ff3b3b;
+    color: white;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1;
+    animation: pulseBadge 1.5s infinite;
+  }
+
+  @keyframes pulseBadge {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
   /* =================== TOAST MESSAGES =================== */
   .messages-container {
     position: fixed;
-    top: 80px;
-    right: 24px;
+    top: 80px; right: 24px;
     z-index: 1500;
     display: flex;
     flex-direction: column;
@@ -754,8 +1067,7 @@
     border-left: 3px solid var(--gold);
     color: var(--cream);
     padding: 12px 20px;
-    min-width: 240px;
-    max-width: 360px;
+    min-width: 240px; max-width: 360px;
     font-size: 0.95rem;
     animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.8s forwards;
     pointer-events: all;
@@ -780,22 +1092,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.6s 0.3s, visibility 0.6s 0.3s;
+    transition: opacity 0.8s 0.3s, visibility 0.8s 0.3s;
   }
 
-  #page-loader.hidden {
-    opacity: 0;
-    visibility: hidden;
-  }
+  #page-loader.hidden { opacity: 0; visibility: hidden; }
 
-  .loader-cross {
-    animation: pulseCross 1.5s ease-in-out infinite;
-    margin-bottom: 28px;
-  }
+  .loader-cross { animation: pulseCross 1.5s ease-in-out infinite; margin-bottom: 28px; }
 
   @keyframes pulseCross {
-    0%, 100% { transform: scale(1); opacity: 0.7; }
-    50%       { transform: scale(1.08); opacity: 1; }
+    0%, 100% { transform: scale(1); opacity: 0.7; filter: drop-shadow(0 0 0px #c9a84c); }
+    50%       { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 16px #c9a84c); }
   }
 
   .loader-text {
@@ -807,8 +1113,7 @@
   }
 
   .loader-bar {
-    width: 160px;
-    height: 1px;
+    width: 160px; height: 1px;
     background: rgba(201,168,76,0.15);
     margin-top: 14px;
     overflow: hidden;
@@ -825,6 +1130,43 @@
     to   { transform: translateX(200%); }
   }
 
+  /* =================== AMBIENT SOUND BUTTON =================== */
+  #ambient-toggle {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 2000;
+    width: 40px; height: 40px;
+    background: rgba(11,18,32,0.8);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+
+  #ambient-toggle:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+
+  #ambient-toggle svg { transition: opacity 0.2s; }
+
+  /* =================== SPOTLIGHT =================== */
+  .spotlight {
+    position: fixed;
+    pointer-events: none;
+    z-index: 3;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+  }
+
   /* =================== RESPONSIVE =================== */
   @media (max-width: 991px) {
     .navbar-collapse {
@@ -832,16 +1174,25 @@
       border-top: 1px solid rgba(201,168,76,0.12);
       padding: 12px 0;
     }
-
     .navbar-nav .nav-link::after { display: none; }
-
-    .nav-dot { display: none; }
+    /* FIX 9: restore native cursor on touch/mobile for all interactive elements */
+    body,
+    .card,
+    .form-control,
+    .form-select,
+    .btn-parish,
+    .btn-uiverse,
+    .footer-links a,
+    #ambient-toggle,
+    #scrollTop,
+    .btn-sound { cursor: auto; }
+    #cursor-cross, #cursor-ring { display: none; }
   }
 
-  /* =================== AOS OVERRIDES =================== */
   [data-aos] { will-change: transform, opacity; }
 </style>
 </head>
+<!-- FIX 4: body already carries Bootstrap d-flex flex-column min-vh-100 — no duplicate flex needed in CSS -->
 <body class="d-flex flex-column min-vh-100">
 
 <!-- ===== PAGE LOADER ===== -->
@@ -867,9 +1218,38 @@
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
 
+<!-- ===== CUSTOM CURSOR ===== -->
+<div id="cursor-cross">
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="9" y="1" width="2" height="18" rx="0.5" fill="rgba(201,168,76,0.9)"/>
+    <rect x="1" y="8" width="18" height="2"  rx="0.5" fill="rgba(201,168,76,0.9)"/>
+    <circle cx="10" cy="10" r="1.5" fill="rgba(201,168,76,1)"/>
+  </svg>
+</div>
+<div id="cursor-ring"></div>
+<div class="spotlight" id="spotlight"></div>
+
+<!-- ===== SCROLL PROGRESS ===== -->
+<div id="scroll-progress"></div>
+
 <!-- ===== 3D WEBGL BACKGROUND ===== -->
 <div id="three-container"></div>
 <div class="page-overlay"></div>
+<div id="grain-overlay"></div>
+
+<!-- ===== AMBIENT SOUND TOGGLE ===== -->
+<button id="ambient-toggle" title="Toggle ambient sound">
+  <svg id="icon-sound-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.8)" stroke-width="1.5">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+  </svg>
+  <svg id="icon-sound-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="1.5" style="display:none">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <line x1="23" y1="9" x2="17" y2="15"/>
+    <line x1="17" y1="9" x2="23" y2="15"/>
+  </svg>
+</button>
 
 <!-- ===== DJANGO MESSAGES ===== -->
 {% if messages %}
@@ -886,41 +1266,16 @@
 
     <!-- Brand -->
     <a class="navbar-brand" href="{% url 'home' %}">
-      <!-- SVG Cross Logo -->
-      <!-- <svg class="cross-logo" viewBox="0 0 42 42" fill="none">
-        <circle cx="21" cy="21" r="20" stroke="rgba(201,168,76,0.25)" stroke-width="1"/>
-        <rect x="18.5" y="5" width="5" height="32" rx="1.5" fill="url(#cnav1)"/>
-        <rect x="7"    y="16" width="28" height="5"  rx="1.5" fill="url(#cnav2)"/> -->
-        <!-- corner ornaments -->
-        <!-- <circle cx="21" cy="5"  r="2" fill="#c9a84c" opacity=".5"/>
-        <circle cx="21" cy="37" r="2" fill="#c9a84c" opacity=".5"/>
-        <circle cx="7"  cy="18.5" r="2" fill="#c9a84c" opacity=".5"/>
-        <circle cx="35" cy="18.5" r="2" fill="#c9a84c" opacity=".5"/>
-        <defs>
-          <linearGradient id="cnav1" x1="0" y1="5" x2="0" y2="37" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#e8c96d"/>
-            <stop offset="100%" stop-color="#8b6914"/>
-          </linearGradient>
-          <linearGradient id="cnav2" x1="7" y1="0" x2="35" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#8b6914"/>
-            <stop offset="50%" stop-color="#e8c96d"/>
-            <stop offset="100%" stop-color="#8b6914"/>
-          </linearGradient>
-        </defs>
-      </svg> -->
       <div class="logo">
         <div class="img-wrap">
           <img src="{% static 'images/logo2.png' %}" alt="Church Logo">
         </div>
       </div>
-
       <div class="brand-wordmark">
-        <span class="brand-main">
+        <span class="brand-main" data-text="{{ global_parish.name|default:'Little Flower' }}">
           {{ global_parish.name|default:"Little Flower" }}
         </span>
-        <span class="brand-sub">
-           Lisuenagar,Varanad
-        </span>
+        <span class="brand-sub">Lisuenagar, Varanad</span>
       </div>
     </a>
 
@@ -937,33 +1292,46 @@
           <li class="nav-item">
             <span class="nav-greeting">Blessings, {{ user.username }}</span>
           </li>
-          <li class="d-lg-flex d-none align-items-center"><div class="nav-dot"></div></li>
-
           {% if user.role == "family_head" %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'my_family' %}">My Family</a></li>
+          <li class="nav-item">
+            <a href="{% url 'my_family' %}" class="btn-uiverse">
+              <div class="blob1"></div>
+              <div class="inner">My Family</div>
+            </a>
+          </li>
           {% endif %}
-
           {% if user.role == "admin" %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+          <li class="nav-item">
+            <a href="{% url 'admin_dashboard' %}" class="btn-uiverse">
+              <div class="blob1"></div>
+              <div class="inner">Dashboard</div>
+            </a>
+          </li>
           {% endif %}
-
-          <li class="nav-item d-flex align-items-center">
-            <form action="{% url 'logout' %}" method="post">
+          <li class="nav-item">
+            <!-- FIX 2: removed style="background:none;" which was overriding .btn-uiverse gradient -->
+            <form action="{% url 'logout' %}" method="post" style="margin:0;">
               {% csrf_token %}
-              <button class="btn-nav-logout">Logout</button>
+              <button type="submit" class="btn-uiverse">
+                <div class="blob1"></div>
+                <div class="inner">Logout</div>
+              </button>
             </form>
           </li>
-          <li class="d-lg-flex d-none align-items-center"><div class="nav-dot"></div></li>
         {% else %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-          <li class="d-lg-flex d-none align-items-center"><div class="nav-dot"></div></li>
+          <li class="nav-item">
+            <a href="{% url 'login' %}" class="btn-uiverse">
+              <div class="blob1"></div>
+              <div class="inner">Login</div>
+            </a>
+          </li>
         {% endif %}
 
         <li class="nav-item"><a class="nav-link" href="{% url 'family_list' %}">Families</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'unit_list' %}">Units</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'group_list' %}">Groups</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'notice_list' %}">Notices</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'event_list' %}">Events</a></li>
+        <li class="nav-item position-relative"><a class="nav-link" href="{% url 'notice_list' %}">Notices{% if new_notices_count > 0 %}<span class="notif-badge">{{ new_notices_count }}</span>{% endif %}</a></li>
+        <li class="nav-item position-relative"><a class="nav-link" href="{% url 'event_list' %}">Events{% if new_events_count > 0 %}<span class="notif-badge">{{ new_events_count }}</span>{% endif %}</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
@@ -977,7 +1345,8 @@
 {% block hero %}{% endblock %}
 
 <!-- ===== MAIN CONTENT ===== -->
-<main class="flex-fill">
+<!-- FIX 3: added main-content class so z-index:10 and padding-top:24px actually apply -->
+<main class="main-content flex-fill">
   <div class="container mt-2 mb-5" data-aos="fade-up">
     {% block content %}{% endblock %}
   </div>
@@ -1002,12 +1371,43 @@
       </svg>
     </div>
 
+    <!-- Support Tooltip (bottom-right, fixed) -->
+    <div class="tooltip-wrapper">
+      <ul class="tooltip-container">
+        <li class="nav-link">
+          <div class="tooltip-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" height="16" width="16">
+              <path stroke="#ffffff" d="M1 10V8C1 2.5 6 1 8 1C10 1 15 2.5 15 8V10"></path>
+            </svg>
+            Support
+          </div>
+          <div class="tooltip">
+            <ul class="tooltip-menu-with-icon">
+              <li class="tooltip-link">
+                <a class="tooltip-links" href="tel:{{ global_parish.phone }}">
+                  📞 {{ global_parish.phone|default:"Not Available" }}
+                </a>
+              </li>
+              <li class="tooltip-link">
+                <a class="tooltip-links">⏰ 8:30AM – 5PM</a>
+              </li>
+              <li class="tooltip-link">
+                <a class="tooltip-links" href="mailto:{{ global_parish.email }}">
+                  ✉️ {{ global_parish.email|default:"Not Available" }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+
     <div class="footer-brand">Little Flower Church</div>
     <div class="footer-verse">"Come to me, all who are weary and burdened." — Matthew 11:28</div>
 
     <div class="footer-mass">
       <div class="footer-mass-title">Holy Mass Timings</div>
-      <div class="footer-mass-times">Monday ~ Saturday — 6:15 AM </div>
+      <div class="footer-mass-times">Monday ~ Saturday — 6:15 AM</div>
       <div class="footer-mass-times">Sunday — 6:15 AM &amp; 9:15 AM &amp; 3:30 PM</div>
     </div>
 
@@ -1023,10 +1423,34 @@
     </div>
 
     <div class="footer-divider"></div>
+    <div class="footer-copy">This platform is intended for internal parish use. Users are responsible for ensuring they have consent before sharing any personal information.</div>
     <div class="footer-copy">&copy; {% now "Y" %} Little Flower Church. All rights reserved.</div>
 
   </div>
 </footer>
+
+<!-- ===== SCRIPTURE TICKER ===== -->
+<div id="scripture-ticker">
+  <div class="ticker-track" id="ticker-track">
+    <span class="ticker-item">"I am the way, the truth, and the life." — John 14:6</span>
+    <span class="ticker-item">"For God so loved the world that he gave his only Son." — John 3:16</span>
+    <span class="ticker-item">"Come to me, all who are weary and burdened." — Matthew 11:28</span>
+    <span class="ticker-item">"The Lord is my shepherd; I shall not want." — Psalm 23:1</span>
+    <span class="ticker-item">"Be still, and know that I am God." — Psalm 46:10</span>
+    <span class="ticker-item">"Love one another as I have loved you." — John 15:12</span>
+    <span class="ticker-item">"I can do all things through Christ who strengthens me." — Philippians 4:13</span>
+    <span class="ticker-item">"Trust in the Lord with all your heart." — Proverbs 3:5</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="ticker-item">"I am the way, the truth, and the life." — John 14:6</span>
+    <span class="ticker-item">"For God so loved the world that he gave his only Son." — John 3:16</span>
+    <span class="ticker-item">"Come to me, all who are weary and burdened." — Matthew 11:28</span>
+    <span class="ticker-item">"The Lord is my shepherd; I shall not want." — Psalm 23:1</span>
+    <span class="ticker-item">"Be still, and know that I am God." — Psalm 46:10</span>
+    <span class="ticker-item">"Love one another as I have loved you." — John 15:12</span>
+    <span class="ticker-item">"I can do all things through Christ who strengthens me." — Philippians 4:13</span>
+    <span class="ticker-item">"Trust in the Lord with all your heart." — Proverbs 3:5</span>
+  </div>
+</div>
 
 <!-- ===== SCROLL TO TOP ===== -->
 <button id="scrollTop" title="Back to top">
@@ -1040,234 +1464,395 @@
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
 <script>
-  // ---- AOS ----
-  AOS.init({ duration: 750, once: true, offset: 60 });
+/* ---- AOS ---- */
+AOS.init({ duration: 750, once: true, offset: 60 });
 
-  // ---- Page Loader ----
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.getElementById('page-loader').classList.add('hidden');
-    }, 600);
+/* ---- Page Loader ---- */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('page-loader').classList.add('hidden'), 700);
+});
+
+/* ---- Scroll Progress Bar ---- */
+const prog = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  prog.style.width = (docH > 0 ? (scrollTop / docH) * 100 : 0) + '%';
+});
+
+/* ---- Scroll-to-top ---- */
+const st = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => {
+  st.classList.toggle('visible', window.scrollY > 400);
+});
+st.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ---- Navbar scroll shrink ---- */
+const navbar = document.querySelector('.navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 30);
+});
+
+/* ---- Active nav link ---- */
+const currentPath = window.location.pathname;
+document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+  if (link.getAttribute('href') === currentPath) link.classList.add('active');
+});
+
+/* ---- Auto-dismiss toasts ---- */
+document.querySelectorAll('.msg-toast').forEach(t => {
+  setTimeout(() => t.remove(), 4400);
+});
+
+/* ---- Hero Video Sound Toggle (child templates set id="heroVideo") ---- */
+const heroVideo = document.getElementById("heroVideo");
+const soundBtn  = document.getElementById("soundToggle");
+if (heroVideo && soundBtn) {
+  soundBtn.addEventListener("click", () => {
+    heroVideo.muted = !heroVideo.muted;
+    soundBtn.textContent = heroVideo.muted ? "🔊 Sound Off" : "🔇 Sound On";
   });
+}
 
-  // ---- Scroll-to-top ----
-  const st = document.getElementById('scrollTop');
-  window.addEventListener('scroll', () => {
-    st.classList.toggle('visible', window.scrollY > 400);
+/* ---- Custom Cross Cursor ---- */
+const cursorEl   = document.getElementById('cursor-cross');
+const cursorRing = document.getElementById('cursor-ring');
+const spotlight  = document.getElementById('spotlight');
+
+let mouseX = 0, mouseY = 0;
+let ringX  = 0, ringY  = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursorEl.style.left  = mouseX + 'px';
+  cursorEl.style.top   = mouseY + 'px';
+  spotlight.style.left = mouseX + 'px';
+  spotlight.style.top  = mouseY + 'px';
+});
+
+/* Lagging ring for smooth follow */
+function animateRing() {
+  ringX += (mouseX - ringX) * 0.1;
+  ringY += (mouseY - ringY) * 0.1;
+  cursorRing.style.left = ringX + 'px';
+  cursorRing.style.top  = ringY + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+/* Cursor trail particles */
+const trailPool = [];
+const TRAIL_COUNT = 12;
+for (let i = 0; i < TRAIL_COUNT; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'cursor-trail';
+  dot.style.opacity = '0';
+  document.body.appendChild(dot);
+  trailPool.push({ el: dot, x: 0, y: 0 });
+}
+
+let trailIndex = 0;
+document.addEventListener('mousemove', e => {
+  const dot = trailPool[trailIndex];
+  dot.x = e.clientX; dot.y = e.clientY;
+  dot.el.style.left = e.clientX + 'px';
+  dot.el.style.top  = e.clientY + 'px';
+  dot.el.style.opacity = '0.6';
+  dot.el.style.background = `rgba(201,168,76,${0.3 + Math.random()*0.4})`;
+  dot.el.style.width  = (2 + Math.random()*3) + 'px';
+  dot.el.style.height = dot.el.style.width;
+  setTimeout(() => { dot.el.style.opacity = '0'; }, 400);
+  trailIndex = (trailIndex + 1) % TRAIL_COUNT;
+});
+
+/* ---- Magnetic Buttons ---- */
+document.querySelectorAll('.btn-uiverse, .btn-parish, #scrollTop').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width  / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = (e.clientX - cx) * 0.35;
+    const dy = (e.clientY - cy) * 0.35;
+    btn.style.transform = `translate(${dx}px, ${dy}px)`;
   });
-  st.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-  // ---- Navbar scroll shrink ----
-  const navbar = document.querySelector('.navbar');
-  window.addEventListener('scroll', () => {
-    navbar.style.setProperty('--nb-py', window.scrollY > 30 ? '0' : '');
-    navbar.classList.toggle('scrolled', window.scrollY > 30);
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = 'translate(0,0)';
   });
+});
 
-  // ---- Active nav link ----
-  const currentPath = window.location.pathname;
-  document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-    if (link.getAttribute('href') === currentPath) link.classList.add('active');
+/* ---- Split Text Reveal on Scroll ---- */
+document.querySelectorAll('.reveal-text').forEach(el => {
+  const text = el.textContent;
+  el.innerHTML = text.split(' ').map(w => `<span class="word">${w}&nbsp;</span>`).join('');
+});
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('in-view');
   });
+}, { threshold: 0.2 });
 
-  // ---- Auto-dismiss toasts ----
-  document.querySelectorAll('.msg-toast').forEach(t => {
-    setTimeout(() => t.remove(), 4400);
-  });
+document.querySelectorAll('.reveal-text').forEach(el => revealObs.observe(el));
 
-  // ---- Hero Video Sound Toggle ----
-  const heroVideo = document.getElementById("heroVideo");
-  const soundBtn = document.getElementById("soundToggle");
+/* ---- Ambient Sound Toggle ---- */
+let ambientCtx = null, ambientGain = null;
+let ambientOn = false;
 
-  if (heroVideo && soundBtn) {
-    soundBtn.addEventListener("click", () => {
-      heroVideo.muted = !heroVideo.muted;
-      soundBtn.textContent = heroVideo.muted ? "🔊 Sound Off" : "🔇 ";
-    });
+function createAmbientBells() {
+  if (!ambientCtx) {
+    ambientCtx  = new (window.AudioContext || window.webkitAudioContext)();
+    ambientGain = ambientCtx.createGain();
+    ambientGain.gain.value = 0;
+    ambientGain.connect(ambientCtx.destination);
   }
+
+  function playTone(freq, time, duration) {
+    const osc  = ambientCtx.createOscillator();
+    const gain = ambientCtx.createGain();
+    osc.type   = 'sine';
+    osc.frequency.setValueAtTime(freq, time);
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.12, time + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    osc.connect(gain);
+    gain.connect(ambientGain);
+    osc.start(time);
+    osc.stop(time + duration);
+  }
+
+  function scheduleBells() {
+    if (!ambientOn) return;
+    const now   = ambientCtx.currentTime;
+    const chord = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+    chord.forEach((f, i) => playTone(f, now + i * 0.18, 3.5));
+    setTimeout(scheduleBells, 6000 + Math.random() * 4000);
+  }
+
+  ambientGain.gain.linearRampToValueAtTime(1, ambientCtx.currentTime + 1);
+  scheduleBells();
+}
+
+const ambBtn  = document.getElementById('ambient-toggle');
+const iconOn  = document.getElementById('icon-sound-on');
+const iconOff = document.getElementById('icon-sound-off');
+
+ambBtn.addEventListener('click', () => {
+  ambientOn = !ambientOn;
+  iconOn.style.display  = ambientOn ? 'block' : 'none';
+  iconOff.style.display = ambientOn ? 'none'  : 'block';
+  if (ambientOn) {
+    createAmbientBells();
+  } else {
+    if (ambientGain) ambientGain.gain.linearRampToValueAtTime(0, ambientCtx.currentTime + 0.5);
+  }
+});
 </script>
 
-<!-- ===== THREE.JS SCENE ===== -->
+<!-- ===== ENHANCED THREE.JS SCENE ===== -->
 <script>
-  (function () {
-    const W = window.innerWidth, H = window.innerHeight;
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(55, W / H, 1, 2000);
-    camera.position.set(0, 0, 280);
+(function () {
+  const W = window.innerWidth, H = window.innerHeight;
+  const scene    = new THREE.Scene();
+  const camera   = new THREE.PerspectiveCamera(55, W / H, 1, 3000);
+  camera.position.set(0, 0, 280);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(W, H);
-    renderer.setClearColor(0x000000, 0);
-    document.getElementById('three-container').appendChild(renderer.domElement);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 0);
+  document.getElementById('three-container').appendChild(renderer.domElement);
 
-    // ---- Ambient light ----
-    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-    const pLight = new THREE.PointLight(0xd4af37, 1.2, 600);
-    pLight.position.set(50, 100, 150);
-    scene.add(pLight);
+  /* ---- Lighting ---- */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const pLight = new THREE.PointLight(0xd4af37, 1.4, 800);
+  pLight.position.set(60, 100, 180);
+  scene.add(pLight);
 
-    // ---- Helper: cross shape ----
-    function makeCrossShape() {
-      const s = new THREE.Shape();
-      const t = 0.28, h = 1.0, v = 1.4;
-      s.moveTo(-t, v); s.lineTo(t, v);
-      s.lineTo(t, t); s.lineTo(h, t);
-      s.lineTo(h, -t); s.lineTo(t, -t);
-      s.lineTo(t, -v); s.lineTo(-t, -v);
-      s.lineTo(-t, -t); s.lineTo(-h, -t);
-      s.lineTo(-h, t); s.lineTo(-t, t);
-      s.closePath();
-      return s;
-    }
+  const pLight2 = new THREE.PointLight(0xffe0a0, 0.6, 500);
+  pLight2.position.set(-80, -60, 100);
+  scene.add(pLight2);
 
-    // ---- Large central floating cross ----
-    const extrudeSettings = { depth: 0.18, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.04, bevelSegments: 3 };
-    const crossGeo = new THREE.ExtrudeGeometry(makeCrossShape(), extrudeSettings);
-    crossGeo.scale(28, 28, 28);
-    const crossMat = new THREE.MeshStandardMaterial({
-      color: 0xc9a84c,
-      metalness: 0.72,
-      roughness: 0.28,
-      emissive: 0x3a2800,
-      emissiveIntensity: 0.3,
-      transparent: true,
-      opacity: 0.55,
+  /* ---- Cross shape ---- */
+  function makeCrossShape(t = 0.28, h = 1.0, v = 1.4) {
+    const s = new THREE.Shape();
+    s.moveTo(-t,v); s.lineTo(t,v); s.lineTo(t,t); s.lineTo(h,t);
+    s.lineTo(h,-t); s.lineTo(t,-t); s.lineTo(t,-v); s.lineTo(-t,-v);
+    s.lineTo(-t,-t); s.lineTo(-h,-t); s.lineTo(-h,t); s.lineTo(-t,t);
+    s.closePath();
+    return s;
+  }
+
+  /* ---- Large central cross ---- */
+  const extOpts = { depth: 0.18, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.04, bevelSegments: 4 };
+  const crossGeo = new THREE.ExtrudeGeometry(makeCrossShape(), extOpts);
+  crossGeo.scale(28, 28, 28);
+  const crossMat = new THREE.MeshStandardMaterial({
+    color: 0xc9a84c, metalness: 0.78, roughness: 0.22,
+    emissive: 0x3a2800, emissiveIntensity: 0.35,
+    transparent: true, opacity: 0.6,
+  });
+  const centralCross = new THREE.Mesh(crossGeo, crossMat);
+  centralCross.position.set(0, 10, -60);
+  scene.add(centralCross);
+
+  /* ---- Light beams ---- */
+  const beamGroup = new THREE.Group();
+  scene.add(beamGroup);
+  const beamAngles = [0, Math.PI/2, Math.PI, 3*Math.PI/2, Math.PI/4, 3*Math.PI/4, 5*Math.PI/4, 7*Math.PI/4];
+  beamAngles.forEach(angle => {
+    const bGeo = new THREE.CylinderGeometry(0.5, 2, 180, 4, 1, true);
+    const bMat = new THREE.MeshBasicMaterial({
+      color: 0xd4af37, transparent: true, opacity: 0.025, side: THREE.DoubleSide
     });
-    const centralCross = new THREE.Mesh(crossGeo, crossMat);
-    centralCross.position.set(0, 10, -60);
-    scene.add(centralCross);
+    const beam = new THREE.Mesh(bGeo, bMat);
+    beam.rotation.z = angle + Math.PI/2;
+    beam.position.set(Math.cos(angle)*60, Math.sin(angle)*60, -100);
+    beamGroup.add(beam);
+  });
 
-    // ---- Orbiting smaller crosses ----
-    const orbitCrosses = [];
-    const orbitCount = 6;
-    for (let i = 0; i < orbitCount; i++) {
-      const g = new THREE.ExtrudeGeometry(makeCrossShape(), { depth: 0.12, bevelEnabled: false });
-      g.scale(5, 5, 5);
-      const m = new THREE.MeshStandardMaterial({
-        color: 0xd4af37,
-        metalness: 0.6,
-        roughness: 0.4,
-        transparent: true,
-        opacity: 0.35 + Math.random() * 0.2,
-      });
-      const mesh = new THREE.Mesh(g, m);
-      const angle = (i / orbitCount) * Math.PI * 2;
-      const radius = 90 + Math.random() * 40;
-      mesh.userData = {
-        angle,
-        radius,
-        speed: 0.0004 + Math.random() * 0.0004,
-        yOffset: (Math.random() - 0.5) * 60,
-        tilt: (Math.random() - 0.5) * 0.8,
-      };
-      scene.add(mesh);
-      orbitCrosses.push(mesh);
-    }
-
-    // ---- Particle field (star-like dots) ----
-    const pCount = 1200;
-    const pPositions = new Float32Array(pCount * 3);
-    const pColors    = new Float32Array(pCount * 3);
-    for (let i = 0; i < pCount; i++) {
-      pPositions[i * 3]     = (Math.random() - 0.5) * 600;
-      pPositions[i * 3 + 1] = (Math.random() - 0.5) * 600;
-      pPositions[i * 3 + 2] = (Math.random() - 0.5) * 300;
-      const warm = Math.random();
-      pColors[i * 3]     = 0.6 + warm * 0.4;
-      pColors[i * 3 + 1] = 0.5 + warm * 0.3;
-      pColors[i * 3 + 2] = 0.1 + warm * 0.2;
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-    pGeo.setAttribute('color',    new THREE.BufferAttribute(pColors,    3));
-    const pMat = new THREE.PointsMaterial({ size: 1.4, vertexColors: true, transparent: true, opacity: 0.55 });
-    const particles = new THREE.Points(pGeo, pMat);
-    scene.add(particles);
-
-    // ---- Cross-shaped particle cluster ----
-    const cpCount = 900;
-    const cpPositions = new Float32Array(cpCount * 3);
-    for (let i = 0; i < cpCount; i++) {
-      let x = 0, y = 0;
-      if (Math.random() > 0.5) { x = (Math.random() - 0.5) * 120; y = (Math.random() - 0.3) * 8; }
-      else                      { x = (Math.random() - 0.5) * 8;   y = (Math.random() - 0.5) * 170; }
-      cpPositions[i * 3]     = x;
-      cpPositions[i * 3 + 1] = y;
-      cpPositions[i * 3 + 2] = (Math.random() - 0.5) * 40;
-    }
-    const cpGeo = new THREE.BufferGeometry();
-    cpGeo.setAttribute('position', new THREE.BufferAttribute(cpPositions, 3));
-    const cpMat = new THREE.PointsMaterial({ color: 0xd4af37, size: 1.8, transparent: true, opacity: 0.3 });
-    const crossParticles = new THREE.Points(cpGeo, cpMat);
-    crossParticles.position.set(0, 0, -30);
-    scene.add(crossParticles);
-
-    // ---- Mouse parallax ----
-    let mx = 0, my = 0;
-    document.addEventListener('mousemove', e => {
-      mx = (e.clientX / window.innerWidth  - 0.5) * 2;
-      my = (e.clientY / window.innerHeight - 0.5) * 2;
+  /* ---- Orbiting smaller crosses ---- */
+  const orbitCrosses = [];
+  for (let i = 0; i < 8; i++) {
+    const g = new THREE.ExtrudeGeometry(makeCrossShape(0.3, 1, 1.5), { depth: 0.1, bevelEnabled: false });
+    g.scale(4 + Math.random() * 3, 4 + Math.random() * 3, 4);
+    const m = new THREE.MeshStandardMaterial({
+      color: 0xd4af37, metalness: 0.6, roughness: 0.4,
+      transparent: true, opacity: 0.25 + Math.random() * 0.25,
     });
+    const mesh = new THREE.Mesh(g, m);
+    const angle  = (i / 8) * Math.PI * 2;
+    const radius = 80 + Math.random() * 60;
+    mesh.userData = {
+      angle, radius,
+      speed: 0.0003 + Math.random() * 0.0005,
+      yOffset: (Math.random() - 0.5) * 70,
+      tilt: (Math.random() - 0.5) * 0.9,
+      bobPhase: Math.random() * Math.PI * 2,
+    };
+    scene.add(mesh);
+    orbitCrosses.push(mesh);
+  }
 
-    // ---- Clock ----
-    const clock = new THREE.Clock();
+  /* ---- Star particles ---- */
+  const pCount = 1800;
+  const pPos = new Float32Array(pCount * 3);
+  const pCol = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount; i++) {
+    pPos[i*3]   = (Math.random()-0.5)*700;
+    pPos[i*3+1] = (Math.random()-0.5)*700;
+    pPos[i*3+2] = (Math.random()-0.5)*350;
+    const w = Math.random();
+    pCol[i*3]   = 0.55 + w*0.45;
+    pCol[i*3+1] = 0.45 + w*0.35;
+    pCol[i*3+2] = 0.05 + w*0.25;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  pGeo.setAttribute('color',    new THREE.BufferAttribute(pCol, 3));
+  const pMat = new THREE.PointsMaterial({ size: 1.6, vertexColors: true, transparent: true, opacity: 0.55 });
+  const stars = new THREE.Points(pGeo, pMat);
+  scene.add(stars);
 
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+  /* ---- Cross particle cluster ---- */
+  const cpCount = 1200;
+  const cpPos = new Float32Array(cpCount * 3);
+  for (let i = 0; i < cpCount; i++) {
+    let x = 0, y = 0;
+    if (Math.random() > 0.5) { x = (Math.random()-0.5)*140; y = (Math.random()-0.3)*9; }
+    else                      { x = (Math.random()-0.5)*9;   y = (Math.random()-0.5)*200; }
+    cpPos[i*3]   = x;
+    cpPos[i*3+1] = y;
+    cpPos[i*3+2] = (Math.random()-0.5)*50;
+  }
+  const cpGeo = new THREE.BufferGeometry();
+  cpGeo.setAttribute('position', new THREE.BufferAttribute(cpPos, 3));
+  const cpMat = new THREE.PointsMaterial({ color: 0xd4af37, size: 1.6, transparent: true, opacity: 0.28 });
+  const crossParticles = new THREE.Points(cpGeo, cpMat);
+  crossParticles.position.set(0, 0, -30);
+  scene.add(crossParticles);
 
-      // Central cross rotation + float
-      centralCross.rotation.y  = t * 0.12;
-      centralCross.rotation.x  = Math.sin(t * 0.18) * 0.06;
-      centralCross.position.y  = 10 + Math.sin(t * 0.4) * 8;
-      centralCross.position.x  = mx * 12;
+  /* ---- Golden rings ---- */
+  const rings = [];
+  for (let i = 0; i < 3; i++) {
+    const rGeo = new THREE.TorusGeometry(40 + i*30, 0.3, 8, 80);
+    const rMat = new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.06 + i*0.02 });
+    const ring = new THREE.Mesh(rGeo, rMat);
+    ring.rotation.x = Math.PI / 2 + i * 0.3;
+    ring.position.set(0, 0, -80 - i*20);
+    ring.userData = { speed: 0.001 + i * 0.0005, phase: i * Math.PI / 3 };
+    scene.add(ring);
+    rings.push(ring);
+  }
 
-      // Orbiting crosses
-      orbitCrosses.forEach(c => {
-        c.userData.angle += c.userData.speed;
-        const a = c.userData.angle;
-        const r = c.userData.radius;
-        c.position.x = Math.cos(a) * r;
-        c.position.y = c.userData.yOffset + Math.sin(t * 0.3 + a) * 20;
-        c.position.z = Math.sin(a) * r * 0.4 - 80;
-        c.rotation.y = a + t * 0.2;
-        c.rotation.x = Math.sin(t * 0.15) * c.userData.tilt;
-      });
+  /* ---- Mouse parallax ---- */
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
 
-      // Particles drift
-      particles.rotation.y = t * 0.006;
-      particles.rotation.x = t * 0.002;
+  const clock = new THREE.Clock();
 
-      crossParticles.rotation.y = t * 0.05;
-      crossParticles.position.y = Math.sin(t * 0.25) * 6 + mx * -8;
-      crossParticles.position.x = mx * 16;
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
 
-      // Camera subtle parallax
-      camera.position.x += (mx * 18 - camera.position.x) * 0.025;
-      camera.position.y += (-my * 12 - camera.position.y) * 0.025;
-      camera.lookAt(scene.position);
+    centralCross.rotation.y = t * 0.1;
+    centralCross.rotation.x = Math.sin(t * 0.15) * 0.07;
+    centralCross.position.y = 10 + Math.sin(t * 0.38) * 9;
+    centralCross.position.x = mx * 10;
+    crossMat.emissiveIntensity = 0.3 + Math.sin(t * 0.6) * 0.12;
 
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      const w = window.innerWidth, h = window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+    beamGroup.rotation.z = t * 0.02;
+    beamGroup.children.forEach((b, i) => {
+      b.material.opacity = 0.02 + Math.sin(t * 0.4 + i) * 0.01;
     });
 
-    // Reduce opacity on scroll for readability
-    window.addEventListener('scroll', () => {
-      const t = document.getElementById('three-container');
-      const opacity = Math.max(0.08, 0.35 - window.scrollY * 0.0008);
-      t.style.opacity = opacity;
+    orbitCrosses.forEach(c => {
+      c.userData.angle += c.userData.speed;
+      const a = c.userData.angle;
+      const r = c.userData.radius;
+      c.position.x = Math.cos(a) * r;
+      c.position.y = c.userData.yOffset + Math.sin(t * 0.28 + c.userData.bobPhase) * 22;
+      c.position.z = Math.sin(a) * r * 0.4 - 80;
+      c.rotation.y = a + t * 0.15;
+      c.rotation.x = Math.sin(t * 0.12) * c.userData.tilt;
     });
 
-  })();
+    stars.rotation.y = t * 0.005;
+    stars.rotation.x = t * 0.002;
+
+    crossParticles.rotation.y = t * 0.04;
+    crossParticles.position.y = Math.sin(t * 0.22) * 7 + mx * -7;
+    crossParticles.position.x = mx * 15;
+
+    rings.forEach(r => {
+      r.rotation.z = t * r.userData.speed;
+      r.rotation.x = Math.PI/2 + Math.sin(t * 0.1 + r.userData.phase) * 0.15;
+    });
+
+    camera.position.x += (mx * 20 - camera.position.x) * 0.022;
+    camera.position.y += (-my * 14 - camera.position.y) * 0.022;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+
+  /* Reduce opacity on scroll for readability */
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('three-container');
+    el.style.opacity = Math.max(0.06, 0.38 - window.scrollY * 0.0007);
+  });
+})();
 </script>
 
 </body>

@@ -53,6 +53,10 @@ class ParishLeader(models.Model):
         ("kaikaran", "Kaikaran (കൈക്കാരൻ)"),
         ("secretary", "Secretary (സെക്രട്ടറി)"),
         ("church_servant", "Church Servant (ദേവാലയ ശുശ്രൂഷി)"),
+
+        # ✅ NEW ROLES
+        ("provincial", "Provincial (പ്രൊവിൻഷ്യൽ)"),
+        ("vice_chairman", "Vice Chairman (വൈസ് ചെയർമാൻ)"),
     ]
 
     parish = models.ForeignKey(
@@ -73,4 +77,3 @@ class ParishLeader(models.Model):
 
     def __str__(self):
         return f"{self.get_role_display()} - {self.name}"
-    

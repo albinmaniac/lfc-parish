@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap');
+:root {
+--red:       #991b1b;
+--red-light: #fee2e2;
+--red-mid:   #fca5a5;
+--ink:       #1c1917;
+--ink-mid:   #44403c;
+--ink-soft:  #78716c;
+--stone:     #f5f5f4;
+--border:    #e7e5e4;
+--white:     #ffffff;
+--green-bg:  #dcfce7;
+--green-fg:  #166534;
+--slate-bg:  #f1f5f9;
+--slate-fg:  #475569;
+--radius:    14px;
+--shadow:    0 20px 60px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.nd-page {
+font-family: 'DM Sans', sans-serif;
+background: #fafaf9;
+min-height: 100vh;
+padding: 48px 16px 80px;
+  }
+.nd-container {
+max-width: 860px;
+margin: 0 auto;
+  }
+/* ── STYLED BACK BUTTON ── */
+.nd-back-wrapper {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 24px;
+text-decoration: none;
+  }
+.nd-back-label {
+font-size: 13px;
+font-weight: 500;
+color: var(--ink-soft);
+letter-spacing: 0.01em;
+transition: color .2s;
+  }
+.nd-back-wrapper:hover .nd-back-label {
+color: var(--red);
+  }
+
+/* ── BUTTON: fixed to 36×36 ── */
+.styled-wrapper .button {
+  display: block;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  overflow: hidden;
+  outline: none;
+  background-color: transparent;
+  cursor: pointer;
+  border: 0;
+}
+.styled-wrapper .button:before {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  inset: 2px;
+  border: 2px solid var(--ink);
+  transition:
+    opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+    transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+}
+.styled-wrapper .button:after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  inset: 2px;
+  border: 2.5px solid #991b1b;
+  transform: scale(1.3);
+  transition:
+    opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+}
+.styled-wrapper .button:hover:before,
+.styled-wrapper .button:focus:before {
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.styled-wrapper .button:hover:after,
+.styled-wrapper .button:focus:after {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+    transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+}
+.styled-wrapper .button-box {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* ── KEY FIX: icon size + centering math for 36px button ── */
+.styled-wrapper .button-elem {
+  display: block;
+  width: 14px;          /* icon width                          */
+  height: 14px;         /* icon height                         */
+  margin: 11px 4px 0 7px; /* top=(36-14)/2≈11, left+right=11≈icon centre */
+  flex-shrink: 0;
+}
+.styled-wrapper .button-elem svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+/* translateX = -(left-margin + icon-width + right-margin) = -(7+14+4)=25px */
+.styled-wrapper .button:hover .button-box,
+.styled-wrapper .button:focus .button-box {
+  transition: 0.4s;
+  transform: translateX(-25px);
+}
+.styled-wrapper .arrow-icon path {
+  fill: var(--ink);
+}
+
+/* ── CARD ── */
+.nd-card {
+background: var(--white);
+border-radius: var(--radius);
+border: 1px solid var(--border);
+box-shadow: var(--shadow);
+overflow: hidden;
+  }
+/* ── IMAGE WRAPPER ── */
+.nd-image-wrap {
+background: var(--stone);
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 28px;
+max-height: 520px;
+overflow: hidden;
+  }
+.nd-image-wrap img {
+max-width: 100%;
+max-height: 460px;
+width: auto;
+height: auto;
+display: block;
+border-radius: 8px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+object-fit: contain;
+  }
+/* ── HEADER STRIP ── */
+.nd-header {
+padding: 32px 38px 28px;
+border-bottom: 1px solid var(--border);
+  }
+.nd-status-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+flex-wrap: wrap;
+margin-bottom: 16px;
+  }
+.nd-status {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-size: 11.5px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+padding: 5px 13px;
+border-radius: 100px;
+  }
+.nd-status-dot {
+width: 6px; height: 6px;
+border-radius: 50%;
+flex-shrink: 0;
+  }
+.nd-status.active  { background: var(--green-bg); color: var(--green-fg); }
+.nd-status.active  .nd-status-dot { background: var(--green-fg); }
+.nd-status.inactive { background: var(--slate-bg); color: var(--slate-fg); }
+.nd-status.inactive .nd-status-dot { background: var(--slate-fg); }
+.nd-title {
+font-family: 'Playfair Display', Georgia, serif;
+font-size: 28px;
+font-weight: 700;
+line-height: 1.35;
+color: var(--ink);
+margin-bottom: 14px;
+  }
+.nd-meta {
+display: flex;
+flex-wrap: wrap;
+gap: 18px;
+font-size: 13px;
+color: var(--ink-soft);
+  }
+.nd-meta-item {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+  }
+.nd-meta-item svg { color: var(--red); flex-shrink: 0; }
+/* ── BODY ── */
+.nd-body {
+padding: 32px 38px;
+  }
+/* ── CONTENT ── */
+.nd-section-label {
+font-size: 10.5px;
+font-weight: 700;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(--red);
+margin-bottom: 12px;
+  }
+.nd-content-text {
+font-size: 15.5px;
+line-height: 1.8;
+color: var(--ink-mid);
+white-space: pre-wrap;
+  }
+/* ── DIVIDER ── */
+.nd-divider {
+border: none;
+border-top: 1px solid var(--border);
+margin: 30px 0;
+  }
+/* ── FILES SECTION ── */
+.nd-files-header {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 16px;
+  }
+.nd-files-icon-wrap {
+width: 36px; height: 36px;
+background: var(--red-light);
+border-radius: 9px;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+  }
+.nd-files-icon-wrap svg { color: var(--red); }
+.nd-files-title {
+font-size: 15px;
+font-weight: 600;
+color: var(--ink);
+  }
+.nd-files-count {
+margin-left: auto;
+font-size: 11.5px;
+font-weight: 600;
+color: var(--ink-soft);
+background: var(--stone);
+border: 1px solid var(--border);
+border-radius: 100px;
+padding: 3px 10px;
+  }
+.nd-files-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+gap: 12px;
+  }
+.nd-file-card {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 14px 16px;
+background: var(--stone);
+border: 1.5px solid var(--border);
+border-radius: 10px;
+text-decoration: none;
+transition: border-color .2s, box-shadow .2s, background .2s;
+cursor: pointer;
+  }
+.nd-file-card:hover {
+border-color: var(--red-mid);
+background: #fff8f8;
+box-shadow: 0 4px 14px rgba(153,27,27,.08);
+  }
+.nd-file-icon {
+width: 38px; height: 38px;
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+font-size: 18px;
+  }
+.icon-pdf   { background: #fef2f2; }
+.icon-img   { background: #eff6ff; }
+.icon-doc   { background: #eff6ff; }
+.icon-xls   { background: #f0fdf4; }
+.icon-zip   { background: #fefce8; }
+.icon-other { background: var(--stone); }
+.nd-file-info { overflow: hidden; }
+.nd-file-name {
+font-size: 13px;
+font-weight: 600;
+color: var(--ink);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+  }
+.nd-file-meta {
+font-size: 11.5px;
+color: var(--ink-soft);
+margin-top: 2px;
+  }
+.nd-file-dl {
+margin-left: auto;
+flex-shrink: 0;
+color: var(--ink-soft);
+transition: color .2s;
+  }
+.nd-file-card:hover .nd-file-dl { color: var(--red); }
+/* ── ACTIONS ── */
+.nd-actions {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+padding: 22px 38px 30px;
+border-top: 1px solid var(--border);
+background: var(--stone);
+  }
+.nd-btn {
+display: inline-flex;
+align-items: center;
+gap: 7px;
+padding: 9px 20px;
+font-size: 13px;
+font-weight: 600;
+border-radius: 100px;
+text-decoration: none;
+transition: .22s;
+cursor: pointer;
+border: none;
+font-family: 'DM Sans', sans-serif;
+  }
+.nd-btn-edit {
+background: var(--ink);
+color: var(--white);
+  }
+.nd-btn-edit:hover { background: var(--red); color: var(--white); }
+.nd-btn-delete {
+background: var(--red-light);
+color: var(--red);
+  }
+.nd-btn-delete:hover { background: var(--red); color: var(--white); }
+@media (max-width: 600px) {
+.nd-header, .nd-body { padding: 24px 22px; }
+.nd-actions { padding: 18px 22px 26px; }
+.nd-title { font-size: 22px; }
+.nd-image-wrap { padding: 18px; }
+.nd-files-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="nd-page">
+<div class="nd-container">
+
+<!-- Back -->
+<a href="{% url 'notice_list' %}" class="nd-back-wrapper">
+  <div class="styled-wrapper">
+    <button class="button" aria-label="Go back">
+      <div class="button-box">
+        <span class="button-elem">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="arrow-icon">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+          </svg>
+        </span>
+        <span class="button-elem">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="arrow-icon">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+          </svg>
+        </span>
+      </div>
+    </button>
+  </div>
+  <span class="nd-back-label">Back to Notices</span>
+</a>
+
+<div class="nd-card">
+<!-- Image (natural size, no cropping) -->
+      {% if notice.image %}
+<div class="nd-image-wrap">
+<img src="{{ notice.image.url }}" alt="{{ notice.title }}">
+</div>
+      {% endif %}
+<!-- Header -->
+<div class="nd-header">
+<div class="nd-status-row">
+          {% if notice.is_active %}
+<span class="nd-status active">
+<span class="nd-status-dot"></span>Active
+</span>
+          {% else %}
+<span class="nd-status inactive">
+<span class="nd-status-dot"></span>Inactive
+</span>
+          {% endif %}
+</div>
+<h1 class="nd-title">{{ notice.title }}</h1>
+<div class="nd-meta">
+<span class="nd-meta-item">
+<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M16 2v4M8 2v4M3 10h18"/>
+</svg>
+            {{ notice.created_at|date:"F d, Y" }}
+</span>
+          {% if notice.created_by %}
+<span class="nd-meta-item">
+<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="8" r="4"/>
+<path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+</svg>
+            {{ notice.created_by.username }}
+</span>
+          {% endif %}
+          {% if notice.category %}
+<span class="nd-meta-item">
+<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M4 4h6l2 2h8v14H4z"/>
+</svg>
+            {{ notice.category }}
+</span>
+          {% endif %}
+</div>
+</div>
+<!-- Body -->
+<div class="nd-body">
+<!-- Content -->
+<p class="nd-section-label">Notice Details</p>
+<div class="nd-content-text">{{ notice.content }}</div>
+<!-- Attachments / Uploaded Files -->
+        {% if notice.files.all or notice.attachments.all %}
+<hr class="nd-divider">
+<div class="nd-files-header">
+<div class="nd-files-icon-wrap">
+<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
+</svg>
+</div>
+<span class="nd-files-title">Attached Files</span>
+<span class="nd-files-count">
+            {% if notice.files.all %}{{ notice.files.count }}{% elif notice.attachments.all %}{{ notice.attachments.count }}{% endif %} file(s)
+</span>
+</div>
+<div class="nd-files-grid">
+          {% for file in notice.files.all %}
+            {% with fname=file.file.name|lower %}
+<a href="{{ file.file.url }}" class="nd-file-card" target="_blank" download>
+<div class="nd-file-icon
+                {% if '.pdf' in fname %}icon-pdf
+                {% elif '.jpg' in fname or '.jpeg' in fname or '.png' in fname or '.gif' in fname or '.webp' in fname %}icon-img
+                {% elif '.doc' in fname %}icon-doc
+                {% elif '.xls' in fname %}icon-xls
+                {% elif '.zip' in fname or '.rar' in fname %}icon-zip
+                {% else %}icon-other{% endif %}">
+                {% if '.pdf' in fname %}📄
+                {% elif '.jpg' in fname or '.jpeg' in fname or '.png' in fname or '.gif' in fname or '.webp' in fname %}🖼️
+                {% elif '.doc' in fname %}📝
+                {% elif '.xls' in fname %}📊
+                {% elif '.zip' in fname or '.rar' in fname %}🗜️
+                {% else %}📎{% endif %}
+</div>
+<div class="nd-file-info">
+<div class="nd-file-name">{{ file.file.name|slice:"20:" }}</div>
+<div class="nd-file-meta">Click to download</div>
+</div>
+<svg class="nd-file-dl" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+<polyline points="7 10 12 15 17 10"/>
+<line x1="12" y1="15" x2="12" y2="3"/>
+</svg>
+</a>
+            {% endwith %}
+          {% endfor %}
+</div>
+        {% endif %}
+</div><!-- /nd-body -->
+<!-- Actions -->
+      {% if can_manage_notices %}
+<div class="nd-actions">
+<a href="{% url 'notice_edit' notice.pk %}" class="nd-btn nd-btn-edit">
+<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+</svg>
+          Edit Notice
+</a>
+        {% if user.role == "admin" %}
+<a href="{% url 'notice_delete' notice.pk %}" class="nd-btn nd-btn-delete">
+<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+<polyline points="3 6 5 6 21 6"/>
+<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+<path d="M10 11v6M14 11v6"/>
+<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+</svg>
+          Delete
+</a>
+        {% endif %}
+</div>
+      {% endif %}
+</div><!-- /nd-card -->
+</div>
+</div>
+{% endblock %}

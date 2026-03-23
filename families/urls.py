@@ -6,6 +6,7 @@ from .views import (
     FamilyDeleteView,
     FamilyUpdateView,
     FamilyMemberCreateView,
+    FamilyMemberDetailView,
     FamilyMemberUpdateView,
     FamilyMemberDeleteView,
     MyFamilyView,FamilyUnitListView,FamilyUnitDetailView,
@@ -27,6 +28,8 @@ urlpatterns = [
         FamilyMemberCreateView.as_view(),
         name="member_add"
     ),
+
+    path("members/<int:pk>/", FamilyMemberDetailView.as_view(), name="member_detail"),
     path(
         "member/<int:pk>/edit/",
         FamilyMemberUpdateView.as_view(),

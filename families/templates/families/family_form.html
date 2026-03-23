@@ -3,7 +3,7 @@
 {% block content %}
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Sora:wght@300;400;500;600&display=swap');
 
   :root {
     --cream: #faf7f2;
@@ -12,397 +12,893 @@
     --brown: #6b4c35;
     --amber: #c97d3a;
     --amber-light: #e8a96b;
+    --amber-glow: rgba(201, 125, 58, 0.18);
     --muted: #9a8a7a;
     --border: #e2d8ce;
+    --border-focus: #c97d3a;
     --card-bg: #ffffff;
-    --shadow: 0 8px 40px rgba(107, 76, 53, 0.12);
-    --shadow-hover: 0 16px 60px rgba(107, 76, 53, 0.2);
+    --success: #2d7a4f;
+    --success-light: rgba(45, 122, 79, 0.12);
+    --error: #c0392b;
+    --error-light: rgba(192, 57, 43, 0.1);
+    --shadow: 0 8px 60px rgba(107, 76, 53, 0.14);
+    --shadow-hover: 0 20px 80px rgba(107, 76, 53, 0.22);
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background-color: var(--cream);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Sora', sans-serif;
     min-height: 100vh;
   }
 
-  .family-form-wrapper {
+  /* ──────────────────────────── WRAPPER ──────────────────────────── */
+  .ffwrap {
     min-height: 100vh;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 3rem 1rem 4rem;
+    padding: 3rem 1rem 5rem;
     background:
-      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201, 125, 58, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(107, 76, 53, 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 90% 60% at 5% 0%, rgba(201,125,58,.09) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 80% at 95% 100%, rgba(107,76,53,.08) 0%, transparent 55%),
       var(--cream);
   }
 
-  .form-card {
+  /* ──────────────────────────── CARD ──────────────────────────── */
+  .ff-card {
     width: 100%;
-    max-width: 640px;
+    max-width: 660px;
     background: var(--card-bg);
-    border-radius: 24px;
+    border-radius: 28px;
     box-shadow: var(--shadow);
     overflow: hidden;
-    transition: box-shadow 0.4s ease;
+    transition: box-shadow .5s ease;
+    animation: cardRise .6s cubic-bezier(.22,.68,0,1.2) both;
   }
-
-  .form-card:hover {
-    box-shadow: var(--shadow-hover);
+  @keyframes cardRise {
+    from { opacity: 0; transform: translateY(32px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
+  .ff-card:hover { box-shadow: var(--shadow-hover); }
 
-  /* Header */
-  .form-header {
-    background: linear-gradient(135deg, var(--brown) 0%, #3d2b1a 100%);
-    padding: 2.5rem 3rem 2rem;
+  /* ──────────────────────────── PROGRESS BAR ──────────────────────────── */
+  .ff-progress-bar {
+    height: 4px;
+    background: var(--border);
     position: relative;
     overflow: hidden;
   }
-
-  .form-header::before {
-    content: '';
+  .ff-progress-fill {
     position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: rgba(201, 125, 58, 0.15);
+    inset: 0 100% 0 0;
+    background: linear-gradient(90deg, var(--amber) 0%, var(--amber-light) 100%);
+    transition: right 0.6s cubic-bezier(.4,0,.2,1);
+    border-radius: 0 2px 2px 0;
   }
 
-  .form-header::after {
+  /* ──────────────────────────── HEADER ──────────────────────────── */
+  .ff-header {
+    background: linear-gradient(135deg, #3d2b1a 0%, var(--brown) 60%, #8a5c3a 100%);
+    padding: 2.5rem 3rem 2.2rem;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+  .ff-header::before {
     content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='29' fill='none' stroke='rgba(255,255,255,.04)' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='18' fill='none' stroke='rgba(255,255,255,.03)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+    opacity: .7;
+  }
+  .ff-header .blob1 {
+    position: absolute; top: -50px; right: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(201,125,58,.18);
+    filter: blur(30px);
+    transition: transform 1s ease;
+  }
+  .ff-header .blob2 {
+    position: absolute; bottom: -80px; left: 30%;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    filter: blur(20px);
+  }
+  .ff-header:hover .blob1 { transform: scale(1.15) translate(8px,-8px); }
+
+  .ff-icon {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,.13);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,.18);
+    position: relative; z-index: 1;
+    transition: transform .3s ease, background .3s ease;
+  }
+  .ff-header:hover .ff-icon {
+    transform: rotate(-4deg) scale(1.08);
+    background: rgba(255,255,255,.2);
+  }
+
+  .ff-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 700;
+    color: #fff; margin-bottom: .35rem;
+    letter-spacing: -.01em; position: relative; z-index: 1;
+  }
+  .ff-header p {
+    color: rgba(255,255,255,.55); font-size: .83rem;
+    font-weight: 300; letter-spacing: .03em;
+    position: relative; z-index: 1;
+  }
+
+  /* ──────────────────────────── FIELD COUNTER ──────────────────────────── */
+  .ff-counter {
+    position: absolute; top: 2.5rem; right: 3rem;
+    display: flex; align-items: center; gap: .5rem;
+    z-index: 2;
+  }
+  .ff-counter-pip {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .65rem; font-weight: 600; color: rgba(255,255,255,.5);
+    transition: all .35s ease;
+    position: relative;
+  }
+  .ff-counter-pip.done {
+    background: var(--amber); border-color: var(--amber);
+    color: #fff; transform: scale(1.12);
+    box-shadow: 0 0 0 4px rgba(201,125,58,.25);
+  }
+  .ff-counter-pip.done::after {
+    content: '✓'; font-size: .7rem;
+  }
+  .ff-counter-pip.done span { display: none; }
+
+  /* ──────────────────────────── BODY ──────────────────────────── */
+  .ff-body { padding: 2.5rem 3rem 3rem; }
+
+  /* ──────────────────────────── FIELD GROUP ──────────────────────────── */
+  .ff-field {
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: fieldSlide .4s ease both;
+  }
+  @keyframes fieldSlide {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .ff-field:nth-child(1)  { animation-delay: .07s; }
+  .ff-field:nth-child(2)  { animation-delay: .13s; }
+  .ff-field:nth-child(3)  { animation-delay: .19s; }
+  .ff-field:nth-child(4)  { animation-delay: .25s; }
+  .ff-field:nth-child(5)  { animation-delay: .31s; }
+  .ff-field:nth-child(6)  { animation-delay: .37s; }
+  .ff-field:nth-child(7)  { animation-delay: .43s; }
+  .ff-field:nth-child(8)  { animation-delay: .49s; }
+
+  /* floating-label wrapper */
+  .ff-input-wrap {
+    position: relative;
+  }
+
+  /* The label that floats */
+  .ff-label {
     position: absolute;
-    bottom: -60px;
-    left: 40%;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.04);
+    left: 1.1rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: .92rem; color: var(--muted);
+    pointer-events: none;
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+    background: transparent;
+    padding: 0 .25rem;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  /* For textarea, start label at top */
+  .ff-input-wrap.is-textarea .ff-label {
+    top: 1rem; transform: none;
+  }
+  /* Floated state */
+  .ff-input-wrap.floated .ff-label,
+  .ff-input-wrap:focus-within .ff-label {
+    top: 0; transform: translateY(-50%);
+    font-size: .7rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--amber);
+    background: #fff;
+    padding: 0 .35rem;
+  }
+  .ff-input-wrap.is-textarea.floated .ff-label,
+  .ff-input-wrap.is-textarea:focus-within .ff-label {
+    top: 0; transform: translateY(-50%);
+    font-size: .7rem; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--amber);
+    background: #fff;
+    padding: 0 .35rem;
   }
 
-  .form-header-icon {
-    width: 52px;
-    height: 52px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 1.25rem;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-
-  .form-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.85rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 0.4rem;
-    letter-spacing: -0.02em;
-  }
-
-  .form-header p {
-    color: rgba(255,255,255,0.6);
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-  }
-
-  /* Body */
-  .form-body {
-    padding: 2.5rem 3rem 3rem;
-  }
-
-  /* Field groups */
-  .field-group {
-    margin-bottom: 1.75rem;
-    animation: slideUp 0.4s ease both;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .field-group:nth-child(1) { animation-delay: 0.05s; }
-  .field-group:nth-child(2) { animation-delay: 0.10s; }
-  .field-group:nth-child(3) { animation-delay: 0.15s; }
-  .field-group:nth-child(4) { animation-delay: 0.20s; }
-  .field-group:nth-child(5) { animation-delay: 0.25s; }
-  .field-group:nth-child(6) { animation-delay: 0.30s; }
-
-  .field-label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 0.55rem;
-  }
-
-  /* Override Django form widget styles */
-  .field-group input,
-  .field-group select,
-  .field-group textarea,
-  .field-group input[type="text"],
-  .field-group input[type="email"],
-  .field-group input[type="number"],
-  .field-group input[type="tel"],
-  .field-group input[type="date"],
-  .field-group input[type="password"],
-  .field-group input[type="url"] {
+  /* ── Inputs ── */
+  .ff-field input[type="text"],
+  .ff-field input[type="email"],
+  .ff-field input[type="number"],
+  .ff-field input[type="tel"],
+  .ff-field input[type="date"],
+  .ff-field input[type="password"],
+  .ff-field input[type="url"],
+  .ff-field select,
+  .ff-field textarea {
     width: 100% !important;
-    padding: 0.85rem 1.1rem !important;
+    padding: 1rem 2.8rem 1rem 1.1rem !important;
     border: 1.5px solid var(--border) !important;
-    border-radius: 12px !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.95rem !important;
+    border-radius: 14px !important;
+    font-family: 'Sora', sans-serif !important;
+    font-size: .93rem !important;
     color: var(--ink) !important;
     background: var(--warm-white) !important;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
     outline: none !important;
-    box-shadow: none !important;
     -webkit-appearance: none !important;
     appearance: none !important;
+    transition: border-color .25s, box-shadow .25s, background .25s !important;
+    display: block;
+    box-shadow: none !important;
   }
 
-  .field-group input:focus,
-  .field-group select:focus,
-  .field-group textarea:focus {
-    border-color: var(--amber) !important;
+  .ff-field input:focus,
+  .ff-field select:focus,
+  .ff-field textarea:focus {
+    border-color: var(--border-focus) !important;
     background: #fff !important;
-    box-shadow: 0 0 0 4px rgba(201, 125, 58, 0.12) !important;
+    box-shadow: 0 0 0 4px var(--amber-glow) !important;
   }
 
-  .field-group select {
-    width: 100%;
-    padding: 0.85rem 1.1rem;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    color: var(--ink);
-    background: var(--warm-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1.1rem center;
+  .ff-field.is-valid input,
+  .ff-field.is-valid select,
+  .ff-field.is-valid textarea {
+    border-color: var(--success) !important;
+    background: #fff !important;
+  }
+  .ff-field.is-error input,
+  .ff-field.is-error select,
+  .ff-field.is-error textarea {
+    border-color: var(--error) !important;
+    background: var(--error-light) !important;
+    animation: shake .35s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
+  /* Select custom arrow */
+  .ff-input-wrap select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 1.1rem center !important;
     cursor: pointer;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
   }
 
-  .field-group textarea {
-    width: 100%;
-    padding: 0.85rem 1.1rem;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    color: var(--ink);
-    background: var(--warm-white);
-    resize: vertical;
+  .ff-field textarea {
     min-height: 110px;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    outline: none;
+    resize: vertical;
+    padding-top: 1.1rem !important;
   }
 
-  /* Checkbox & radio */
-  .field-group input[type="checkbox"],
-  .field-group input[type="radio"] {
-    width: auto !important;
-    padding: 0 !important;
+  /* Checkboxes / radios — non-floating-label */
+  .ff-field.is-check { display: flex; align-items: center; gap: .75rem; }
+  .ff-field.is-check input[type="checkbox"],
+  .ff-field.is-check input[type="radio"] {
+    width: 20px !important; height: 20px !important;
     accent-color: var(--amber);
-    width: 18px !important;
-    height: 18px !important;
-    cursor: pointer;
-    border-radius: 4px !important;
+    padding: 0 !important; flex-shrink: 0;
+    cursor: pointer; border-radius: 5px !important;
+  }
+  .ff-check-label {
+    font-size: .9rem; color: var(--ink); cursor: pointer;
+    font-weight: 400; line-height: 1.4;
   }
 
   /* File input */
-  .field-group input[type="file"] {
-    padding: 0.6rem 0.8rem !important;
-    background: var(--warm-white) !important;
+  .ff-field input[type="file"] {
+    padding: .75rem 1rem !important;
     border: 1.5px dashed var(--border) !important;
-    border-radius: 12px !important;
-    cursor: pointer;
-    font-size: 0.85rem !important;
+    border-radius: 14px !important;
+    background: var(--warm-white) !important;
+    font-size: .83rem !important;
     color: var(--muted) !important;
+    cursor: pointer; display: block; width: 100%;
+    transition: border-color .2s, background .2s !important;
   }
-
-  .field-group input[type="file"]:hover {
+  .ff-field input[type="file"]:hover {
     border-color: var(--amber-light) !important;
+    background: #fffaf5 !important;
   }
 
-  .help-text {
-    margin-top: 0.45rem;
-    font-size: 0.78rem;
-    color: var(--muted);
-    font-style: italic;
+  /* ── Status icon ── */
+  .ff-status {
+    position: absolute; right: 1rem; top: 50%;
+    transform: translateY(-50%);
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; pointer-events: none;
+    opacity: 0; transition: opacity .25s, transform .25s;
+    z-index: 3;
+  }
+  .ff-input-wrap.is-textarea .ff-status { top: 1.4rem; transform: none; }
+  .ff-field.is-valid .ff-status {
+    background: var(--success); color: #fff; opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  .ff-input-wrap.is-textarea ~ .ff-status,
+  .ff-field.is-valid .ff-input-wrap.is-textarea .ff-status {
+    transform: scale(1);
+  }
+  .ff-field.is-error .ff-status {
+    background: var(--error); color: #fff; opacity: 1;
+    transform: translateY(-50%) scale(1);
   }
 
-  .error-text {
-    margin-top: 0.4rem;
-    font-size: 0.8rem;
-    color: #c0392b;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+  /* ── Help text ── */
+  .ff-help {
+    font-size: .76rem; color: var(--muted);
+    font-style: italic; margin-top: .4rem;
+    padding-left: .25rem;
+    max-height: 0; overflow: hidden;
+    transition: max-height .3s ease, opacity .3s ease;
+    opacity: 0;
+  }
+  .ff-field:focus-within .ff-help { max-height: 60px; opacity: 1; }
+
+  /* ── Error text ── */
+  .ff-error {
+    font-size: .78rem; color: var(--error);
+    margin-top: .4rem; padding-left: .25rem;
+    display: flex; align-items: center; gap: .3rem;
+  }
+  .ff-error::before { content: '⚠'; font-style: normal; }
+
+  /* ── Char counter ── */
+  .ff-char {
+    position: absolute; bottom: .65rem; right: .9rem;
+    font-size: .7rem; color: var(--muted); pointer-events: none;
+    transition: color .2s; z-index: 3;
+  }
+  .ff-char.warn { color: var(--amber); }
+  .ff-char.over { color: var(--error); }
+
+  /* ── Non-field errors ── */
+  .ff-non-field {
+    background: #fff0ee; border: 1px solid #f5c6c0;
+    border-radius: 14px; padding: .9rem 1.1rem;
+    margin-bottom: 1.75rem; font-size: .87rem; color: var(--error);
   }
 
-  .error-text::before {
-    content: '⚠';
-    font-style: normal;
-  }
-
-  /* Non-field errors */
-  .non-field-errors {
-    background: #fff0ee;
-    border: 1px solid #f5c6c0;
-    border-radius: 12px;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 1.75rem;
-    font-size: 0.88rem;
-    color: #c0392b;
-  }
-
-  /* Divider */
-  .form-divider {
-    height: 1px;
-    background: var(--border);
+  /* ──────────────────────────── DIVIDER ──────────────────────────── */
+  .ff-divider {
+    display: flex; align-items: center; gap: 1rem;
     margin: 2rem 0;
   }
-
-  /* Actions */
-  .form-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap;
+  .ff-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .ff-divider-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border);
   }
+
+  /* ──────────────────────────── SUMMARY STRIP ──────────────────────────── */
+  .ff-summary {
+    background: linear-gradient(90deg, #fdf8f3 0%, #fff9f4 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: .9rem 1.2rem;
+    margin-bottom: 1.75rem;
+    display: flex; align-items: center; gap: 1rem;
+    transition: all .3s;
+  }
+  .ff-summary-bar {
+    flex: 1; height: 6px; background: var(--border);
+    border-radius: 3px; overflow: hidden;
+  }
+  .ff-summary-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), var(--amber-light));
+    border-radius: 3px;
+    width: 0%;
+    transition: width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .ff-summary-label {
+    font-size: .78rem; color: var(--muted); white-space: nowrap;
+    font-weight: 500; min-width: 90px; text-align: right;
+  }
+  .ff-summary-label strong { color: var(--amber); }
+
+  .privacy-note {
+    background: #fff8e8;
+    border: 1px solid #ecd9a3;
+    color: #5f4b1f;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .privacy-note-soft {
+    background: #f7f7f7;
+    border-color: #ddd;
+    color: #444;
+  }
+
+  .consent-box {
+    margin: 16px 0;
+    font-size: 14px;
+  }
+
+  .consent-box input {
+    margin-right: 8px;
+  }
+
+  /* ──────────────────────────── ACTIONS ──────────────────────────── */
+  .ff-actions { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
 
   .btn-submit {
-    padding: 0.85rem 2rem;
+    padding: .9rem 2.2rem;
     background: linear-gradient(135deg, var(--amber) 0%, #b86b28 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-    box-shadow: 0 4px 16px rgba(201, 125, 58, 0.35);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: #fff; border: none; border-radius: 14px;
+    font-family: 'Sora', sans-serif;
+    font-size: .93rem; font-weight: 600;
+    cursor: pointer; letter-spacing: .02em;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+    box-shadow: 0 4px 20px rgba(201,125,58,.4);
+    display: inline-flex; align-items: center; gap: .55rem;
+    position: relative; overflow: hidden;
   }
-
+  .btn-submit::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,.12);
+    transform: translateX(-100%);
+    transition: transform .4s ease;
+  }
+  .btn-submit:hover::after { transform: translateX(0); }
   .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(201, 125, 58, 0.45);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(201,125,58,.5);
   }
+  .btn-submit:active { transform: translateY(-1px); }
+  .btn-submit.loading { opacity: .7; pointer-events: none; }
+  .btn-submit .btn-icon { display: inline-flex; transition: transform .3s; }
+  .btn-submit:hover .btn-icon { transform: scale(1.2) rotate(-5deg); }
 
-  .btn-submit:active {
-    transform: translateY(0);
+  /* Spinner */
+  .spinner {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff;
+    animation: spin .6s linear infinite; display: none;
   }
+  .btn-submit.loading .spinner { display: block; }
+  .btn-submit.loading .btn-label { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   .btn-cancel {
-    padding: 0.85rem 1.5rem;
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 400;
-    cursor: pointer;
-    text-decoration: none;
-    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
+    padding: .9rem 1.5rem;
+    background: transparent; color: var(--muted);
+    border: 1.5px solid var(--border); border-radius: 14px;
+    font-family: 'Sora', sans-serif; font-size: .93rem; font-weight: 400;
+    cursor: pointer; text-decoration: none;
+    transition: border-color .2s, color .2s, background .2s, transform .2s;
+    display: inline-flex; align-items: center; gap: .4rem;
   }
-
   .btn-cancel:hover {
-    border-color: var(--brown);
-    color: var(--brown);
-    background: rgba(107, 76, 53, 0.04);
+    border-color: var(--brown); color: var(--brown);
+    background: rgba(107,76,53,.05); transform: translateX(-3px);
     text-decoration: none;
   }
 
-  /* Responsive */
+  /* ──────────────────────────── TOOLTIP ──────────────────────────── */
+  .ff-tooltip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    font-size: .6rem; font-weight: 700; cursor: help;
+    position: absolute; right: -22px; top: 0;
+    transition: background .2s, color .2s;
+  }
+  .ff-tooltip:hover { background: var(--amber); color: #fff; }
+
+  /* ──────────────────────────── RESPONSIVE ──────────────────────────── */
   @media (max-width: 600px) {
-    .form-header,
-    .form-body {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-    .form-card {
-      border-radius: 18px;
-    }
+    .ff-header, .ff-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .ff-card { border-radius: 20px; }
+    .ff-counter { top: 1.5rem; right: 1.5rem; }
   }
 </style>
 
-<div class="family-form-wrapper">
-  <div class="form-card">
+<div class="ffwrap">
+  <div class="ff-card" id="ffCard">
+
+    <!-- Progress Bar -->
+    <div class="ff-progress-bar">
+      <div class="ff-progress-fill" id="progressFill"></div>
+    </div>
 
     <!-- Header -->
-    <div class="form-header">
-      <div class="form-header-icon">
+    <div class="ff-header" id="ffHeader">
+      <div class="blob1"></div>
+      <div class="blob2"></div>
+
+      <div class="ff-counter" id="ffCounter"></div>
+
+      <div class="ff-icon">
         {% if object %}✏️{% else %}🏡{% endif %}
       </div>
       <h2>{% if object %}Edit Family{% else %}Add New Family{% endif %}</h2>
-      <p>{% if object %}Update the details for this family record{% else %}Fill in the details to register a new family{% endif %}</p>
+      <p>
+        {% if object %}
+          Update the details for this family record
+        {% else %}
+          Fill in the details to register a new family
+        {% endif %}
+      </p>
     </div>
 
     <!-- Body -->
-    <div class="form-body">
-      <form method="post" enctype="multipart/form-data" novalidate>
+    <div class="ff-body">
+      <form method="post" enctype="multipart/form-data" novalidate id="familyForm">
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-        <div class="non-field-errors">
-          {{ form.non_field_errors }}
-        </div>
+        <div class="ff-non-field">{{ form.non_field_errors }}</div>
         {% endif %}
 
+        <!-- 🔒 PRIVACY NOTICE (BEST POSITION) -->
+        <div class="privacy-note">
+          <strong>⚠️ Privacy Notice</strong><br>
+          Please avoid uploading sensitive personal information such as private photos, exact addresses, or confidential details unless necessary.
+        </div>
+
+        <div class="privacy-note privacy-note-soft">
+          <strong>🔒 Privacy Reminder</strong><br>
+          Only upload information you are comfortable sharing within the parish. Avoid sensitive or personal content without consent.
+        </div>
+
+        <!-- Completion progress strip -->
+        <div class="ff-summary" id="ffSummary">
+          <div class="ff-summary-bar">
+            <div class="ff-summary-fill" id="summaryFill"></div>
+          </div>
+          <div class="ff-summary-label" id="summaryLabel">0 fields done</div>
+        </div>
+
+        <!-- FORM FIELDS -->
         {% for field in form %}
-        <div class="field-group">
-          <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}
-          <div class="help-text">{{ field.help_text }}</div>
+        <div class="ff-field" id="field-{{ field.html_name }}" data-field-name="{{ field.html_name }}">
+
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="is-check" style="display:flex;align-items:center;gap:.75rem;">
+              {{ field }}
+              <label class="ff-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            </div>
+
+          {% else %}
+            <div class="ff-input-wrap{% if field.field.widget.input_type == 'textarea' %} is-textarea{% endif %}"
+                 id="wrap-{{ field.html_name }}">
+              {{ field }}
+              <label class="ff-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              <div class="ff-status" id="status-{{ field.html_name }}">✓</div>
+
+              {% if field.field.widget.input_type == 'textarea' %}
+              <div class="ff-char" id="char-{{ field.html_name }}"></div>
+              {% endif %}
+            </div>
           {% endif %}
+
+          {% if field.help_text %}
+          <div class="ff-help">{{ field.help_text }}</div>
+          {% endif %}
+
           {% for error in field.errors %}
-          <div class="error-text">{{ error }}</div>
+          <div class="ff-error">{{ error }}</div>
           {% endfor %}
+
         </div>
         {% endfor %}
 
-        <div class="form-divider"></div>
+        <!-- 🔥 CONSENT CHECKBOX -->
+        <div class="consent-box">
+          <label>
+            <input type="checkbox" required>
+            I confirm that I have obtained consent to share this information.
+          </label>
+        </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">
-            {% if object %}
-              <span>✓</span> Update Family
-            {% else %}
-              <span>+</span> Create Family
-            {% endif %}
+        <span class="form-note">This platform is intended for internal parish use.
+Users are responsible for ensuring they have consent before sharing any personal information.</span>
+
+        <!-- Divider -->
+        <div class="ff-divider">
+          <div class="ff-divider-line"></div>
+          <div class="ff-divider-dot"></div>
+          <div class="ff-divider-dot"></div>
+          <div class="ff-divider-dot"></div>
+          <div class="ff-divider-line"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="ff-actions">
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="btn-icon">{% if object %}✓{% else %}+{% endif %}</span>
+            <span class="btn-label">
+              {% if object %}Update Family{% else %}Create Family{% endif %}
+            </span>
+            <div class="spinner"></div>
           </button>
-          <a href="{% url 'family_list' %}" class="btn-cancel">
-            ← Cancel
-          </a>
+
+          <a href="{% url 'family_list' %}" class="btn-cancel">← Cancel</a>
         </div>
 
       </form>
     </div>
-
   </div>
 </div>
+
+<script>
+(function () {
+  /* ── Helpers ── */
+  const $ = id => document.getElementById(id);
+  const qs = (sel, ctx = document) => ctx.querySelector(sel);
+  const qsa = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+  /* ── Collect all interactive fields ── */
+  const fieldDivs = qsa('.ff-field');
+  const total = fieldDivs.filter(f => !f.querySelector('[type="checkbox"]')).length;
+
+  /* ── Progress pip setup ── */
+  const counter = $('ffCounter');
+  const pips = [];
+  const textFieldDivs = fieldDivs.filter(f => !f.querySelector('[type="checkbox"]'));
+  textFieldDivs.forEach((fd, i) => {
+    const pip = document.createElement('div');
+    pip.className = 'ff-counter-pip';
+    pip.innerHTML = `<span>${i + 1}</span>`;
+    pip.title = `Field ${i + 1}`;
+    counter.appendChild(pip);
+    pips.push({ pip, fd });
+  });
+
+  /* ── Float labels for pre-filled or server-errored fields ── */
+  function shouldFloat(input) {
+    if (!input) return false;
+    if (input.tagName === 'SELECT') return input.value !== '';
+    return input.value && input.value.trim() !== '';
+  }
+
+  fieldDivs.forEach(fd => {
+    const wrap = qs('.ff-input-wrap', fd);
+    if (!wrap) return;
+    const input = qs('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea', fd);
+    if (input && shouldFloat(input)) wrap.classList.add('floated');
+  });
+
+  /* ── Track completion ── */
+  let completed = new Set();
+
+  function updateProgress() {
+    const pct = total === 0 ? 0 : Math.round((completed.size / total) * 100);
+    $('progressFill').style.right = (100 - pct) + '%';
+    $('summaryFill').style.width = pct + '%';
+    const lbl = $('summaryLabel');
+    if (pct === 100) {
+      lbl.innerHTML = '<strong>All done! ✨</strong>';
+    } else {
+      lbl.innerHTML = `<strong>${completed.size}</strong> of ${total} fields`;
+    }
+  }
+  updateProgress();
+
+  /* ── Per-field wiring ── */
+  textFieldDivs.forEach((fd, idx) => {
+    const name = fd.dataset.fieldName;
+    const wrap = qs('.ff-input-wrap', fd);
+    const input = wrap ? qs('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea', wrap) : null;
+    const statusEl = $('status-' + name);
+    const charEl = $('char-' + name);
+    const pip = pips[idx] ? pips[idx].pip : null;
+
+    if (!input) return;
+
+    /* Has server-side error already? */
+    const hasError = qsa('.ff-error', fd).length > 0;
+    if (hasError) {
+      fd.classList.add('is-error');
+      if (statusEl) statusEl.textContent = '✕';
+    }
+
+    /* Float label on focus/blur */
+    function handleFloat() {
+      if (!wrap) return;
+      if (shouldFloat(input)) wrap.classList.add('floated');
+      else wrap.classList.remove('floated');
+    }
+    input.addEventListener('focus', () => {
+      if (wrap) wrap.classList.add('floated');
+    });
+    input.addEventListener('blur', () => {
+      handleFloat();
+      validateField(fd, input, name, statusEl, pip, idx);
+    });
+    input.addEventListener('input', () => {
+      handleFloat();
+      liveUpdate(fd, input, name, statusEl, charEl, pip, idx);
+    });
+    input.addEventListener('change', () => {
+      handleFloat();
+      validateField(fd, input, name, statusEl, pip, idx);
+    });
+
+    /* Char counter for textareas */
+    if (charEl && input.tagName === 'TEXTAREA') {
+      const maxLen = input.getAttribute('maxlength');
+      function updateChar() {
+        const len = input.value.length;
+        if (maxLen) {
+          const rem = maxLen - len;
+          charEl.textContent = rem + ' left';
+          charEl.className = 'ff-char' + (rem < 20 ? ' warn' : '') + (rem < 0 ? ' over' : '');
+        } else {
+          charEl.textContent = len > 0 ? len + ' chars' : '';
+        }
+      }
+      input.addEventListener('input', updateChar);
+      updateChar();
+    }
+
+    /* Initial state for pre-filled */
+    if (shouldFloat(input) && !hasError) {
+      markValid(fd, input, name, statusEl, pip);
+    }
+  });
+
+  function markValid(fd, input, name, statusEl, pip) {
+    fd.classList.remove('is-error');
+    fd.classList.add('is-valid');
+    if (statusEl) { statusEl.textContent = '✓'; }
+    if (pip) pip.classList.add('done');
+    completed.add(name);
+    updateProgress();
+  }
+
+  function markError(fd, statusEl, pip, name) {
+    fd.classList.remove('is-valid');
+    fd.classList.add('is-error');
+    if (statusEl) statusEl.textContent = '✕';
+    if (pip) pip.classList.remove('done');
+    completed.delete(name);
+    updateProgress();
+  }
+
+  function markNeutral(fd, statusEl, pip, name) {
+    fd.classList.remove('is-valid', 'is-error');
+    if (pip) pip.classList.remove('done');
+    completed.delete(name);
+    updateProgress();
+  }
+
+  function liveUpdate(fd, input, name, statusEl, charEl, pip, idx) {
+    /* While typing, just track completeness loosely */
+    const val = (input.value || '').trim();
+    if (val.length > 0 && !fd.classList.contains('is-error')) {
+      if (!fd.classList.contains('is-valid')) {
+        /* partial — show amber status later on blur */
+      }
+    } else if (val.length === 0) {
+      markNeutral(fd, statusEl, pip, name);
+    }
+  }
+
+  function validateField(fd, input, name, statusEl, pip, idx) {
+    const val = (input.value || '').trim();
+    const required = input.required || input.getAttribute('required') !== null;
+
+    /* Remove old error messages we injected */
+    qsa('.ff-error.js-err', fd).forEach(e => e.remove());
+
+    if (val === '' && !required) {
+      markNeutral(fd, statusEl, pip, name);
+      return;
+    }
+
+    let errorMsg = '';
+    if (val === '' && required) {
+      errorMsg = 'This field is required.';
+    } else if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      errorMsg = 'Please enter a valid email address.';
+    } else if (input.type === 'number') {
+      const min = input.getAttribute('min'), max = input.getAttribute('max');
+      const n = parseFloat(val);
+      if (min !== null && n < parseFloat(min)) errorMsg = `Minimum value is ${min}.`;
+      if (max !== null && n > parseFloat(max)) errorMsg = `Maximum value is ${max}.`;
+    } else if (input.type === 'tel' && val.length > 0 && !/^\+?[\d\s\-().]{7,}$/.test(val)) {
+      errorMsg = 'Please enter a valid phone number.';
+    }
+
+    if (errorMsg) {
+      markError(fd, statusEl, pip, name);
+      const e = document.createElement('div');
+      e.className = 'ff-error js-err';
+      e.textContent = errorMsg;
+      fd.appendChild(e);
+    } else if (val !== '') {
+      markValid(fd, input, name, statusEl, pip);
+    }
+  }
+
+  /* ── Header parallax ── */
+  const header = $('ffHeader');
+  const blob1 = qs('.blob1', header);
+  document.addEventListener('mousemove', e => {
+    const rect = header.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / window.innerWidth;
+    const dy = (e.clientY - cy) / window.innerHeight;
+    blob1.style.transform = `translate(${dx * 20}px, ${dy * 15}px) scale(1.05)`;
+  });
+
+  /* ── Submit loading state ── */
+  const form = $('familyForm');
+  const submitBtn = $('submitBtn');
+  form.addEventListener('submit', function (e) {
+    /* Run quick validation pass */
+    let hasError = false;
+    textFieldDivs.forEach((fd, idx) => {
+      const name = fd.dataset.fieldName;
+      const wrap = qs('.ff-input-wrap', fd);
+      const input = wrap ? qs('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea', wrap) : null;
+      const statusEl = $('status-' + name);
+      const pip = pips[idx] ? pips[idx].pip : null;
+      if (input) {
+        validateField(fd, input, name, statusEl, pip, idx);
+        if (fd.classList.contains('is-error')) hasError = true;
+      }
+    });
+
+    if (hasError) { e.preventDefault(); return; }
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+  });
+
+  /* ── Keyboard nav: Enter moves to next field ── */
+  textFieldDivs.forEach((fd, i) => {
+    const wrap = qs('.ff-input-wrap', fd);
+    const input = wrap ? qs('input:not([type="checkbox"]):not([type="file"]):not(textarea), select', wrap) : null;
+    if (!input) return;
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && input.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        const next = textFieldDivs[i + 1];
+        if (next) {
+          const nextWrap = qs('.ff-input-wrap', next);
+          const nextInput = nextWrap ? qs('input, select, textarea', nextWrap) : null;
+          if (nextInput) { nextInput.focus(); }
+        } else {
+          submitBtn.focus();
+        }
+      }
+    });
+  });
+
+})();
+</script>
 
 {% endblock %}

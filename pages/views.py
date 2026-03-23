@@ -2,7 +2,9 @@ from django.views.generic import TemplateView
 from notices.models import Notice
 from events.models import Event
 from .models import CarouselImage
-
+from django.utils.timezone import now
+from django.utils import timezone
+from datetime import timedelta
 
 class HomeView(TemplateView):
     template_name = "pages/home.html"
@@ -27,11 +29,21 @@ class HomeView(TemplateView):
         )
 
         # Upcoming active events (future only)
-        from django.utils.timezone import now
-        context["upcoming_events"] = (
-            Event.objects
-            .filter(is_active=True, date__gte=now().date())
-            .order_by("date")[:3]
-        )
+        
+
+        context["events"] = Event.objects.filter(
+            is_active=True,
+            date__gte=timezone.localdate()
+        ).order_by("date")[:3]
+
+        today = timezone.localdate()
+
+        for event in context["events"]:
+            if event.date == today:
+                event.tag = "today"
+            elif event.date == today + timedelta(days=1):
+                event.tag = "tomorrow"
+            else:
+                event.tag = "upcoming"
 
         return context
