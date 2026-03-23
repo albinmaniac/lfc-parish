@@ -30,10 +30,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    "lfc.up.railway.app",
-    "lfc.up.railway.app",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -108,7 +105,7 @@ import os
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
+        default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
         ssl_require=False
     )
@@ -150,7 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -218,12 +215,6 @@ cloudinary.config(
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
 )
-
-
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
-]
 
 
 # MEDIA_URL = "/media/"
